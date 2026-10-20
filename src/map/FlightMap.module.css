@@ -25,6 +25,12 @@
   stroke-width: 0.5;
 }
 
+.borderOnImagery {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.14);
+  stroke-width: 0.5;
+}
+
 .rim {
   fill: none;
   stroke: rgba(120, 170, 255, 0.18);

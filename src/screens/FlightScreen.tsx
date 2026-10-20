@@ -147,6 +147,7 @@ export function FlightScreen() {
           <span className={styles.chip}>{flight.flightNumber}</span>
           <span className={styles.chip}>{PHASE_LABEL[state.phase]}</span>
         </div>
+        <span className={styles.credit}>Imagery: NASA</span>
       </div>
 
       <div className={styles.clock}>
