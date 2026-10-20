@@ -1,0 +1,14 @@
+.app {
+  height: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: calc(var(--safe-top) + 20px) 20px 24px;
+}

@@ -1,0 +1,95 @@
+/* Dark minimal UI, airline-app feel. Collectibles (carriers, stickers, map) bring their own realistic look. */
+:root {
+  --bg: #0b0d10;
+  --surface-1: #14171c;
+  --surface-2: #1b1f26;
+  --line: #262b33;
+  --line-strong: #353b45;
+  --text-1: #e8eaed;
+  --text-2: #9aa0a6;
+  --text-3: #6b7178;
+
+  --accent: #4c8dff;
+  --accent-soft: rgba(76, 141, 255, 0.14);
+  --danger: #ff6b5e;
+
+  --tier-silver: #c0c4ca;
+  --tier-gold: #e2b65c;
+  --tier-platinum: #e5e4e2;
+
+  --font-ui: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-code: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-mono: 'Roboto Mono', ui-monospace, monospace;
+
+  --radius-s: 8px;
+  --radius-m: 14px;
+  --radius-l: 20px;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  color-scheme: dark;
+}
+
+/* Membership tier tints the accent. */
+:root[data-tier='silver'] {
+  --accent: var(--tier-silver);
+  --accent-soft: rgba(192, 196, 202, 0.14);
+}
+:root[data-tier='gold'] {
+  --accent: var(--tier-gold);
+  --accent-soft: rgba(226, 182, 92, 0.14);
+}
+:root[data-tier='platinum'] {
+  --accent: var(--tier-platinum);
+  --accent-soft: rgba(229, 228, 226, 0.12);
+  --bg: #060708;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
