@@ -8,6 +8,7 @@ const PATHS = {
     'M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM12 7.5a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM9 17h6',
   back: 'M15 5l-7 7 7 7',
   search: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4',
+  chevron: 'M6 9l6 6 6-6',
 } as const;
 
 export type IconName = keyof typeof PATHS;
@@ -22,7 +23,7 @@ export function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
       aria-hidden="true"
       fill={filled ? 'currentColor' : 'none'}
       stroke={filled ? 'none' : 'currentColor'}
-      strokeWidth={1.7}
+      strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"
     >

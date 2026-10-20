@@ -1,40 +1,102 @@
 .screen {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 26px;
   min-height: 100%;
 }
 
 .welcome {
-  margin-top: 16px;
-}
-
-.label {
-  color: var(--text-3);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  position: relative;
+  margin-top: 10px;
 }
 
 .city {
-  font-size: 40px;
-  line-height: 1.1;
+  font-size: 58px;
+  line-height: 1;
 }
 
 .sub {
+  margin-top: 8px;
   color: var(--text-2);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-style: italic;
+}
+
+/* Passport entry stamp: red ink, double frame, slammed down at an angle. */
+.stamp {
+  position: absolute;
+  top: -6px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 7px 12px 6px;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px var(--bg), inset 0 0 0 3px var(--accent);
+  color: var(--accent);
+  mix-blend-mode: multiply;
+  opacity: 0;
+  animation: stamp 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) 0.35s forwards;
+}
+
+@keyframes stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.9) rotate(-2deg);
+  }
+  60% {
+    opacity: 0.95;
+    transform: scale(0.95) rotate(-9deg);
+  }
+  100% {
+    opacity: 0.88;
+    transform: scale(1) rotate(-8deg);
+  }
+}
+
+.stampTop {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.stampCode {
+  font-family: var(--font-code);
+  font-weight: 500;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+.stampDate {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
 }
 
 .miles {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-top: 1px solid var(--text-1);
+  border-bottom: 1px dashed var(--line-strong);
+}
+
+.milesValue {
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: 28px;
+  font-size: 24px;
+  font-weight: 500;
 }
 
 .stickers {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .stack {
@@ -69,13 +131,6 @@
   }
 }
 
-.cta {
+.screen > button:last-child {
   margin-top: auto;
-  height: 54px;
-  border: 0;
-  border-radius: var(--radius-m);
-  background: var(--accent);
-  color: #0b0d10;
-  font-weight: 600;
-  font-size: 16px;
 }

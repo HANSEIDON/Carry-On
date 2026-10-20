@@ -17,7 +17,7 @@
 | 동기화 | Supabase (Auth + Postgres) | 게스트로 시작 → 원할 때 로그인. Google + Apple 로그인 |
 | Android / iOS | Capacitor | 네이티브 플러그인: 백그라운드 오디오, 포그라운드 서비스, 라이브 업데이트, 햅틱 |
 | Windows | PWA (설치형, 추후 MS Store via PWABuilder) | 필요 시 Tauri로 교체 가능 |
-| 지도 | d3-geo + NASA Blue/Black Marble | 2D, 오프라인 |
+| 지도 | d3-geo + Natural Earth 벡터 지구본 | 오프라인, 스타일 선택 |
 | 3D | Three.js (react-three-fiber) | 캐리어 화면에서만 사용 |
 | 사운드 | Web Audio API | 기내 소음은 실시간 합성, 안내방송은 녹음 조각 이어붙이기 |
 
@@ -76,9 +76,25 @@
 - 기종은 거리 기준: 단거리 A320/737급, 중거리 787/A330급, 장거리 A350/777급
 - 항공사는 **국가별 가상 항공사** (실제 항공사 이름/로고 금지 — 상표 문제)
 
-### 3.8 안내방송 (영어)
-탑승 → 환영 → 안전 안내(짧게) → 이륙 → 순항 중 기장 방송(가끔) → 안전벨트 차임(가끔) → 기내식(휴식) → 하강 → 착륙 → "Welcome to Seoul, local time is …"
-- 고품질 TTS로 미리 녹음한 조각 + 도시 이름 조각을 이어붙임
+### 3.8 안내방송 (영어) — 대본 확정 (2026-10-20)
+- 화자 2명: **승무원**(환영·도착·휴식) / **기장**(이륙·순항·하강·착륙·안전벨트). 실제 비행의 역할 분담
+- 톤: 실제 항공사 문구 + 은근한 집중 넛지 ("set your phone to flight mode", "enjoy the quiet")
+- 대본 원본: `src/domain/announcements.ts` (문구를 바꾸면 음성 클립 재생성 필요)
+
+| # | 시점 | 화자 | 차임 | 문구 ({ }는 가변) |
+|---|---|---|---|---|
+| 1 | 스텁 뜯은 직후 | 승무원 | 2음 | Ladies and gentlemen, welcome aboard {Hanul Air} flight {four seven four} to {Tokyo}. Our flight time today is {two hours}. Please fasten your seatbelt, and set your phone to flight mode. |
+| 2 | 1 직후 | 기장 | 1음 | Cabin crew, please prepare for take-off. |
+| 3 | 순항 고도 도달 | 기장 | 2음 | Good {afternoon} from the flight deck. We've reached our cruising altitude of {thirty-five thousand} feet, and the seatbelt sign is now off. We'll have you in {Tokyo} in about {one hour and thirty minutes}. Sit back, and enjoy the quiet. |
+| 4 | 하강 시작 | 기장 | 2음 | Ladies and gentlemen, we've begun our descent into {Tokyo}. We expect to land in about {twenty minutes}. Please return to your seat and fasten your seatbelt. |
+| 5 | 착륙 8분 전 (짧은 비행은 하강의 절반) | 기장 | 1음 | Cabin crew, please take your seats for landing. |
+| 6 | 도착 화면 | 승무원 | 2음 | Ladies and gentlemen, welcome to {Tokyo}. The local time is {two thirteen p.m.} Thank you for flying {Hanul Air}. |
+| 8 | 휴식 시작 (휴식 기능 구현 시) | 승무원 | 2음 | Ladies and gentlemen, we'll shortly begin our meal service. Feel free to stretch, and take a short break. |
+| 9 | 휴식 종료 / 난기류 (90분 이상 비행의 약 1/3, 1회) | 기장 | 1음 | Ladies and gentlemen, the seatbelt sign has been switched on. Please return to your seats, and fasten your seatbelt. |
+
+- 관광 비행: 1 "welcome aboard this {airline} scenic flight over {Seoul}. We'll be in the air for about {…}" / 3 "cruising at {six thousand} feet over {Seoul}" / 4 "we'll shortly begin our approach back into {Seoul}" / 6 "welcome back to {Seoul}"
+- 회항(중도 종료) 방송은 넣지 않음
+- 음성: Kokoro-82M(Apache 2.0)으로 클립을 미리 생성해 앱에 포함 + 기내 PA 필터 (예정). 그 전까지는 기기 음성(기장=남성, 승무원=여성)
 - 볼륨 분리: 기내 소음 / 방송 / 차임. 방송 끄기 옵션
 
 ### 3.9 엄격 모드 (기본 ON)
@@ -177,9 +193,9 @@
 
 ## 9. 지도 & 화면
 
-- 비행 화면: NASA Blue Marble(낮) + Black Marble(밤 도시 불빛)을 실시간 낮/밤 경계선으로 합성
-  - 구현: WebGL로 두 이미지를 지구본에 투영하고 태양 위치로 픽셀마다 낮/밤 혼합 (4096×2048, 합계 1.6MB). WebGL이 없으면 벡터 지구본으로 대체
-  - 짧은 비행은 확대가 커서 다소 흐릿함 → 추후 고해상도 타일 검토
+- 비행 화면: 지도 스타일 선택 — **Dark**(기본, 미니멀 다크 지구본) / **Classic**(기내 모니터 색감)
+  - 실시간 낮/밤 음영 + 밤 쪽 도시 불빛 (벡터, Natural Earth)
+  - NASA 위성지도는 시도했으나 품질이 기대에 못 미쳐 제거 (2026-10-20)
 - 대권항로 곡선 + 비행기 아이콘 진행
 - 기내 모니터 스타일 정보: 고도, 속도, 남은 시간, 도착 현지 시각
 - 추후: 창가 뷰
@@ -234,4 +250,4 @@
 - 정확한 마일 가격·등급 기준 밸런싱
 - 도시 DB 확장 (현재 약 65개 → 150개)
 - 가상 항공사 목록 & 기체 도장
-- 안내방송 TTS 제공자
+- 안내방송 음성: Kokoro 기장/승무원 목소리 최종 선택 (후보 샘플 청취 후)

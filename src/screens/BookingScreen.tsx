@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Icon } from '../components/Icon';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { TicketButton } from '../components/TicketButton';
 import { CITIES, cityByCode } from '../data/cities';
 import { routesFrom, routesNearDuration, SCENIC_MAX_MINUTES, scenicMiles } from '../domain/booking';
 import { planRoute, planScenic } from '../domain/flightPlan';
@@ -57,16 +58,22 @@ export function BookingScreen() {
 
   return (
     <section className={styles.screen}>
-      <ScreenHeader title="Book a flight" onBack={() => go('fly')} />
+      <ScreenHeader title="Where to?" onBack={() => go('fly')} />
 
       <label className={styles.origin}>
-        <span className={styles.label}>From</span>
+        <span className="label">Departing from</span>
+        <span className={styles.originValue}>
+          <span className={styles.originCity}>{origin.city}</span>
+          <span className={styles.originCode}>{origin.code}</span>
+          <Icon name="chevron" size={16} />
+        </span>
         <select
           value={originCode}
           onChange={(e) => {
             setOriginCode(e.target.value);
             setPick(null);
           }}
+          aria-label="Departure city"
         >
           {CITIES.map((c) => (
             <option key={c.code} value={c.code}>
@@ -76,13 +83,13 @@ export function BookingScreen() {
         </select>
       </label>
 
-      <div className={styles.segment} role="tablist">
+      <div className={styles.tabs} role="tablist">
         {(['time', 'destination'] as const).map((m) => (
           <button
             key={m}
             role="tab"
             aria-selected={mode === m}
-            className={styles.segmentItem}
+            className={styles.tab}
             onClick={() => {
               setMode(m);
               setPick(null);
@@ -112,22 +119,18 @@ export function BookingScreen() {
       ) : (
         <label className={styles.search}>
           <Icon name="search" size={18} />
-          <input
-            placeholder="City, country or code"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+          <input placeholder="City, country or code" value={query} onChange={(e) => setQuery(e.target.value)} />
         </label>
       )}
 
       <ul className={styles.list}>
         {showScenic && (
           <>
-            <li className={styles.groupLabel}>Scenic flight</li>
+            <li className={`label ${styles.group}`}>Scenic flight</li>
             <RouteRow
               code={origin.code}
               title="Scenic flight"
-              subtitle={`Loop over ${origin.city}`}
+              subtitle={`A loop over ${origin.city}`}
               minutes={target}
               miles={scenicMiles(target)}
               picked={isPicked({ kind: 'scenic', minutes: target })}
@@ -137,7 +140,7 @@ export function BookingScreen() {
         )}
 
         {mode === 'time' && routes.length > 0 && (
-          <li className={styles.groupLabel}>Destinations around {formatDuration(target)}</li>
+          <li className={`label ${styles.group}`}>Departures around {formatDuration(target)}</li>
         )}
         {routes.map((r) => (
           <RouteRow
@@ -162,14 +165,16 @@ export function BookingScreen() {
 
       {pick && (
         <footer className={styles.footer}>
-          <p className={styles.summary}>
-            {pick.kind === 'route'
-              ? `${origin.code} → ${pick.route.to.code} · ${formatDuration(pick.route.minutes)}`
-              : `${origin.code} scenic · ${formatDuration(pick.minutes)}`}
-          </p>
-          <button className={styles.cta} onClick={checkIn}>
+          <TicketButton
+            onClick={checkIn}
+            sub={
+              pick.kind === 'route'
+                ? `${origin.code} → ${pick.route.to.code} · ${formatDuration(pick.route.minutes)}`
+                : `${origin.code} scenic · ${formatDuration(pick.minutes)}`
+            }
+          >
             Check in
-          </button>
+          </TicketButton>
         </footer>
       )}
     </section>
@@ -192,12 +197,12 @@ function RouteRow({ code, title, subtitle, minutes, miles, picked, onPick }: Rou
       <button className={styles.row} data-picked={picked} onClick={onPick}>
         <span className={styles.code}>{code}</span>
         <span className={styles.place}>
-          <span>{title}</span>
-          <span className={styles.sub}>{subtitle}</span>
+          <span className={styles.city}>{title}</span>
+          <span className={styles.country}>{subtitle}</span>
         </span>
         <span className={styles.meta}>
-          <span>{formatDuration(minutes)}</span>
-          <span className={styles.sub}>{miles.toLocaleString('en-US')} mi</span>
+          <span className={styles.duration}>{formatDuration(minutes)}</span>
+          <span className={styles.miles}>{miles.toLocaleString('en-US')} mi</span>
         </span>
       </button>
     </li>

@@ -1,21 +1,14 @@
 .screen {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding-bottom: 150px;
+  gap: 20px;
+  padding-bottom: 170px;
 }
 
 .block {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.label {
-  color: var(--text-3);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .chips {
@@ -25,38 +18,42 @@
 }
 
 .chip {
-  height: 34px;
+  height: 32px;
   padding: 0 14px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: 999px;
-  background: none;
+  background: transparent;
   color: var(--text-2);
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .chip[data-active='true'] {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent);
+  border-color: var(--text-1);
+  background: var(--text-1);
+  color: var(--on-accent);
 }
 
 .seatHead {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
 }
 
 .link {
   padding: 0;
   border: 0;
+  border-bottom: 1px solid currentColor;
   background: none;
   color: var(--accent);
   font-size: 13px;
 }
 
 .hint {
-  color: var(--text-3);
-  font-size: 12px;
+  color: var(--text-2);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.35;
 }
 
 .footer {
@@ -71,39 +68,33 @@
   transform: translateX(-50%);
   padding: 14px 20px calc(var(--safe-bottom) + 14px);
   border-top: 1px solid var(--line);
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--grain);
 }
 
 .seatInfo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   min-width: 0;
 }
 
 .seatCode {
   font-family: var(--font-code);
   font-weight: 500;
-  font-size: 34px;
+  font-size: 38px;
   line-height: 1;
 }
 
 .seatLine,
 .seatSub {
   display: block;
-  font-size: 13px;
+  font-size: 13.5px;
 }
 
 .seatSub {
   color: var(--text-3);
-  font-size: 12px;
-}
-
-.cta {
-  height: 50px;
-  border: 0;
-  border-radius: var(--radius-m);
-  background: var(--accent);
-  color: #0b0d10;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-style: italic;
 }

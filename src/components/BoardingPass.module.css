@@ -1,14 +1,19 @@
 /* Paper boarding pass. Tiers: basic paper, silver foil, gold foil + shimmer, platinum black metal. */
 .pass {
-  --paper: #f4f1ea;
-  --ink: #1a1a1a;
-  --muted: #6f6a60;
+  /* Ticket stock is a touch whiter than the notebook page it lies on. */
+  --paper: #fffcf6;
+  --ink: #1f1b16;
+  --muted: #7b7366;
   --foil: transparent;
+  /* Perforation: hole radius and spacing. */
+  --hole: 2.6px;
+  --pitch: 11px;
   width: 100%;
   max-width: 360px;
   margin: 0 auto;
   color: var(--ink);
   user-select: none;
+  -webkit-user-select: none;
 }
 
 .pass[data-tier='silver'] {
@@ -26,14 +31,25 @@
   --foil: linear-gradient(90deg, #7d7d80, #f5f5f5 45%, #c9e7ff 50%, #f5f5f5 55%, #7d7d80);
 }
 
-.main,
-.stub {
-  background: var(--paper);
+.paper {
+  filter: drop-shadow(0 1px 1px rgba(60, 40, 20, 0.14)) drop-shadow(0 10px 16px rgba(60, 40, 20, 0.13));
 }
 
+/* The main part ends in half-holes along the perforation. */
 .main {
   overflow: hidden;
   border-radius: 16px 16px 0 0;
+  background: var(--paper);
+  -webkit-mask-image: radial-gradient(circle at 50% 100%, transparent var(--hole), #000 calc(var(--hole) + 0.5px)),
+    linear-gradient(#000, #000);
+  mask-image: radial-gradient(circle at 50% 100%, transparent var(--hole), #000 calc(var(--hole) + 0.5px)),
+    linear-gradient(#000, #000);
+  -webkit-mask-size: var(--pitch) 6px, 100% calc(100% - 6px);
+  mask-size: var(--pitch) 6px, 100% calc(100% - 6px);
+  -webkit-mask-position: left bottom, left top;
+  mask-position: left bottom, left top;
+  -webkit-mask-repeat: repeat-x, no-repeat;
+  mask-repeat: repeat-x, no-repeat;
 }
 
 .band {
@@ -86,7 +102,9 @@
 
 .city {
   color: var(--muted);
-  font-size: 13px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  line-height: 1.2;
 }
 
 .plane {
@@ -102,7 +120,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 12px 10px;
   margin: 0;
-  padding: 12px 18px 18px;
+  padding: 12px 18px 20px;
 }
 
 .field {
@@ -115,8 +133,9 @@
 
 .field dt {
   color: var(--muted);
-  font-size: 10px;
-  letter-spacing: 0.06em;
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -149,23 +168,23 @@
   vertical-align: 2px;
 }
 
-/* Dashed tear line with half-circle notches cut into both edges. */
+/* Notches cut into both edges where the pass folds and tears. */
 .perforation {
   position: relative;
+  z-index: 1;
   height: 0;
-  border-top: 2px dashed color-mix(in srgb, var(--muted) 55%, transparent);
-  background: var(--paper);
 }
 
 .perforation::before,
 .perforation::after {
   content: '';
   position: absolute;
-  top: -11px;
+  top: -10px;
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--grain);
 }
 
 .perforation::before {
@@ -176,37 +195,89 @@
   right: -10px;
 }
 
+.pass[data-phase='torn'] .perforation {
+  visibility: hidden;
+}
+
+/*
+ * The stub hinges on its right end: pulling opens a wedge from the left, so the rip
+ * travels across the perforation. The shadow grows as it lifts off the main part.
+ */
 .stub {
+  position: relative;
+  cursor: grab;
+  touch-action: none;
+  transform-origin: right top;
+  /* Negative = counter-clockwise about the right end, so the left edge drops and the gap opens there. */
+  transform: rotate(calc(var(--p) * -11deg)) translateY(calc(var(--p) * 5px));
+  filter: drop-shadow(0 calc(var(--p) * 10px) calc(var(--p) * 12px) rgba(0, 0, 0, calc(var(--p) * 0.45)));
+}
+
+.pass[data-phase='dragging'] .stub {
+  cursor: grabbing;
+}
+
+.pass[data-phase='returning'] .stub {
+  transition:
+    transform 0.45s cubic-bezier(0.3, 1.5, 0.5, 1),
+    filter 0.3s;
+}
+
+.pass[data-phase='torn'] .stub {
+  animation: drop 0.85s cubic-bezier(0.55, 0, 0.9, 0.45) forwards;
+  pointer-events: none;
+}
+
+/* Free of the pass, the stub swings and falls away. */
+@keyframes drop {
+  0% {
+    transform: rotate(-11deg) translateY(5px);
+  }
+  18% {
+    transform: translate(-4px, 22px) rotate(-17deg);
+  }
+  100% {
+    transform: translate(-60px, 600px) rotate(-40deg);
+    opacity: 0;
+  }
+}
+
+/* The stub's paper: half-holes along the top edge. */
+.stubPaper {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 14px 18px 18px;
+  padding: 16px 18px 18px;
   border-radius: 0 0 16px 16px;
+  background: var(--paper);
   color: var(--ink);
-  cursor: grab;
-  touch-action: none;
-  transform: translate(var(--px), var(--py)) rotate(var(--rot));
-  transform-origin: 0 0;
-  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  -webkit-mask-image: radial-gradient(circle at 50% 0, transparent var(--hole), #000 calc(var(--hole) + 0.5px)),
+    linear-gradient(#000, #000);
+  mask-image: radial-gradient(circle at 50% 0, transparent var(--hole), #000 calc(var(--hole) + 0.5px)),
+    linear-gradient(#000, #000);
+  -webkit-mask-size: var(--pitch) 6px, 100% calc(100% - 6px);
+  mask-size: var(--pitch) 6px, 100% calc(100% - 6px);
+  -webkit-mask-position: left top, left bottom;
+  mask-position: left top, left bottom;
+  -webkit-mask-repeat: repeat-x, no-repeat;
+  mask-repeat: repeat-x, no-repeat;
 }
 
-.stub[data-phase='dragging'] {
-  cursor: grabbing;
-  transition: none;
+/* Once the stub is gone, the pass is handed over and slides away. */
+.pass[data-phase='torn'] .main {
+  animation: handover 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.45s forwards;
 }
 
-.stub[data-phase='torn'] {
-  animation: fall 0.8s cubic-bezier(0.5, 0, 0.9, 0.6) forwards;
-  pointer-events: none;
-}
-
-@keyframes fall {
+@keyframes handover {
   0% {
-    transform: translate(var(--px), var(--py)) rotate(var(--rot));
+    transform: none;
+  }
+  25% {
+    transform: translateY(6px);
   }
   100% {
-    transform: translate(calc(var(--px) + 70px), calc(var(--py) + 420px)) rotate(38deg);
+    transform: translateY(-40px) scale(0.96);
     opacity: 0;
   }
 }
@@ -220,4 +291,45 @@
 
 .mono {
   font-family: var(--font-mono);
+}
+
+/* Guide: an arrow that keeps pulling down, gone the moment the pass is touched. */
+.hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 18px;
+  color: var(--text-2);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-style: italic;
+  transition: opacity 0.2s;
+}
+
+.hint[data-hidden='true'] {
+  opacity: 0;
+}
+
+.arrow {
+  color: var(--accent);
+  animation: pull 1.3s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes pull {
+  0% {
+    transform: translateY(-4px);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(8px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(12px);
+    opacity: 0;
+  }
 }

@@ -25,12 +25,6 @@
   stroke-width: 0.5;
 }
 
-.borderOnImagery {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.14);
-  stroke-width: 0.5;
-}
-
 .rim {
   fill: none;
   stroke: rgba(120, 170, 255, 0.18);
@@ -90,4 +84,86 @@
   fill: #fff;
   stroke: #05080d;
   stroke-width: 0.8;
+}
+
+/* Classic: the blue-and-sand look of older seat-back moving maps. */
+.map[data-style='classic'] {
+  background: #0d2440;
+}
+.map[data-style='classic'] .ocean {
+  fill: #1d4f86;
+}
+.map[data-style='classic'] .graticule {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+.map[data-style='classic'] .land {
+  fill: #c8b37e;
+}
+.map[data-style='classic'] .border {
+  stroke: rgba(70, 52, 24, 0.45);
+}
+.map[data-style='classic'] .night {
+  fill: rgba(4, 14, 40, 0.26);
+}
+.map[data-style='classic'] .city {
+  fill: #5b4a28;
+}
+.map[data-style='classic'] .route {
+  stroke: rgba(255, 255, 255, 0.75);
+}
+.map[data-style='classic'] .label {
+  stroke: #1d4f86;
+}
+
+/* Paper: a printed map in the notebook. Ink coastlines, pale sea, cream land, red route. */
+.map[data-style='paper'] {
+  background: transparent;
+}
+.map[data-style='paper'] .ocean {
+  fill: #d6dfdb;
+}
+.map[data-style='paper'] .graticule {
+  stroke: rgba(32, 27, 20, 0.07);
+}
+.map[data-style='paper'] .land {
+  fill: #f8f3e9;
+  stroke: rgba(32, 27, 20, 0.45);
+  stroke-width: 0.5;
+}
+.map[data-style='paper'] .border {
+  stroke: rgba(32, 27, 20, 0.16);
+}
+.map[data-style='paper'] .rim {
+  stroke: rgba(32, 27, 20, 0.5);
+}
+.map[data-style='paper'] .night {
+  fill: rgba(31, 58, 95, 0.07);
+}
+.map[data-style='paper'] .city {
+  fill: #8f8676;
+}
+.map[data-style='paper'] .light {
+  fill: #c98a22;
+}
+.map[data-style='paper'] .lightGlow {
+  fill: #e0a640;
+  opacity: 0.35;
+}
+.map[data-style='paper'] .route {
+  stroke: rgba(32, 27, 20, 0.5);
+}
+.map[data-style='paper'] .flown {
+  stroke: var(--accent);
+}
+.map[data-style='paper'] .marker {
+  fill: #fffcf6;
+  stroke: #1f1b16;
+}
+.map[data-style='paper'] .label {
+  fill: #1f1b16;
+  stroke: #f8f3e9;
+}
+.map[data-style='paper'] .plane {
+  fill: #1f1b16;
+  stroke: #fffcf6;
 }

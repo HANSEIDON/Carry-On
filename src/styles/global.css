@@ -1,49 +1,63 @@
-/* Dark minimal UI, airline-app feel. Collectibles (carriers, stickers, map) bring their own realistic look. */
+/*
+ * Paper journey: a travel notebook. Cream paper with a little grain, ink-black type,
+ * an elegant serif for places, mono for anything printed by an airline, and one stamp red.
+ */
 :root {
-  --bg: #0b0d10;
-  --surface-1: #14171c;
-  --surface-2: #1b1f26;
-  --line: #262b33;
-  --line-strong: #353b45;
-  --text-1: #e8eaed;
-  --text-2: #9aa0a6;
-  --text-3: #6b7178;
+  --bg: #f1ebe0;
+  --surface-1: #faf6ee;
+  --surface-2: #f5efe4;
+  --line: rgba(32, 27, 20, 0.12);
+  --line-strong: rgba(32, 27, 20, 0.26);
+  --text-1: #1f1b16;
+  --text-2: #5b5449;
+  --text-3: #8f8676;
 
-  --accent: #4c8dff;
-  --accent-soft: rgba(76, 141, 255, 0.14);
-  --danger: #ff6b5e;
+  --accent: #b9392a;
+  --accent-soft: rgba(185, 57, 42, 0.09);
+  --on-accent: #fffaf2;
+  --navy: #1f3a5f;
+  --danger: #a8281c;
 
-  --tier-silver: #c0c4ca;
-  --tier-gold: #e2b65c;
-  --tier-platinum: #e5e4e2;
+  --tier-silver: #5a6470;
+  --tier-gold: #a07425;
+  --tier-platinum: #1f1b16;
 
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
   --font-ui: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-code: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  --font-mono: 'Roboto Mono', ui-monospace, monospace;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  --radius-s: 8px;
-  --radius-m: 14px;
-  --radius-l: 20px;
+  --radius-s: 6px;
+  --radius-m: 12px;
+  --radius-l: 18px;
+
+  /* Paper lying on paper: a hairline edge, a soft contact shadow, a long ambient one. */
+  --shadow-paper: 0 0 0 1px rgba(32, 27, 20, 0.05), 0 1px 2px rgba(60, 40, 20, 0.08),
+    0 12px 28px -16px rgba(60, 40, 20, 0.35);
+  --shadow-lift: 0 0 0 1px rgba(32, 27, 20, 0.05), 0 2px 4px rgba(60, 40, 20, 0.1),
+    0 22px 40px -18px rgba(60, 40, 20, 0.45);
+
+  /* Fine paper grain, generated (no image file). */
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 0 0.14 0 0 0 0.09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
-/* Membership tier tints the accent. */
+/* Membership tier tints the accent, like a different ink. */
 :root[data-tier='silver'] {
   --accent: var(--tier-silver);
-  --accent-soft: rgba(192, 196, 202, 0.14);
+  --accent-soft: rgba(90, 100, 112, 0.1);
 }
 :root[data-tier='gold'] {
   --accent: var(--tier-gold);
-  --accent-soft: rgba(226, 182, 92, 0.14);
+  --accent-soft: rgba(160, 116, 37, 0.1);
 }
 :root[data-tier='platinum'] {
   --accent: var(--tier-platinum);
-  --accent-soft: rgba(229, 228, 226, 0.12);
-  --bg: #060708;
+  --accent-soft: rgba(31, 27, 22, 0.08);
 }
 
 *,
@@ -60,7 +74,8 @@ body,
 }
 
 body {
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--grain);
   color: var(--text-1);
   font-family: var(--font-ui);
   font-size: 15px;
@@ -86,10 +101,20 @@ h1,
 h2,
 h3 {
   margin: 0;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 400;
   letter-spacing: -0.01em;
 }
 
 p {
   margin: 0;
+}
+
+/* Small printed label: the "PASSENGER", "GATE" kind. */
+.label {
+  color: var(--text-3);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }

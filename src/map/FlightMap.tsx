@@ -3,8 +3,8 @@ import { memo, useEffect, useMemo, useState } from 'react';
 import { CITIES } from '../data/cities';
 import { isNight, subsolarPoint } from '../domain/sun';
 import type { City } from '../domain/types';
+import type { MapStyle } from '../store/settings';
 import styles from './FlightMap.module.css';
-import { globeRenderer } from './globeRenderer';
 import { loadWorld, type WorldData } from './worldData';
 
 const W = 400;
@@ -24,13 +24,11 @@ interface Props {
   /** 0..1 */
   progress: number;
   now: Date;
+  mapStyle: MapStyle;
 }
 
-/**
- * In-flight map, styled like a seat-back moving map: globe, route, day/night, plane.
- * NASA satellite imagery when WebGL is available; a vector globe otherwise (and while loading).
- */
-export function FlightMap({ from, to, scenic, progress, now }: Props) {
+/** In-flight map, styled like a seat-back moving map: globe, route, day/night, plane. */
+export function FlightMap({ from, to, scenic, progress, now, mapStyle }: Props) {
   const [world, setWorld] = useState<WorldData | null>(null);
   useEffect(() => {
     loadWorld().then(setWorld);
@@ -72,29 +70,6 @@ export function FlightMap({ from, to, scenic, progress, now }: Props) {
   // Night shading only needs to move once a minute.
   const minute = Math.floor(now.getTime() / 60_000);
 
-  const [satellite, setSatellite] = useState<string | null>(null);
-  useEffect(() => {
-    let alive = true;
-    const [lon, lat] = projection.rotate();
-    const [tx, ty] = projection.translate();
-    const pixelRatio = Math.min(2.5, Math.max(1.5, window.devicePixelRatio));
-    globeRenderer
-      .render(
-        {
-          center: [-lon, -lat],
-          scale: projection.scale(),
-          translate: [tx, ty],
-          width: W,
-          height: H,
-          sun: subsolarPoint(new Date(minute * 60_000)),
-        },
-        pixelRatio,
-      )
-      .then((url) => alive && setSatellite(url));
-    return () => {
-      alive = false;
-    };
-  }, [projection, minute]);
   const night = useMemo(() => {
     const sun = subsolarPoint(new Date(minute * 60_000));
     const anti: Pt = [sun.lon + 180, -sun.lat];
@@ -119,27 +94,18 @@ export function FlightMap({ from, to, scenic, progress, now }: Props) {
   const toXY = projection(pt(to));
 
   return (
-    <svg className={styles.map} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" role="img" aria-label={`Flight map from ${from.city} to ${to.city}`}>
+    <svg className={styles.map} data-style={mapStyle} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" role="img" aria-label={`Flight map from ${from.city} to ${to.city}`}>
       <defs>
         <filter id="glow" x="-200%" y="-200%" width="500%" height="500%">
           <feGaussianBlur stdDeviation="2.2" />
         </filter>
       </defs>
 
-      {satellite ? (
-        <>
-          <image href={satellite} x={0} y={0} width={W} height={H} />
-          {world && <path d={path(world.borders) ?? ''} className={styles.borderOnImagery} />}
-        </>
-      ) : (
-        <>
-          <BaseLayer path={path} world={world} />
-          {night.map((d, i) => (
-            <path key={i} d={d} className={styles.night} />
-          ))}
-          <CityLights projection={projection} minute={minute} />
-        </>
-      )}
+      <BaseLayer path={path} world={world} />
+      {night.map((d, i) => (
+        <path key={i} d={d} className={styles.night} />
+      ))}
+      <CityLights projection={projection} minute={minute} />
 
       <path d={path(route) ?? ''} className={styles.route} />
       <path d={path(flown) ?? ''} className={styles.flown} />

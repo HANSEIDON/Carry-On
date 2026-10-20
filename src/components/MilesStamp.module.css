@@ -1,0 +1,28 @@
+.stamp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 66px;
+  height: 66px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 3px var(--bg), inset 0 0 0 4px var(--accent);
+  color: var(--accent);
+  transform: rotate(-9deg);
+  opacity: 0.88;
+}
+
+.value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.unit {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}

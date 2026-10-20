@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SeatLegend, SeatMapView } from '../components/SeatMapView';
 import { StageBar } from '../components/StageBar';
+import { TicketButton } from '../components/TicketButton';
 import type { TripPurpose } from '../db/db';
 import { AIRCRAFT_LABEL } from '../domain/flightPlan';
 import { hashString } from '../domain/random';
@@ -58,7 +59,7 @@ export function CheckinScreen() {
       <StageBar current="Check-in" />
 
       <div className={styles.block}>
-        <p className={styles.label}>Trip purpose</p>
+        <p className="label">Trip purpose</p>
         <div className={styles.chips}>
           {PURPOSES.map((p) => (
             <button
@@ -75,7 +76,7 @@ export function CheckinScreen() {
 
       <div className={styles.block}>
         <div className={styles.seatHead}>
-          <p className={styles.label}>Choose your seat</p>
+          <p className="label">Choose your seat</p>
           <button className={styles.link} onClick={assign}>
             Assign for me
           </button>
@@ -100,12 +101,13 @@ export function CheckinScreen() {
               </span>
             </span>
           </div>
-        ) : (
-          <p className={styles.seatSub}>Tap a seat on the map</p>
-        )}
-        <button className={styles.cta} onClick={seat ? () => go('boarding') : assign}>
-          {seat ? 'Get boarding pass' : 'Assign for me'}
-        </button>
+        ) : null}
+        <TicketButton
+          onClick={seat ? () => go('boarding') : assign}
+          sub={seat ? `Seat ${seat.id} · ${CABIN_LABEL[seat.cabin]}` : 'Or tap a seat on the map'}
+        >
+          {seat ? 'Get boarding pass' : 'Assign me a seat'}
+        </TicketButton>
       </footer>
     </section>
   );

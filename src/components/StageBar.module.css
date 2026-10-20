@@ -1,26 +1,30 @@
 .bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .stage {
-  padding-top: 6px;
-  border-top: 2px solid var(--line);
+  padding-top: 7px;
+  border-top: 1px solid var(--line-strong);
   color: var(--text-3);
-  font-size: 11px;
-  letter-spacing: 0.03em;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .stage[data-state='done'] {
-  border-color: var(--text-3);
+  border-top-color: var(--text-1);
+  color: var(--text-2);
 }
 
 .stage[data-state='now'] {
-  border-color: var(--accent);
+  border-top: 2px solid var(--accent);
+  padding-top: 6px;
   color: var(--accent);
+  font-weight: 500;
 }

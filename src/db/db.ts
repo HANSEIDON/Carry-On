@@ -82,7 +82,7 @@ db.version(1).stores({
 
 const STARTER_CARRIER: Omit<Carrier, 'id' | 'acquiredAt'> = {
   modelId: 'placeholder',
-  color: '#2B2E33',
+  color: '#2c3b55',
   capacity: 24,
 };
 

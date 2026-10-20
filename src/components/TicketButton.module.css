@@ -1,0 +1,61 @@
+.ticket {
+  --stub: 58px;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 58px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: var(--text-1);
+  color: var(--on-accent);
+  text-align: left;
+  box-shadow: 0 14px 26px -16px rgba(30, 20, 10, 0.6);
+  /* Notches bitten out where the perforation meets the edges. */
+  -webkit-mask:
+    radial-gradient(circle at calc(100% - var(--stub)) 0, transparent 6px, #000 6.5px) top / 100% 51% no-repeat,
+    radial-gradient(circle at calc(100% - var(--stub)) 100%, transparent 6px, #000 6.5px) bottom / 100% 51% no-repeat;
+  mask:
+    radial-gradient(circle at calc(100% - var(--stub)) 0, transparent 6px, #000 6.5px) top / 100% 51% no-repeat,
+    radial-gradient(circle at calc(100% - var(--stub)) 100%, transparent 6px, #000 6.5px) bottom / 100% 51% no-repeat;
+  transition: transform 0.15s, background 0.2s;
+}
+
+.ticket:active {
+  transform: translateY(1px) scale(0.995);
+}
+
+.ticket:disabled {
+  background: var(--text-3);
+  cursor: default;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  padding: 8px 18px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 23px;
+  line-height: 1.05;
+}
+
+.sub {
+  color: rgba(255, 250, 242, 0.6);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.stub {
+  display: grid;
+  place-items: center;
+  width: var(--stub);
+  border-left: 1.5px dashed rgba(255, 250, 242, 0.35);
+}

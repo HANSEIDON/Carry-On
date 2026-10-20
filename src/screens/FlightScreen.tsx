@@ -11,13 +11,20 @@ import { aircraftFor, distanceKm } from '../domain/geo';
 import { formatClock, progress, remainingMs } from '../domain/landing';
 import { hashString, seededRandom } from '../domain/random';
 import { ZONE_LABEL } from '../domain/seatmap';
-import { localTime } from '../domain/time';
+import { localHourMinute, localTime } from '../domain/time';
+import { StageBar } from '../components/StageBar';
 import { FlightMap } from '../map/FlightMap';
 import { useApp } from '../store/appStore';
-import { useSound } from '../store/settings';
+import { useSettings, type MapStyle } from '../store/settings';
 import styles from './FlightScreen.module.css';
 
 const PHASE_LABEL: Record<FlightPhase, string> = { climb: 'Climbing', cruise: 'Cruising', descent: 'Descending' };
+
+const MAP_STYLES: { id: MapStyle; label: string; note: string }[] = [
+  { id: 'paper', label: 'Paper', note: 'A printed map, like a travel journal' },
+  { id: 'classic', label: 'Classic', note: 'Seat-back map colors' },
+  { id: 'dark', label: 'Night', note: 'Dark globe with city lights' },
+];
 
 /** A flight that started this recently gets the full welcome; resumed flights don't. */
 const FRESH_START_MS = 15_000;
@@ -40,10 +47,11 @@ export function FlightScreen() {
   const setFlight = useApp((s) => s.setFlight);
   const setLanding = useApp((s) => s.setLanding);
   const setProfile = useApp((s) => s.setProfile);
-  const sound = useSound();
+  const settings = useSettings();
 
   const [now, setNow] = useState(Date.now());
   const [needsTap, setNeedsTap] = useState(!cabinAudio.playing);
+  const [mapMenu, setMapMenu] = useState(false);
   const landing = useRef(false);
 
   const from = cityByCode(flight.fromCode)!;
@@ -69,6 +77,8 @@ export function FlightScreen() {
     scenic: flight.scenic,
     minutes: flight.plannedMinutes,
     altitudeFt: state.altitudeFt,
+    remainingMinutes: Math.round(left / 60_000),
+    local: localHourMinute(from.tz, new Date(now)),
   };
 
   // Clock tick.
@@ -78,39 +88,58 @@ export function FlightScreen() {
   }, []);
 
   // Cabin volume follows the setting.
-  useEffect(() => cabinAudio.setVolume(sound.volume), [sound.volume]);
+  useEffect(() => cabinAudio.setVolume(settings.volume), [settings.volume]);
 
-  // Welcome aboard, once, for a flight that has just taken off.
+  // Welcome aboard, then the captain readies the cabin: once, for a flight that has just taken off.
   useEffect(() => {
     if (welcomed.has(flight.id)) return;
     welcomed.add(flight.id);
-    if (Date.now() - flight.startedAt < FRESH_START_MS && useSound.getState().announcements) {
+    if (Date.now() - flight.startedAt < FRESH_START_MS && useSettings.getState().announcements) {
       announce(scripts.welcome(contextRef.current));
+      announce(scripts.takeoff());
     }
   }, [flight.id, flight.startedAt]);
 
-  // Phase changes: the sound shifts, the seatbelt sign chimes, the crew speaks.
+  // Phase changes: the sound shifts and the captain speaks (an announcement brings its own chime).
   const lastPhase = useRef<FlightPhase>(state.phase);
   useEffect(() => {
     if (state.phase === lastPhase.current) return;
     lastPhase.current = state.phase;
     cabinAudio.setPhase(state.phase);
-    if (sound.chimes) cabinAudio.chime('single');
-    if (!sound.announcements) return;
-    if (state.phase === 'cruise') announce(scripts.cruise(contextRef.current));
-    if (state.phase === 'descent') announce(scripts.descent(contextRef.current));
-  }, [state.phase, sound.chimes, sound.announcements]);
+    if (settings.announcements && state.phase === 'cruise') announce(scripts.cruise(contextRef.current));
+    else if (settings.announcements && state.phase === 'descent') announce(scripts.descent(contextRef.current));
+    else if (settings.chimes) cabinAudio.chime('single');
+  }, [state.phase, settings.chimes, settings.announcements]);
+
+  // On final approach the captain calls the crew to their seats. Skipped if the flight resumed past it.
+  const landingCueMs = useMemo(() => landingCue(flight.plannedMinutes) * 60_000, [flight.plannedMinutes]);
+  const landingCalled = useRef(left <= landingCueMs);
+  useEffect(() => {
+    if (landingCalled.current || left > landingCueMs || left <= 0) return;
+    landingCalled.current = true;
+    if (settings.announcements) announce(scripts.landing());
+  }, [left, landingCueMs, settings.announcements]);
 
   // Now and then during cruise the seatbelt sign blinks, like a real flight.
   const chimeAt = useMemo(() => seatbeltChimes(flight), [flight]);
-  const chimed = useRef(new Set<number>());
+  const chimed = useRef(new Set(chimeAt.filter((t) => done >= t)));
   useEffect(() => {
     for (const t of chimeAt) {
       if (done < t || chimed.current.has(t)) continue;
       chimed.current.add(t);
-      if (sound.chimes) cabinAudio.chime('single');
+      if (settings.chimes) cabinAudio.chime('single');
     }
-  }, [done, chimeAt, sound.chimes]);
+  }, [done, chimeAt, settings.chimes]);
+
+  // Some longer flights hit a patch of light turbulence once: the captain puts the sign on.
+  const bumpAt = useMemo(() => turbulence(flight), [flight]);
+  const bumped = useRef(bumpAt !== null && done >= bumpAt);
+  useEffect(() => {
+    if (bumpAt === null || bumped.current || done < bumpAt) return;
+    bumped.current = true;
+    if (settings.announcements) announce(scripts.seatbelt());
+    else if (settings.chimes) cabinAudio.chime('single');
+  }, [done, bumpAt, settings.announcements, settings.chimes]);
 
   // Touchdown.
   useEffect(() => {
@@ -126,8 +155,8 @@ export function FlightScreen() {
   }, [left, flight.id, go, setFlight, setLanding, setProfile]);
 
   const turnOnSound = () => {
-    cabinAudio.start(zone, flight.cabin, state.phase);
-    cabinAudio.setVolume(sound.volume);
+    cabinAudio.start(zone, flight.cabin, state.phase, flight.purpose);
+    cabinAudio.setVolume(settings.volume);
     setNeedsTap(false);
   };
 
@@ -141,17 +170,56 @@ export function FlightScreen() {
 
   return (
     <section className={styles.screen}>
+      <StageBar current="In flight" />
+
       <div className={styles.mapWrap}>
-        <FlightMap from={from} to={to} scenic={flight.scenic} progress={done} now={new Date(now)} />
+        <FlightMap
+          from={from}
+          to={to}
+          scenic={flight.scenic}
+          progress={done}
+          now={new Date(now)}
+          mapStyle={settings.mapStyle}
+        />
         <div className={styles.mapTop}>
           <span className={styles.chip}>{flight.flightNumber}</span>
           <span className={styles.chip}>{PHASE_LABEL[state.phase]}</span>
         </div>
-        <span className={styles.credit}>Imagery: NASA</span>
+        <button className={styles.mapButton} aria-expanded={mapMenu} onClick={() => setMapMenu((o) => !o)}>
+          Map · {MAP_STYLES.find((s) => s.id === settings.mapStyle)?.label}
+        </button>
+        {mapMenu && (
+          <div className={styles.mapMenu} role="menu">
+            {MAP_STYLES.map((s) => (
+              <button
+                key={s.id}
+                role="menuitemradio"
+                aria-checked={settings.mapStyle === s.id}
+                className={styles.mapOption}
+                onClick={() => {
+                  settings.setMapStyle(s.id);
+                  setMapMenu(false);
+                }}
+              >
+                <span>{s.label}</span>
+                <span className={styles.mapNote}>{s.note}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className={styles.clock}>
-        <p className={styles.time}>{formatClock(left)}</p>
+        <p className={styles.time} aria-label={`${formatClock(left)} to arrival`}>
+          {/* Fixed-width digits so the serif countdown doesn't wobble every second. */}
+          {formatClock(left)
+            .split('')
+            .map((ch, i) => (
+              <span key={i} className={ch === ':' ? styles.colon : styles.digit}>
+                {ch}
+              </span>
+            ))}
+        </p>
         <p className={styles.sub}>
           to {destination.city} · arrives {localTime(destination.tz, arrival)} local
         </p>
@@ -179,21 +247,21 @@ export function FlightScreen() {
               min={0}
               max={1}
               step={0.01}
-              value={sound.volume}
-              onChange={(e) => sound.setVolume(Number(e.target.value))}
+              value={settings.volume}
+              onChange={(e) => settings.setVolume(Number(e.target.value))}
             />
           </label>
         )}
         <div className={styles.toggles}>
           <Toggle
             label="Announcements"
-            on={sound.announcements}
+            on={settings.announcements}
             onChange={(on) => {
-              sound.setAnnouncements(on);
+              settings.setAnnouncements(on);
               if (!on) silenceAnnouncements();
             }}
           />
-          <Toggle label="Seatbelt chimes" on={sound.chimes} onChange={sound.setChimes} />
+          <Toggle label="Seatbelt chimes" on={settings.chimes} onChange={settings.setChimes} />
         </div>
       </div>
 
@@ -202,6 +270,21 @@ export function FlightScreen() {
       </button>
     </section>
   );
+}
+
+/** Minutes before touchdown for "Cabin crew, please take your seats for landing": 8, or half the descent if shorter. */
+function landingCue(plannedMinutes: number): number {
+  const { descentStart } = phaseBounds(plannedMinutes);
+  return Math.min(8, (1 - descentStart) * plannedMinutes * 0.5);
+}
+
+/** About a third of flights of 90 minutes or more get one bumpy patch mid-cruise; null for the rest. */
+function turbulence(flight: Flight): number | null {
+  if (flight.plannedMinutes < 90) return null;
+  const rand = seededRandom(hashString(`${flight.id}|bumps`));
+  if (rand() > 0.35) return null;
+  const { climbEnd, descentStart } = phaseBounds(flight.plannedMinutes);
+  return climbEnd + 0.15 + rand() * (descentStart - climbEnd - 0.3);
 }
 
 /** Progress points (0..1) inside the cruise where the seatbelt sign chimes: about one per 35 minutes. */

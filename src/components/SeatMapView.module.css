@@ -1,3 +1,4 @@
+/* The cabin drawn like a printed seat plan: ink outline of the fuselage on paper. */
 .fuselage {
   --aisle: 18px;
   display: flex;
@@ -5,10 +6,11 @@
   align-items: stretch;
   gap: 18px;
   margin: 0 14px;
-  padding: 56px 8px 28px;
-  border: 1px solid var(--line-strong);
+  padding: 58px 8px 28px;
+  border: 1.5px solid var(--text-1);
   border-radius: 140px 140px 28px 28px;
   background: var(--surface-1);
+  box-shadow: var(--shadow-paper);
 }
 
 .cabin {
@@ -18,18 +20,18 @@
 }
 
 .cabinLabel {
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  color: var(--text-1);
+  font-family: var(--font-display);
+  font-size: 18px;
   text-align: center;
-  color: var(--text-2);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .lockNote {
   color: var(--text-3);
-  text-transform: none;
-  letter-spacing: 0;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-style: normal;
 }
 
 .row {
@@ -48,27 +50,23 @@
   top: -2px;
   bottom: -2px;
   width: 13px;
-  background: var(--line-strong);
+  background: repeating-linear-gradient(-45deg, var(--text-3) 0 1px, transparent 1px 4px);
+  opacity: 0.6;
 }
 .row[data-wing='true']::before {
-  left: -22px;
+  left: -23px;
 }
 .row[data-wing='true']::after {
-  right: -22px;
+  right: -23px;
 }
 
 /* Exit rows: the row number turns red. */
 .row[data-exit='true'] .aisle {
-  color: var(--danger);
+  color: var(--accent);
+  font-weight: 600;
 }
 
-.letter {
-  color: var(--text-3);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  text-align: center;
-}
-
+.letter,
 .aisle {
   color: var(--text-3);
   font-family: var(--font-mono);
@@ -80,25 +78,28 @@
   aspect-ratio: 1;
   width: 100%;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border: 1.2px solid var(--text-1);
   border-radius: 5px 5px 3px 3px;
-  background: var(--accent-soft);
-  transition: background 0.15s, border-color 0.15s;
+  background: var(--surface-1);
+  transition:
+    background 0.15s,
+    transform 0.15s;
 }
 
 .seat[data-state='free']:hover {
-  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
+/* Taken seats are hatched, like a printed plan. */
 .seat[data-state='taken'] {
-  border-color: transparent;
-  background: #2a2e35;
+  border-color: var(--text-3);
+  background: repeating-linear-gradient(-45deg, var(--text-3) 0 1px, transparent 1px 4px);
   cursor: not-allowed;
 }
 
 .seat[data-state='locked'] {
-  border-color: var(--line-strong);
-  border-style: dashed;
+  border-color: var(--text-3);
+  border-style: dotted;
   background: transparent;
   cursor: not-allowed;
 }
@@ -106,12 +107,13 @@
 .seat[data-state='selected'] {
   border-color: var(--accent);
   background: var(--accent);
+  transform: scale(1.08);
 }
 
 .legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 16px;
   color: var(--text-2);
   font-size: 12px;
 }
@@ -125,4 +127,5 @@
 .seat[data-legend] {
   display: inline-block;
   width: 14px;
+  transform: none;
 }

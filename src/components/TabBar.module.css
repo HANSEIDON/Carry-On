@@ -2,23 +2,38 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   border-top: 1px solid var(--line);
-  background: var(--bg);
-  padding: 6px 8px calc(var(--safe-bottom) + 6px);
+  background-color: var(--bg);
+  background-image: var(--grain);
+  padding: 8px 8px calc(var(--safe-bottom) + 8px);
 }
 
 .tab {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 6px 0;
+  gap: 3px;
+  padding: 6px 0 2px;
   border: 0;
   background: none;
   color: var(--text-3);
-  font-size: 11px;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
   transition: color 0.15s;
 }
 
 .tab[data-active='true'] {
-  color: var(--accent);
+  color: var(--text-1);
+}
+
+/* A small ink dot marks where you are. */
+.tab[data-active='true']::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
 }
