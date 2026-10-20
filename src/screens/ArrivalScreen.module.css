@@ -1,0 +1,81 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-height: 100%;
+}
+
+.welcome {
+  margin-top: 16px;
+}
+
+.label {
+  color: var(--text-3);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.city {
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+.sub {
+  color: var(--text-2);
+}
+
+.miles {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 28px;
+}
+
+.stickers {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Each sticker slaps down like it's being pressed onto the case. */
+.sticker {
+  opacity: 0;
+  animation: slap 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+}
+
+.sticker:nth-child(odd) {
+  --tilt: -4deg;
+}
+
+.sticker:nth-child(even) {
+  --tilt: 5deg;
+}
+
+@keyframes slap {
+  from {
+    opacity: 0;
+    transform: scale(1.6) rotate(0deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(var(--tilt));
+  }
+}
+
+.cta {
+  margin-top: auto;
+  height: 54px;
+  border: 0;
+  border-radius: var(--radius-m);
+  background: var(--accent);
+  color: #0b0d10;
+  font-weight: 600;
+  font-size: 16px;
+}

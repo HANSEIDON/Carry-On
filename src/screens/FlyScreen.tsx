@@ -1,17 +1,27 @@
+import { useEffect, useState } from 'react';
 import { PlaceholderCarrier } from '../components/PlaceholderCarrier';
 import { TierBadge } from '../components/TierBadge';
 import { cityByCode } from '../data/cities';
+import { countStickers, db, type Carrier } from '../db/db';
 import { localTime } from '../domain/time';
-import { nextTier, tierFor, tierLabel } from '../domain/tier';
+import { nextTier, tierLabel } from '../domain/tier';
 import { useApp } from '../store/appStore';
+import { useTier } from '../store/useTier';
 import styles from './FlyScreen.module.css';
 
 export function FlyScreen() {
   const profile = useApp((s) => s.profile)!;
   const go = useApp((s) => s.go);
   const here = cityByCode(profile.currentCityCode)!;
-  const tier = tierFor(profile.lifetimeMiles);
+  const tier = useTier();
   const next = nextTier(profile.lifetimeMiles);
+  const [carrier, setCarrier] = useState<Carrier>();
+  const [stickers, setStickers] = useState(0);
+
+  useEffect(() => {
+    db.carriers.get(profile.activeCarrierId).then(setCarrier);
+    countStickers(profile.activeCarrierId).then(setStickers);
+  }, [profile.activeCarrierId, profile.lifetimeMiles]);
 
   return (
     <section className={styles.screen}>
@@ -31,8 +41,10 @@ export function FlyScreen() {
       </div>
 
       <div className={styles.carrier}>
-        <PlaceholderCarrier color="#2b2e33" />
-        <p className={styles.label}>0 / 24 stickers</p>
+        <PlaceholderCarrier color={carrier?.color ?? '#2b2e33'} />
+        <p className={styles.label}>
+          {stickers} / {carrier?.capacity ?? '–'} stickers
+        </p>
       </div>
 
       {next && (

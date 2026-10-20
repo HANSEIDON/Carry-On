@@ -1,0 +1,26 @@
+.bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stage {
+  padding-top: 6px;
+  border-top: 2px solid var(--line);
+  color: var(--text-3);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.stage[data-state='done'] {
+  border-color: var(--text-3);
+}
+
+.stage[data-state='now'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}

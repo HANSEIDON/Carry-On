@@ -1,0 +1,101 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-height: 100%;
+}
+
+.route {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.code {
+  font-family: var(--font-code);
+  font-weight: 500;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.track {
+  position: relative;
+  flex: 1;
+  height: 2px;
+  background: var(--line-strong);
+}
+
+.fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 1s linear;
+}
+
+.plane {
+  position: absolute;
+  top: 50%;
+  color: var(--accent);
+  transform: translate(-50%, -50%);
+  transition: left 1s linear;
+}
+
+.clock {
+  text-align: center;
+}
+
+.label {
+  color: var(--text-3);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.time {
+  font-family: var(--font-mono);
+  font-size: 56px;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.sub {
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+
+.facts dt {
+  color: var(--text-3);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  text-transform: capitalize;
+}
+
+.note {
+  color: var(--text-3);
+  font-size: 12px;
+  text-align: center;
+}
+
+.end {
+  margin-top: auto;
+  height: 46px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  background: none;
+  color: var(--danger);
+}

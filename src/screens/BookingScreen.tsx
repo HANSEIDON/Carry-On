@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Icon } from '../components/Icon';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { CITIES, cityByCode } from '../data/cities';
 import { routesFrom, routesNearDuration, SCENIC_MAX_MINUTES, scenicMiles } from '../domain/booking';
+import { planRoute, planScenic } from '../domain/flightPlan';
 import { formatDuration } from '../domain/geo';
 import type { Route } from '../domain/types';
 import { useApp } from '../store/appStore';
@@ -17,6 +19,7 @@ type Pick = { kind: 'route'; route: Route } | { kind: 'scenic'; minutes: number 
 export function BookingScreen() {
   const profile = useApp((s) => s.profile)!;
   const go = useApp((s) => s.go);
+  const setDraft = useApp((s) => s.setDraft);
 
   const [originCode, setOriginCode] = useState(profile.currentCityCode);
   const [mode, setMode] = useState<Mode>('time');
@@ -45,14 +48,16 @@ export function BookingScreen() {
       ? pick.kind === 'scenic' && pick.minutes === p.minutes
       : pick.kind === 'route' && pick.route.to.code === p.route.to.code);
 
+  const checkIn = () => {
+    if (!pick) return;
+    const plan = pick.kind === 'route' ? planRoute(origin, pick.route.to) : planScenic(origin, pick.minutes);
+    setDraft({ plan, purpose: 'study' });
+    go('checkin');
+  };
+
   return (
     <section className={styles.screen}>
-      <header className={styles.top}>
-        <button className={styles.back} onClick={() => go('fly')} aria-label="Back">
-          <Icon name="back" />
-        </button>
-        <h1 className={styles.title}>Book a flight</h1>
-      </header>
+      <ScreenHeader title="Book a flight" onBack={() => go('fly')} />
 
       <label className={styles.origin}>
         <span className={styles.label}>From</span>
@@ -162,7 +167,9 @@ export function BookingScreen() {
               ? `${origin.code} → ${pick.route.to.code} · ${formatDuration(pick.route.minutes)}`
               : `${origin.code} scenic · ${formatDuration(pick.minutes)}`}
           </p>
-          <p className={styles.next}>Seat selection comes next</p>
+          <button className={styles.cta} onClick={checkIn}>
+            Check in
+          </button>
         </footer>
       )}
     </section>
