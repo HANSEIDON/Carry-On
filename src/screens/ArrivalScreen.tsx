@@ -1,10 +1,16 @@
+import { useEffect } from 'react';
+import { announce } from '../audio/announcer';
 import { BagTag } from '../components/BagTag';
 import { StageBar } from '../components/StageBar';
 import { airlineByCode } from '../data/airlines';
 import { cityByCode } from '../data/cities';
+import { arrival } from '../domain/announcements';
 import { localTime } from '../domain/time';
 import { useApp } from '../store/appStore';
+import { useSound } from '../store/settings';
 import styles from './ArrivalScreen.module.css';
+
+let announcedLanding: string | null = null;
 
 export function ArrivalScreen() {
   const landing = useApp((s) => s.landing)!;
@@ -13,6 +19,24 @@ export function ArrivalScreen() {
   const { flight, stickers } = landing;
   const city = cityByCode(flight.toCode)!;
   const airline = airlineByCode(flight.airlineCode);
+
+  // "Welcome to Tokyo, local time is …" once per landing.
+  useEffect(() => {
+    if (announcedLanding === flight.id || !useSound.getState().announcements) return;
+    announcedLanding = flight.id;
+    announce(
+      arrival({
+        airline: airline.name,
+        flightNumber: flight.flightNumber,
+        fromCity: cityByCode(flight.fromCode)!.city,
+        toCity: city.city,
+        scenic: flight.scenic,
+        minutes: flight.plannedMinutes,
+        altitudeFt: 0,
+        localTime: localTime(city.tz),
+      }),
+    );
+  }, [flight, airline.name, city]);
 
   const done = () => {
     setLanding(null);

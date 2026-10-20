@@ -1,0 +1,87 @@
+.map {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #05080d;
+}
+
+.ocean {
+  fill: #0a1420;
+}
+
+.graticule {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.04);
+  stroke-width: 0.6;
+}
+
+.land {
+  fill: #1c2735;
+}
+
+.border {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.09);
+  stroke-width: 0.5;
+}
+
+.rim {
+  fill: none;
+  stroke: rgba(120, 170, 255, 0.18);
+  stroke-width: 1;
+}
+
+.night {
+  fill: rgba(1, 4, 12, 0.24);
+  pointer-events: none;
+}
+
+.city {
+  fill: #6f8197;
+}
+
+.light {
+  fill: #ffe2a3;
+}
+
+.lightGlow {
+  fill: #ffb54a;
+  opacity: 0.55;
+}
+
+.route {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 1.3;
+  stroke-dasharray: 3 4;
+}
+
+.flown {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.marker {
+  fill: var(--bg);
+  stroke: var(--text-1);
+  stroke-width: 1.5;
+}
+
+.label {
+  fill: var(--text-1);
+  font-family: var(--font-code);
+  font-size: 15px;
+  font-weight: 500;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: #05080d;
+  stroke-width: 3px;
+}
+
+.plane {
+  fill: #fff;
+  stroke: #05080d;
+  stroke-width: 0.8;
+}

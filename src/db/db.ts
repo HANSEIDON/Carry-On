@@ -2,7 +2,7 @@ import Dexie, { type EntityTable } from 'dexie';
 import { DEFAULT_HOME_CODE } from '../data/cities';
 import type { FlightPlan } from '../domain/flightPlan';
 import { earnedMiles, stickersForLanding, type StickerKind } from '../domain/landing';
-import type { CabinClass } from '../domain/seatmap';
+import type { CabinClass, SeatZone } from '../domain/seatmap';
 import { tierFor } from '../domain/tier';
 
 export interface Profile {
@@ -41,6 +41,8 @@ export interface Flight {
   gate: string;
   seat: string;
   cabin: CabinClass;
+  /** Where the seat is along the cabin; sets the noise mix. Missing on early test flights. */
+  zone?: SeatZone;
   purpose: TripPurpose;
   plannedMinutes: number;
   startedAt: number;
@@ -109,7 +111,7 @@ export async function loadOrCreateProfile(): Promise<Profile> {
 
 export async function startFlight(
   plan: FlightPlan,
-  seat: { id: string; cabin: CabinClass },
+  seat: { id: string; cabin: CabinClass; zone: SeatZone },
   purpose: TripPurpose,
 ): Promise<Flight> {
   const flight: Flight = {
@@ -122,6 +124,7 @@ export async function startFlight(
     gate: plan.gate,
     seat: seat.id,
     cabin: seat.cabin,
+    zone: seat.zone,
     purpose,
     plannedMinutes: plan.minutes,
     startedAt: Date.now(),

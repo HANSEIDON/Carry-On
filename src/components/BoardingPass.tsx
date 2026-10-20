@@ -16,6 +16,8 @@ interface Props {
   purpose: TripPurpose;
   passenger: string;
   tier: Tier;
+  /** Called the moment the stub tears, still inside the user's gesture (audio can start here). */
+  onTear?: () => void;
   /** Called once the stub has fallen away. */
   onTorn: () => void;
 }
@@ -25,7 +27,7 @@ const GROUP: Record<Tier, number> = { platinum: 1, gold: 2, silver: 3, basic: 4 
 /** Pull distance (px) that tears the stub off. */
 const TEAR_AT = 110;
 
-export function BoardingPass({ plan, seat, purpose, passenger, tier, onTorn }: Props) {
+export function BoardingPass({ plan, seat, purpose, passenger, tier, onTear, onTorn }: Props) {
   const from = cityByCode(plan.fromCode)!;
   const to = cityByCode(plan.toCode)!;
   const now = new Date();
@@ -40,6 +42,7 @@ export function BoardingPass({ plan, seat, purpose, passenger, tier, onTorn }: P
   const tear = () => {
     if (phase === 'torn') return;
     setPhase('torn');
+    onTear?.();
     navigator.vibrate?.(30);
     setTimeout(onTorn, 700);
   };
