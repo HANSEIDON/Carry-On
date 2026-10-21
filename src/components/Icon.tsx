@@ -13,6 +13,9 @@ const PATHS = {
 
 export type IconName = keyof typeof PATHS;
 
+/** The plane silhouette (24×24, nose to the right), for drawings that need it inline (passport stamps). */
+export const PLANE_PATH = PATHS.plane;
+
 export function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
   const filled = name === 'plane';
   return (

@@ -4,6 +4,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { StageBar } from '../components/StageBar';
 import { startFlight } from '../db/db';
 import { timbreFor } from '../domain/cabinTimbre';
+import { passengerName } from '../domain/passport';
 import { useSettings } from '../store/settings';
 import { useApp } from '../store/appStore';
 import { useTier } from '../store/useTier';
@@ -38,7 +39,7 @@ export function BoardingScreen() {
 
       {/* Touching the pass unlocks audio (tear sound, then engines): iOS only allows it on a tap or key. */}
       <div onPointerDown={() => cabinAudio.unlock()} onKeyDown={() => cabinAudio.unlock()}>
-        <BoardingPass plan={plan} seat={seat!} purpose={purpose} passenger={profile.name} tier={tier} onTorn={board} />
+        <BoardingPass plan={plan} seat={seat!} purpose={purpose} passenger={passengerName(profile)} tier={tier} onTorn={board} />
       </div>
     </section>
   );

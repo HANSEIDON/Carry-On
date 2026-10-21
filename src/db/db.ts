@@ -7,7 +7,14 @@ import { tierFor } from '../domain/tier';
 
 export interface Profile {
   id: 'me';
+  /** Given names: the greeting and the passport use them. */
   name: string;
+  /** Set on the passport page; optional. */
+  surname?: string;
+  /** ISO 3166-1 alpha-2; until set, the passport uses the home city's country. */
+  nationality?: string;
+  /** Passport photo: a small JPEG data URL. */
+  photo?: string;
   currentCityCode: string;
   /** Spendable miles. */
   miles: number;
@@ -107,6 +114,21 @@ export async function loadOrCreateProfile(): Promise<Profile> {
     await db.profile.add(profile);
     return profile;
   });
+}
+
+/** Saves passport details (name, nationality, photo) the traveler edits. */
+export async function updateProfile(patch: Partial<Pick<Profile, 'name' | 'surname' | 'nationality' | 'photo'>>): Promise<Profile> {
+  return db.transaction('rw', db.profile, async () => {
+    const profile = (await db.profile.get('me'))!;
+    const updated = { ...profile, ...patch };
+    await db.profile.put(updated);
+    return updated;
+  });
+}
+
+/** Every flight, oldest first (for the passport). */
+export function listFlights(): Promise<Flight[]> {
+  return db.flights.orderBy('startedAt').toArray();
 }
 
 export async function startFlight(

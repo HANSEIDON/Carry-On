@@ -7,6 +7,7 @@ import { BookingScreen } from './screens/BookingScreen';
 import { CheckinScreen } from './screens/CheckinScreen';
 import { FlightScreen } from './screens/FlightScreen';
 import { FlyScreen } from './screens/FlyScreen';
+import { PassportScreen } from './screens/PassportScreen';
 import { PlaceholderScreen } from './screens/PlaceholderScreen';
 import { useApp, type Screen } from './store/appStore';
 import { useTier } from './store/useTier';
@@ -56,9 +57,7 @@ export function App() {
         {screen === 'dutyfree' && (
           <PlaceholderScreen title="Duty Free" note="Spend miles on new carriers. Coming in phase 2." />
         )}
-        {screen === 'passport' && (
-          <PlaceholderScreen title="Passport" note="Entry stamps and flight stats. Coming soon." />
-        )}
+        {screen === 'passport' && <PassportScreen />}
       </main>
       {TAB_SCREENS.includes(screen) && <TabBar />}
     </div>

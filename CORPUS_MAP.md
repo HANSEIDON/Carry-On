@@ -28,9 +28,12 @@ AI 에이전트가 특정 작업 요청을 받았을 때 바로 찾아갈 파일
 | **수하물 태그 및 스티커 디자인** | `src/components/BagTag.tsx` | `src/components/BagTag.module.css`, `src/components/Barcode.tsx` | — |
 | **회원 등급 (Tier) 및 마일리지 보너스** | `src/domain/tier.ts` | `src/store/useTier.ts`, `src/components/TierBadge.tsx` | `src/domain/tier.test.ts` |
 | **로컬 DB 스키마 / IndexedDB 함수** | `src/db/db.ts` | `src/store/appStore.ts` | — |
-| **도시 및 공항 데이터 (IATA/좌표/시차)** | `src/data/cities.ts` | `src/domain/types.ts` | — |
+| **도시 및 공항 데이터 (IATA/좌표/시차)** | `src/data/countries.ts` | 앱이 가는 43개국: ISO-2/ISO-3(MRZ용, 독일은 `D<<`), 자국어 이름, 여권 표지 색, 도장 스타일(모양·잉크·기관·입국/출국 문구, 솅겐 국가 기호). 괌·사이판은 미국 도장. 국내·관광 비행용 Carry On 자체 도장 `HOUSE_STAMP` | `COUNTRIES`, `countryByCode()`, `HOUSE_STAMP`, `StampStyle` |
+| `src/data/cities.ts` | `src/domain/types.ts` | — |
 | **가상 항공사 데이터 (코드/이름/리버리색)** | `src/data/airlines.ts` | `src/components/BagTag.tsx`, `src/domain/flightPlan.ts` | — |
 | **화면 전환 / 내비게이션 / 드래프트 상태** | `src/store/appStore.ts`, `src/App.tsx` | `src/App.module.css`, `src/components/TabBar.tsx` | — |
+| **여권 (책자 넘김·데이터 면·MRZ·사진·이름·국적)** | `src/screens/PassportScreen.tsx`, `src/domain/passport.ts` | `src/components/PassportPages.tsx`, `src/components/PassportEditor.tsx`, `src/audio/passportSound.ts` | `src/domain/passport.test.ts` |
+| **나라별 출입국 도장 (모양·잉크·문구)** | `src/data/countries.ts`, `src/components/PassportStamp.tsx` | `src/domain/passport.ts` (`stampsFor()`, `visaPages()`) | `src/domain/passport.test.ts` |
 | **볼륨 / 맵스타일 / 오디오 설정 (로컬저장)** | `src/store/settings.ts` | `src/screens/FlightScreen.tsx` | — |
 | **글로벌 테마 / 폰트 / 다크모드 스타일** | `src/styles/global.css` | `src/App.module.css` | — |
 | **개발 모드 플래그 (?tier=, ?speed=)** | `src/dev.ts` | `src/store/useTier.ts`, `src/screens/FlightScreen.tsx` | — |
@@ -86,7 +89,7 @@ flowchart LR
 
 | File | Responsibilities | Key Exports | Consumers |
 |---|---|---|---|
-| `src/db/db.ts` | Dexie(IndexedDB) 스키마 정의 및 트랜잭션 함수 | `db`, `loadOrCreateProfile()`, `startFlight()`, `getActiveFlight()`, `landFlight()`, `divertFlight()`, `countStickers()`, `Profile`, `Carrier`, `Flight`, `Sticker` | `src/App.tsx`, `src/screens/*` |
+| `src/db/db.ts` | Dexie(IndexedDB) 스키마 정의 및 트랜잭션 함수 | `db`, `loadOrCreateProfile()`, `updateProfile()` (여권 이름·성·국적·사진), `listFlights()`, `startFlight()`, `getActiveFlight()`, `landFlight()`, `divertFlight()`, `countStickers()`, `Profile`, `Carrier`, `Flight`, `Sticker` | `src/App.tsx`, `src/screens/*` |
 | `src/store/appStore.ts` | UI 전역 화면 전환 및 비행 드래프트/결과 관리 | `useApp`, `Screen`, `Draft`, `AppState` | 모든 화면 및 컴포넌트 |
 | `src/store/settings.ts` | 사용자 기기별 로컬 스토리지 환경설정 | `useSettings`, `MapStyle` (`'paper'`, `'classic'`, `'dark'`), 소리 볼륨(`volume`, 방송은 고정 비율로 따라감)/차임/방송/집중 모드(`focusMode`)/바이노럴 톤(`focusTones`). v3 마이그레이션에서 `voiceVolume` 제거 | `src/screens/FlightScreen.tsx`, `src/screens/BoardingScreen.tsx`, `src/audio/announcer.ts` |
 | `src/store/useTier.ts` | 현재 사용자 회원 등급 리액티브 훅 (`DEV_TIER` 우선 반영) | `useTier()`: `Tier` | `src/App.tsx`, `src/components/*`, `src/screens/*` |
@@ -111,6 +114,7 @@ flowchart LR
 | `src/domain/sun.ts` | 저정밀 태양 천문력 기반 태양 직하점(subsolar point) 계산 및 주야간 경계(isNight) 판별 | `subsolarPoint()`, `centralAngle()`, `isNight()` | `src/domain/sky.test.ts` |
 | `src/domain/tier.ts` | 누적 마일에 따른 회원 등급(Basic, Silver, Gold, Platinum) 및 다음 등급 잔여 마일 계산 | `tierFor()`, `nextTier()`, `tierLabel()`, `TIER_THRESHOLDS`, `TIER_MILE_BONUS` | `src/domain/tier.test.ts` |
 | `src/domain/random.ts` | 문자열 결정론적 시드 해시(djb2) 및 시드 의사난수 생성기(LCG) | `hashString()`, `seededRandom()` | `src/domain/flight.test.ts` |
+| `src/domain/passport.ts` | 여권 규칙. 소지자(이름·국적 기본값=홈 도시 국가·여권번호=프로필 생성시각 해시 `CO`+7자리·발급/만료 10년), ICAO 9303 MRZ(TD3 2×44, 검증 숫자 7-3-1), 탑승권 승객명(`HAN/SEIDON`), 착륙한 비행 → 도장(국경 넘으면 출국+입국, 국내·관광은 Carry On 도장), 나라별 날짜 표기(동아시아 2026.10.21 / 북미 OCT 21 2026 / 솅겐 21.10.26 / 그 외 21 OCT 2026), 사증 면 배치(면당 6개, 기존 도장 고정, 항상 빈 자리 있는 면 포함), 비행 기록 통계 | `holderOf()`, `mrzLines()`, `checkDigit()`, `mrzName()`, `passengerName()`, `stampsFor()`, `stampDate()`, `visaPages()`, `flightLog()` | `src/domain/passport.test.ts` (ICAO 예시 여권 검증 숫자 포함) |
 | `src/domain/cabinTimbre.ts` | 기종 클래스 → 기내 음색: 협동체는 편명 해시로 A320/737, 광동체·장거리는 777 | `timbreFor()`, `CabinTimbre`, `CABIN_TIMBRES` | `src/domain/cabinTimbre.test.ts` |
 | `src/domain/time.ts` | 특정 IANA 타임존의 현지 시각 문자열("HH:MM") 및 시/분 숫자 | `localTime()`, `localHourMinute()` | `src/domain/time.test.ts` |
 
@@ -123,6 +127,7 @@ flowchart LR
 | File | Responsibilities | Key Exports | Characteristics |
 |---|---|---|---|
 | `src/audio/cabinAudio.ts` | 기내 소음 실시간 합성. AudioWorklet 핑크 노이즈(반복·이음매 없음) → 공기흐름 몸통(저중역 130–220Hz 강조, 85Hz 이하 컷, 좌석별 롤오프: 앞=밝게/뒤=무겁게) + 통풍구 공기 + 엔진 드론(협대역 노이즈, 순음 없음) + 30초 이상 주기의 느린 레벨 변화. 페이즈별 레벨/톤, 선택형 바이노럴 포커스 톤(기본 꺼짐, 헤드폰 전용), 차임 | `cabinAudio` (`start(…, timbre)`, `loadTimbres()`, `setPhase()`, `setFocusMode()`, `setFocusTones()`, `setVolume()`, `chime()`, `output()`), `ANNOUNCEMENT_SHARE` (방송 = 볼륨 × 0.35 고정). 기내 버스와 PA 버스(차임·방송·찢는 소리, `output()`)는 리미터를 따로 써서 방송이 기내 소리를 끌어내리지 않음. 집중 모드는 160Hz 로우셸프 -7dB. 기종 음색이 로드돼 있으면 화이트 노이즈 → 실제 기종 음색 필터(ConvolverNode) → 좌석 틸트 → 페이즈 톤, 없으면 합성 폴백 | 심리음향 근거: 순음(tonality)·날카로움(sharpness)·거칠기(roughness) 회피. Worklet 미지원 시 크로스페이드 루프 버퍼 |
+| `src/audio/passportSound.ts` | 여권 소리 합성: 책장(가장자리 마찰 → 펄럭이는 바람 소리 → 살짝 내려앉는 소리), 표지(더 무겁고 느린 바람 + 판지 둔탁음). 매번 조금씩 다르게 | `passportSound.page(seconds)`, `passportSound.cover(opening, seconds)` | PA 버스로 출력(볼륨 따름) |
 | `src/audio/tearSound.ts` | 탑승권 스텁을 찢을 때 종이 섬유가 뜯어지는 미세 파열음(Grains) 동적 합성 | `tearSound.advance(delta)`, `tearSound.snap()` | 제스처 드래그 속도에 비례한 그레인 밀도 |
 | `src/audio/announcer.ts` | 안내방송 재생. 구절 클립(`public/audio/voice/<목소리>/`)을 쉼표 0.14초·문장 0.24/0.36초 간격으로 이어 붙여 기내 PA 필터 → PA 버스(볼륨 × `ANNOUNCEMENT_SHARE`)로 송출, 차임 후 시작, 큐잉. 기내 소리는 줄이지 않음. 클립이 하나라도 없으면 그 방송은 Web Speech 기기 음성으로 대체 | `announce(announcement)`, `setAnnouncementFlight(flightNumber)` (기장 결정), `silenceAnnouncements()` | 클립 목록은 `clips.json`, 디코딩 버퍼 48개 캐시 |
 | `src/audio/pa.ts` | 기내 PA 필터 (대역제한·중역 강조·압축·스피커 왜곡·다중 스피커 지연·짧은 반사·라인 히스·키 클릭). 앱은 `cabin` 프리셋 | `PA_PRESETS` (`light`/`cabin`/`vintage`), `paChain()`, `keyLine()` | 사운드 랩과 공유 |
@@ -161,7 +166,8 @@ flowchart LR
 | `src/screens/BoardingScreen.tsx` | `src/screens/BoardingScreen.module.css` | `'boarding'` | 탑승 대기 화면. 찢을 수 있는 탑승권(`BoardingPass`) 렌더 및 제스처 시 오디오 언락 |
 | `src/screens/FlightScreen.tsx` | `src/screens/FlightScreen.module.css` | `'flight'` | 비행 중 화면. 벡터 지구본 지도, 기내 모니터 정보(고도/속도/남은시간), 백색소음 재생, 페이즈별 방송. 소리 조작은 볼륨 슬라이더 + "Sound settings" 패널(방송·차임·집중 모드·바이노럴 톤)만 |
 | `src/screens/ArrivalScreen.tsx` | `src/screens/ArrivalScreen.module.css` | `'arrival'` | 착륙 화면. 환영 방송, 입국 도장, 획득 마일리지 표시, 획득한 수하물 태그/스티커 부착 연출 |
-| `src/screens/PlaceholderScreen.tsx` | `src/screens/PlaceholderScreen.module.css` | `'luggage'`, `'dutyfree'`, `'passport'` | Phase 2 구현 예정 기능들을 위한 안내 플레이스홀더 화면 |
+| `src/screens/PlaceholderScreen.tsx` | `src/screens/PlaceholderScreen.module.css` | `'luggage'`, `'dutyfree'` | Phase 2 구현 예정 기능들을 위한 안내 플레이스홀더 화면 |
+| `src/screens/PassportScreen.tsx` | `src/screens/PassportScreen.module.css` | `'passport'` | 여권 책자. 닫히면 세로 표지(카메라 가깝게 1.32배) → 탭하면 ① 책자가 옆으로 눕는 90° 회전 + 카메라가 물러나듯 축소(0.7초) ② 이어서 표지가 철 위로 넘어감 → 철이 가운데 가로로 놓인 위·아래 두 면(첫 펼침면: 위 표지 안쪽, 아래 데이터 면). 넘기기: 아래 면이 손가락을 따라 들리며 넘어가는 종이 슬라이드(위·옆 스와이프, 놓을 때 1/3 넘거나 튕기면 넘김·아니면 되돌아옴), 탭 = 한 장. 첫 펼침면에서 뒤로 = 표지가 내려온 뒤 책자가 다시 서며 닫힘, 닫기 버튼. 모든 움직임은 rAF로 DOM 직접 갱신(+숨은 탭 대비 타이머 마무리), '모션 줄이기' 설정이어도 재생(사용자 동작에서만 시작). 진행 중인 넘김은 ref로 즉시 참조. 편집 중엔 데이터 면이 입력 즉시 바뀜 |
 
 ---
 
@@ -181,6 +187,9 @@ flowchart LR
 | `MilesStamp` | `src/components/MilesStamp.tsx` | `src/components/MilesStamp.module.css` | 보유 마일리지 잔액 뱃지 |
 | `ScreenHeader` | `src/components/ScreenHeader.tsx` | `src/components/ScreenHeader.module.css` | 뒤로가기 버튼과 타이틀/서브타이틀이 포함된 화면 헤더 |
 | `Icon` | `src/components/Icon.tsx` | — (SVG 인라인) | 경량 인라인 SVG 아이콘 세트 (plane, ticket, suitcase, globe, volume 등) |
+| `PassportStamp` | `src/components/PassportStamp.tsx` | `src/components/PassportStamp.module.css` | 출입국 도장 SVG. 모양 6종(원·타원·사각·솅겐 별 고리·육각·아치), 나라별 잉크·문구, 입국은 비행기 하강·출국은 상승, 시드 고정 잉크 번짐 필터(가장자리 거칠기 + 얼룩) |
+| `PassportPages` | `src/components/PassportPages.tsx` | `src/components/PassportPages.module.css` | 여권 각 면(펼친 면은 가로 125×88): 표지(세로, 가죽 결·형압 테두리·금박·가상 문장·칩 마크), 표지 안쪽(앞: 문구, 뒤: 무지), 데이터 면(사진·고스트 이미지·필드·서명·키네그램 띠·라미네이트 홀로그램·MRZ), 배서 면(타자기 비행 기록 + 멤버십 인장), 사증 면(3열×2행 도장). 모두 컨테이너 단위(cqw) |
+| `PassportEditor` | `src/components/PassportEditor.tsx` | `src/components/PassportEditor.module.css` | 여권 정보 편집 시트: 맨 위에 데이터 면 실시간 미리보기, 사진(가운데 위쪽 기준 35:45로 잘라 350×450 JPEG ≈30KB, 기기에만 저장), 이름·성·국적. 입력할 때마다 `onChange`로 화면에 바로 반영, 취소하면 되돌림 |
 
 ---
 

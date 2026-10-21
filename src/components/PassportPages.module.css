@@ -1,0 +1,519 @@
+/*
+ * Passport pages. Everything is sized in container units (cqw: 1% of the page width) so a page
+ * reads the same on a phone and on a desktop. Pages are landscape (100 × 70.4 cqw); the cover is
+ * portrait. --cover is the passport's cover color; pages pick up a trace of it in their line work,
+ * like real security printing. Corners come from the slot the page sits in (border-radius: inherit).
+ */
+
+.page {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  container-type: inline-size;
+  border-radius: inherit;
+  background-color: color-mix(in srgb, var(--cover) 5%, #fbf8f1);
+  background-image: var(--grain);
+  color: var(--text-1);
+  font-size: 2.4cqw;
+}
+
+.security {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.lines path {
+  fill: none;
+  stroke: var(--cover);
+  stroke-width: 0.1;
+  opacity: 0.2;
+}
+
+/* --- Cover (portrait) ------------------------------------------------------------------------ */
+
+.cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13cqw 8cqw 11cqw;
+  background-color: var(--cover);
+  background-image:
+    radial-gradient(130% 90% at 28% 18%, rgba(255, 255, 255, 0.1), transparent 55%),
+    radial-gradient(90% 70% at 80% 100%, rgba(0, 0, 0, 0.28), transparent 70%);
+  border-radius: 1.2cqw 3cqw 3cqw 1.2cqw;
+  box-shadow:
+    inset 2.4cqw 0 2.6cqw -1.6cqw rgba(0, 0, 0, 0.5),
+    inset -0.3cqw 0 0 rgba(255, 255, 255, 0.06);
+  color: #d6b064;
+}
+
+/* Leather grain. */
+.cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain), var(--grain);
+  background-size: 90px, 37px;
+  mix-blend-mode: overlay;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* A blind-embossed border, pressed into the cover. */
+.cover::after {
+  content: '';
+  position: absolute;
+  inset: 4.5cqw;
+  border: 0.45cqw solid rgba(0, 0, 0, 0.2);
+  border-radius: 2cqw;
+  box-shadow: 0 0.35cqw 0 rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+
+.coverTop,
+.coverBottom {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6cqw;
+  text-align: center;
+}
+
+/* Gold foil: a metallic sweep, slightly sunk into the leather. */
+.coverNative,
+.coverName,
+.coverTitle {
+  background: linear-gradient(172deg, #f6e1a6 0%, #d2ab5c 38%, #9f7735 62%, #e6c987 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0.25cqw 0 rgba(0, 0, 0, 0.35));
+}
+
+.coverNative {
+  font-family: var(--font-display);
+  font-size: 9cqw;
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+}
+
+.coverName {
+  font-size: 3.3cqw;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.coverTitle {
+  font-family: var(--font-display);
+  font-size: 8cqw;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.emblem {
+  position: relative;
+  z-index: 1;
+  width: 44cqw;
+  color: #d3ad61;
+  filter: drop-shadow(0 0.3cqw 0 rgba(0, 0, 0, 0.35));
+}
+
+.chip {
+  width: 11cqw;
+  color: #d3ad61;
+  filter: drop-shadow(0 0.25cqw 0 rgba(0, 0, 0, 0.35));
+}
+
+/* --- Inside of the covers ---------------------------------------------------------------------- */
+
+.inside {
+  background-color: color-mix(in srgb, var(--cover) 82%, #f6efe0);
+  color: rgba(255, 250, 240, 0.78);
+}
+
+.inside .lines path {
+  stroke: #fff;
+  opacity: 0.16;
+}
+
+.insideNote {
+  position: absolute;
+  right: 16cqw;
+  bottom: 9cqw;
+  left: 16cqw;
+  font-family: var(--font-display);
+  font-size: 3.2cqw;
+  font-style: italic;
+  line-height: 1.35;
+  text-align: center;
+}
+
+/* --- Data page -------------------------------------------------------------------------------- */
+
+.data {
+  display: flex;
+  flex-direction: column;
+  padding: 3.4cqw 4cqw 3cqw;
+}
+
+.dataHead {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 3cqw;
+  padding-bottom: 1.6cqw;
+  border-bottom: 0.25cqw solid color-mix(in srgb, var(--cover) 45%, transparent);
+}
+
+.kicker {
+  color: var(--cover);
+  font-size: 1.8cqw;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.issuer {
+  font-family: var(--font-display);
+  font-size: 3.8cqw;
+  line-height: 1.1;
+}
+
+.edit {
+  position: absolute;
+  top: 2.8cqw;
+  right: 3.6cqw;
+  z-index: 2;
+  padding: 0.6cqw 2cqw;
+  border: 0.25cqw solid var(--line-strong);
+  border-radius: 999px;
+  background: rgba(255, 252, 246, 0.8);
+  font-family: var(--font-mono);
+  font-size: 2cqw;
+}
+
+.dataBody {
+  position: relative;
+  display: grid;
+  grid-template-columns: 20cqw 1fr 9cqw;
+  gap: 3cqw;
+  margin-top: 2.2cqw;
+}
+
+.photo {
+  position: relative;
+  align-self: start;
+  width: 100%;
+  aspect-ratio: 35 / 45;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0.7cqw;
+  background: color-mix(in srgb, var(--cover) 10%, #ebe4d7);
+  box-shadow: inset 0 0 0 0.25cqw rgba(32, 27, 20, 0.08);
+}
+
+.photo img,
+.ghost img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo img {
+  filter: saturate(0.82) contrast(1.04) sepia(0.06);
+  mix-blend-mode: multiply;
+}
+
+/* Fine line print over the photo, like a real one. */
+.photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-radial-gradient(circle at 120% 30%, transparent 0 0.9cqw, rgba(255, 255, 255, 0.16) 0.9cqw 1.1cqw);
+  pointer-events: none;
+}
+
+.silhouette {
+  width: 100%;
+  height: 100%;
+  fill: color-mix(in srgb, var(--cover) 26%, #cfc6b5);
+}
+
+.photoHint {
+  position: absolute;
+  right: 0;
+  bottom: 1.6cqw;
+  left: 0;
+  color: var(--text-2);
+  font-size: 1.9cqw;
+  font-weight: 500;
+  text-align: center;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1.1cqw 2cqw;
+  margin: 0;
+  min-width: 0;
+}
+
+.field {
+  min-width: 0;
+}
+
+.field dt {
+  color: var(--text-3);
+  font-size: 1.5cqw;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.field dd {
+  margin: 0.2cqw 0 0;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 2.4cqw;
+  font-weight: 500;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.big dd {
+  font-size: 3.1cqw;
+}
+
+/* The small second photo, printed faint: a security feature. */
+.side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.ghost {
+  width: 100%;
+  aspect-ratio: 35 / 45;
+  overflow: hidden;
+  border-radius: 0.5cqw;
+  opacity: 0.3;
+  filter: grayscale(1) contrast(1.25);
+  mix-blend-mode: multiply;
+}
+
+.sign {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2cqw;
+  margin-top: 1cqw;
+}
+
+.signLabel {
+  flex: none;
+  width: 20cqw;
+  color: var(--text-3);
+  font-size: 1.5cqw;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.signature {
+  min-width: 0;
+  padding: 0 6cqw 0.3cqw 1cqw;
+  overflow: hidden;
+  border-bottom: 0.2cqw solid var(--line-strong);
+  color: #23336b;
+  font-family: var(--font-display);
+  font-size: 4.6cqw;
+  font-style: italic;
+  line-height: 1.15;
+  white-space: nowrap;
+  transform: rotate(-2.5deg);
+  transform-origin: left bottom;
+}
+
+/* The kinegram: a band of microtext that shifts color with the light (follows --hx like the laminate). */
+.ovd {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 3.6cqw;
+  margin: auto -4cqw 0;
+  overflow: hidden;
+  background: linear-gradient(
+    100deg,
+    rgba(120, 200, 255, 0.16),
+    rgba(255, 140, 210, 0.16),
+    rgba(255, 225, 120, 0.18),
+    rgba(140, 255, 200, 0.16),
+    rgba(120, 200, 255, 0.16)
+  );
+  background-size: 300% 100%;
+  background-position: calc(var(--hx, 0.3) * 100%) 50%;
+  border-block: 0.15cqw solid rgba(255, 255, 255, 0.5);
+}
+
+.ovd span {
+  color: color-mix(in srgb, var(--cover) 45%, transparent);
+  font-family: var(--font-code);
+  font-size: 1.8cqw;
+  letter-spacing: 0.3em;
+  white-space: nowrap;
+}
+
+.mrz {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.4cqw;
+  color: #1d1b19;
+  font-family: var(--font-mono);
+  font-size: 3.4cqw;
+  letter-spacing: 0;
+  line-height: 1.35;
+  white-space: pre;
+}
+
+/* The laminate: a soft sheen and a hologram that shifts with the finger. */
+.laminate {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(115deg, transparent 0 34%, rgba(255, 255, 255, 0.32) 47%, transparent 60% 100%),
+    linear-gradient(
+      115deg,
+      rgba(255, 90, 180, 0.07),
+      rgba(80, 200, 255, 0.08),
+      rgba(255, 220, 90, 0.07),
+      rgba(120, 255, 190, 0.07),
+      rgba(255, 90, 180, 0.07)
+    );
+  background-size:
+    300% 300%,
+    400% 400%;
+  background-position:
+    calc(var(--hx, 0.3) * 100%) calc(var(--hy, 0.3) * 100%),
+    calc(var(--hx, 0.3) * 100%) 50%;
+  mix-blend-mode: overlay;
+}
+
+/* --- Endorsements and visa pages --------------------------------------------------------------- */
+
+.log {
+  display: flex;
+  flex-direction: column;
+  padding: 3.6cqw 5cqw 3cqw;
+}
+
+.pageHead {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 1.4cqw;
+  border-bottom: 0.2cqw solid color-mix(in srgb, var(--cover) 35%, transparent);
+  color: var(--cover);
+  font-size: 1.8cqw;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.typed {
+  position: relative;
+  margin-top: 2.4cqw;
+  color: #2b2a36;
+  font-family: var(--font-mono);
+  font-size: 2.2cqw;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.entries {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2cqw 5cqw;
+  width: 70cqw;
+  margin: 1.6cqw 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  display: flex;
+  align-items: baseline;
+  gap: 1.2cqw;
+  min-width: 0;
+  color: #2b2a36;
+  font-family: var(--font-mono);
+  font-size: 2.2cqw;
+  white-space: nowrap;
+}
+
+.entry span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leader {
+  flex: 1;
+  min-width: 2cqw;
+  border-bottom: 0.3cqw dotted color-mix(in srgb, var(--text-3) 70%, transparent);
+  transform: translateY(-0.5cqw);
+}
+
+.seal {
+  position: absolute;
+  right: 4.5cqw;
+  bottom: 6cqw;
+  width: 21cqw;
+  transform: rotate(-9deg);
+}
+
+.pageFoot {
+  position: absolute;
+  right: 0;
+  bottom: 1.8cqw;
+  left: 0;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 1.8cqw;
+  text-align: center;
+}
+
+.visa .pageHead {
+  position: absolute;
+  top: 3.4cqw;
+  right: 5cqw;
+  left: 5cqw;
+}
+
+.placed {
+  position: absolute;
+}
+
+.empty {
+  position: absolute;
+  top: 54%;
+  right: 16cqw;
+  left: 16cqw;
+  color: var(--text-3);
+  font-family: var(--font-display);
+  font-size: 3.4cqw;
+  font-style: italic;
+  text-align: center;
+  transform: translateY(-50%);
+}

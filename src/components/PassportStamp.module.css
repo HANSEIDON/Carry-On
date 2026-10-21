@@ -1,0 +1,22 @@
+/* Ink on paper: multiplied into the page, never quite full strength. */
+.stamp {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  opacity: 0.86;
+  mix-blend-mode: multiply;
+}
+
+.stamp[data-kind='exit'] {
+  opacity: 0.78;
+}
+
+.condensed {
+  font-family: var(--font-code);
+  letter-spacing: 0.04em;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
