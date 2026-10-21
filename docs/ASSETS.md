@@ -12,6 +12,8 @@
 
 | Chatterbox (Resemble AI, 모델) | 기장 목소리 클립 생성 (PC/데스크톱에서 오프라인, 앱엔 결과 오디오만) | [ResembleAI/chatterbox](https://huggingface.co/ResembleAI/chatterbox) | MIT | 아니오 (출력물에 Perth 워터마크가 들어감) |
 | `scripts/tts/refs/ref-george.wav` | `cb-george` 기장의 음색 참조. Kokoro `bm_george` 낭독(실제 사람 목소리 아님) | 이 저장소에서 생성 | Apache 2.0 파생 | 아니오 |
+| Cinzel (글꼴) | 여권 표지 "PASSPORT"·나라 이름 (새긴 로마 대문자) | [@fontsource/cinzel](https://fontsource.org/fonts/cinzel) | OFL 1.1 | 아니오 |
+| Noto Serif KR · Noto Serif JP (글꼴) | 여권 표지의 자국어 국가명 (한글·한자·키릴 명조) | [@fontsource/noto-serif-kr](https://fontsource.org/fonts/noto-serif-kr), [@fontsource/noto-serif-jp](https://fontsource.org/fonts/noto-serif-jp) | OFL 1.1 | 아니오 |
 | Kokoro-82M (모델·보이스) | 안내방송 음성 생성 (PC에서 오프라인 생성, 앱엔 결과 오디오만 포함) | [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) via [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx) model-files-v1.0 | Apache 2.0 | 아니오 |
 
 ## 기내 소음 음색 필터 (앱에 포함)

@@ -1,4 +1,4 @@
-import { useMemo, type CSSProperties, type ReactNode } from 'react';
+import { useId, useMemo, type CSSProperties, type ReactNode } from 'react';
 import type { Country } from '../data/countries';
 import { HOUSE_STAMP } from '../data/countries';
 import { formatDuration } from '../domain/geo';
@@ -86,19 +86,74 @@ function Security({ children }: { children: ReactNode }) {
   );
 }
 
-/** A made-up emblem (no national arms): a globe with meridians, an orbit and a plane. */
-function Emblem() {
+/**
+ * The cover crest, a made-up seal (no national arms): a ring of microtext, a laurel wreath, and a
+ * globe crossed by a plane, all in gold foil.
+ */
+function Crest() {
+  const id = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+  /** Two laurel branches climbing the sides from the bottom, leaves smaller toward the tips. */
+  const laurel = useMemo(() => {
+    const R = 63;
+    const at = (deg: number) => {
+      const t = (deg * Math.PI) / 180;
+      return { x: 100 + Math.cos(t) * R, y: 100 - Math.sin(t) * R };
+    };
+    const leaves: { x: number; y: number; rot: number; s: number }[] = [];
+    const stems: string[] = [];
+    for (const side of [-1, 1]) {
+      // Left branch from 262° (bottom) up to 150°; the right one mirrored.
+      const angles = Array.from({ length: 10 }, (_, i) => 262 - i * 12.5);
+      const deg = (a: number) => (side === -1 ? a : 180 - a);
+      stems.push(angles.map((a, i) => `${i ? 'L' : 'M'}${at(deg(a)).x.toFixed(1)} ${at(deg(a)).y.toFixed(1)}`).join(''));
+      angles.forEach((a, i) => {
+        const d = deg(a);
+        const { x, y } = at(d);
+        // Along the branch, tilted outward, alternating a little inside and outside the stem.
+        const out = i % 2 === 0 ? 1 : -1;
+        const nx = Math.cos((d * Math.PI) / 180) * 4 * out;
+        const ny = -Math.sin((d * Math.PI) / 180) * 4 * out;
+        leaves.push({ x: x + nx, y: y + ny, rot: -d + side * 28 * out, s: 1 - i * 0.045 });
+      });
+    }
+    return { leaves, stems };
+  }, []);
+  // Even foil, the same gold as the lettering (CSS color).
+  const gold = 'currentColor';
   return (
-    <svg className={styles.emblem} viewBox="0 0 100 100" aria-hidden="true">
-      <g fill="none" stroke="currentColor" strokeWidth={1.6}>
-        <circle cx={50} cy={50} r={30} />
-        <ellipse cx={50} cy={50} rx={13} ry={30} />
-        <ellipse cx={50} cy={50} rx={24} ry={30} />
-        <path d="M21 40h58M20 50h60M21 60h58" />
-        <ellipse cx={50} cy={50} rx={44} ry={15} transform="rotate(-22 50 50)" strokeWidth={1.2} />
-        <circle cx={50} cy={50} r={41} strokeWidth={0.8} strokeDasharray="1.5 3" />
+    <svg className={styles.crest} viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <path id={`${id}-ring`} d="M 100 100 m -86 0 a 86 86 0 1 1 172 0 a 86 86 0 1 1 -172 0" />
+      </defs>
+      <g fill="none" stroke={gold}>
+        <circle cx={100} cy={100} r={95} strokeWidth={2.4} />
+        <circle cx={100} cy={100} r={78} strokeWidth={1} />
       </g>
-      <path d={PLANE_PATH} fill="currentColor" transform="translate(74 22) rotate(-30) scale(0.78)" />
+      <text fill={gold} fontSize={9.2} letterSpacing={3.2} className={styles.crestText}>
+        <textPath href={`#${id}-ring`} startOffset="0">
+          CARRY ON · FOCUS · FLY · CARRY ON · FOCUS · FLY ·
+        </textPath>
+      </text>
+      {/* Laurel: two branches climbing the sides, leaves along each. */}
+      <g fill="none" stroke={gold} strokeWidth={1.3}>
+        {laurel.stems.map((d, i) => (
+          <path key={i} d={d} />
+        ))}
+      </g>
+      <g fill={gold}>
+        {laurel.leaves.map((l, i) => (
+          <ellipse key={i} cx={l.x} cy={l.y} rx={2.6 * l.s} ry={6.6 * l.s} transform={`rotate(${l.rot.toFixed(1)} ${l.x.toFixed(1)} ${l.y.toFixed(1)})`} />
+        ))}
+      </g>
+      {/* The globe, crossed by a plane. */}
+      <g fill="none" stroke={gold} strokeWidth={1.8}>
+        <circle cx={100} cy={98} r={34} />
+        <ellipse cx={100} cy={98} rx={14} ry={34} />
+        <ellipse cx={100} cy={98} rx={26} ry={34} />
+        <path d="M 68 86 h 64 M 66 98 h 68 M 68 110 h 64" />
+      </g>
+      <path d={PLANE_PATH} fill={gold} transform="translate(116 58) rotate(-35) scale(1.25)" />
+      <path d="M 100 34 l 2.6 5.4 5.9 .8 -4.3 4.1 1 5.9 -5.2 -2.8 -5.2 2.8 1 -5.9 -4.3 -4.1 5.9 -.8 z" fill={gold} />
     </svg>
   );
 }
@@ -115,16 +170,48 @@ function ChipMark() {
   );
 }
 
-/** The front cover (portrait, 88 × 125). */
+/** Tone-on-tone pattern pressed into the whole cover (blind embossing), in a portrait 88 × 125 frame. */
+function Deboss() {
+  const d = useMemo(() => {
+    const lines: string[] = [];
+    for (let j = 0; j < 46; j++) {
+      const y0 = (j + 0.5) * (125 / 46);
+      let p = '';
+      for (let x = 0; x <= 88; x += 1) {
+        const y = y0 + Math.sin(x / 6 + j * 0.42) * 1.4 + Math.sin(x / 2.3 + j) * 0.35;
+        p += `${x ? 'L' : 'M'}${x} ${y.toFixed(2)}`;
+      }
+      lines.push(p);
+    }
+    return lines;
+  }, []);
+  return (
+    <svg className={styles.deboss} viewBox="0 0 88 125" preserveAspectRatio="none" aria-hidden="true">
+      {/* A pressed line: shadow, with a faint highlight just above it. */}
+      <g fill="none" strokeWidth={0.16}>
+        {d.map((p, i) => (
+          <g key={i}>
+            <path d={p} stroke="rgba(255,255,255,0.05)" transform="translate(0 -0.18)" />
+            <path d={p} stroke="rgba(0,0,0,0.22)" />
+          </g>
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+/** The front cover (portrait, 88 × 125): country, crest, the word for passport, the chip mark. */
 export function Cover({ country }: { country: Country }) {
   return (
     <div className={`${styles.page} ${styles.cover}`} style={theme(country)}>
+      <Deboss />
       <div className={styles.coverTop}>
         <span className={styles.coverNative}>{country.native}</span>
-        <span className={styles.coverName}>{country.name}</span>
+        <span className={styles.coverName}>{country.official ?? country.name}</span>
       </div>
-      <Emblem />
+      <Crest />
       <div className={styles.coverBottom}>
+        {country.passportWord && <span className={styles.coverWord}>{country.passportWord}</span>}
         <span className={styles.coverTitle}>Passport</span>
         <ChipMark />
       </div>

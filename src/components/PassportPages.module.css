@@ -85,50 +85,84 @@
   text-align: center;
 }
 
-/* Gold foil: a metallic sweep, slightly sunk into the leather. */
+/* Gold foil: one even gold, pressed into the leather (a faint light edge above, a soft shadow below). */
 .coverNative,
 .coverName,
-.coverTitle {
-  background: linear-gradient(172deg, #f6e1a6 0%, #d2ab5c 38%, #9f7735 62%, #e6c987 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0.25cqw 0 rgba(0, 0, 0, 0.35));
+.coverTitle,
+.coverWord {
+  color: #d2b06c;
+  text-shadow:
+    0 -0.15cqw 0 rgba(255, 238, 200, 0.12),
+    0 0.25cqw 0.2cqw rgba(0, 0, 0, 0.4);
 }
 
+/* The country in its own script, in a serif with weight: Hangul, Kanji, Cyrillic. */
 .coverNative {
-  font-family: var(--font-display);
-  font-size: 9cqw;
-  line-height: 1.1;
-  letter-spacing: 0.06em;
+  font-family: 'Noto Serif KR', 'Noto Serif JP', var(--font-display), serif;
+  font-size: 10cqw;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.16em;
+  padding-left: 0.16em;
 }
 
+/* Engraved Roman capitals, like the cover of a real passport. */
 .coverName {
-  font-size: 3.3cqw;
+  max-width: 64cqw;
+  font-family: 'Cinzel', var(--font-display), serif;
+  font-size: 3.4cqw;
   font-weight: 600;
-  letter-spacing: 0.32em;
+  line-height: 1.5;
+  letter-spacing: 0.22em;
+  padding-left: 0.22em;
   text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.coverWord {
+  font-family: 'Noto Serif KR', 'Noto Serif JP', 'Cinzel', var(--font-display), serif;
+  font-size: 5cqw;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  padding-left: 0.4em;
 }
 
 .coverTitle {
-  font-family: var(--font-display);
-  font-size: 8cqw;
-  letter-spacing: 0.32em;
+  font-family: 'Cinzel', var(--font-display), serif;
+  font-size: 6.4cqw;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  padding-left: 0.3em;
   text-transform: uppercase;
 }
 
-.emblem {
+
+.crest {
   position: relative;
   z-index: 1;
-  width: 44cqw;
-  color: #d3ad61;
-  filter: drop-shadow(0 0.3cqw 0 rgba(0, 0, 0, 0.35));
+  width: 54cqw;
+  color: #d2b06c;
+  filter: drop-shadow(0 -0.15cqw 0 rgba(255, 238, 200, 0.12)) drop-shadow(0 0.25cqw 0.15cqw rgba(0, 0, 0, 0.4));
+}
+
+.crestText {
+  font-family: 'Cinzel', var(--font-display), serif;
+  font-weight: 600;
+}
+
+.deboss {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 .chip {
-  width: 11cqw;
-  color: #d3ad61;
-  filter: drop-shadow(0 0.25cqw 0 rgba(0, 0, 0, 0.35));
+  width: 10cqw;
+  margin-top: 1cqw;
+  color: #d2b06c;
+  filter: drop-shadow(0 0.25cqw 0.15cqw rgba(0, 0, 0, 0.4));
 }
 
 /* --- Inside of the covers ---------------------------------------------------------------------- */
