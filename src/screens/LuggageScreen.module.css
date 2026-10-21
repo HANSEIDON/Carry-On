@@ -1,0 +1,238 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+  padding-bottom: 12px;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title {
+  font-size: 34px;
+  line-height: 1.1;
+}
+
+.sub {
+  color: var(--text-2);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-style: italic;
+}
+
+/* The carrier stands on the page itself, no box around it. */
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-height: 46vh;
+  margin: 0 auto;
+}
+
+.loading {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  color: var(--text-3);
+  font-family: var(--font-display);
+  font-style: italic;
+  text-align: center;
+}
+
+/* One you haven't found: its shape, standing where yours would. */
+.shadow {
+  position: absolute;
+  inset: 10% 14% 8%;
+}
+
+.bigMark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--text-3) 45%, transparent);
+  font-family: var(--font-display);
+  font-size: 120px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 58px;
+  padding: 10px 0;
+  border-top: 1px solid var(--text-1);
+  border-bottom: 1px dashed var(--line-strong);
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.inUse {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.primary {
+  height: 38px;
+  padding: 0 16px;
+  border: 1px solid var(--text-1);
+  border-radius: 999px;
+  background: var(--text-1);
+  color: var(--bg);
+  font-size: 13.5px;
+}
+
+/* Your carriers of this kind: the filled ones, then the one in progress. */
+.copies {
+  display: flex;
+  gap: 6px;
+  margin: -2px -16px 0;
+  padding: 0 16px 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.copy {
+  flex: none;
+  padding: 5px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.copy[aria-checked='true'] {
+  border-color: var(--text-1);
+  background: var(--text-1);
+  color: var(--bg);
+}
+
+.copyMark {
+  color: var(--accent);
+}
+
+.copy[aria-checked='true'] .copyMark {
+  color: inherit;
+}
+
+.collectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.h2 {
+  font-size: 26px;
+}
+
+.tally {
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+/* Thirty carriers on a shelf: three to a row. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 6px 10px;
+  border: 0;
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-paper);
+}
+
+.card:active {
+  transform: scale(0.97);
+}
+
+.card[aria-pressed='true'] {
+  box-shadow:
+    0 0 0 1.5px var(--text-1),
+    var(--shadow-paper);
+}
+
+.picture {
+  display: flex;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.name {
+  width: 100%;
+  overflow: hidden;
+  font-size: 11.5px;
+  line-height: 1.25;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Filled before: a small check, with how many times. */
+.full {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+/* Not found yet: a grey card with its silhouette (or a question mark, if it's still being made). */
+.unknown {
+  background: color-mix(in srgb, var(--text-3) 10%, var(--surface-2));
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  color: color-mix(in srgb, var(--text-3) 55%, transparent);
+  font-family: var(--font-display);
+  font-size: 46px;
+}
+
+.number {
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}

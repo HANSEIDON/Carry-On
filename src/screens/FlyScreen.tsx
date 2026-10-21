@@ -1,16 +1,19 @@
-import { useEffect, useState } from 'react';
-import { CarrierView, type CarrierSticker } from '../components/CarrierView';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { MilesStamp } from '../components/MilesStamp';
 import { TicketButton } from '../components/TicketButton';
 import { TierBadge } from '../components/TierBadge';
-import { airlineByCode } from '../data/airlines';
+import { carrierType } from '../data/carriers';
 import { cityByCode } from '../data/cities';
-import { db, type Carrier } from '../db/db';
+import { db, stickersOn, type Carrier } from '../db/db';
+import type { StickerArt } from '../domain/stickerArt';
 import { localTime } from '../domain/time';
 import { nextTier, tierLabel } from '../domain/tier';
 import { useApp } from '../store/appStore';
 import { useTier } from '../store/useTier';
 import styles from './FlyScreen.module.css';
+
+/** three.js is big: load it after the home screen is up. */
+const Carrier3D = lazy(() => import('../components/Carrier3D').then((m) => ({ default: m.Carrier3D })));
 
 function greeting(hour: number): string {
   if (hour < 5) return 'Good night';
@@ -27,22 +30,12 @@ export function FlyScreen() {
   const next = nextTier(profile.lifetimeMiles);
 
   const [carrier, setCarrier] = useState<Carrier>();
-  const [stickers, setStickers] = useState<CarrierSticker[]>([]);
+  const [stickers, setStickers] = useState<StickerArt[]>([]);
 
   useEffect(() => {
     (async () => {
       setCarrier(await db.carriers.get(profile.activeCarrierId));
-      const list = await db.stickers.where('carrierId').equals(profile.activeCarrierId).toArray();
-      const flights = await db.flights.bulkGet(list.map((s) => s.flightId));
-      setStickers(
-        list.map((s, i) => ({
-          id: s.id,
-          kind: s.kind,
-          code: s.code,
-          appliedAt: s.appliedAt,
-          airlineColor: airlineByCode(flights[i]?.airlineCode ?? '').color,
-        })),
-      );
+      setStickers(await stickersOn(profile.activeCarrierId));
     })();
   }, [profile.activeCarrierId, profile.lifetimeMiles]);
 
@@ -50,8 +43,7 @@ export function FlyScreen() {
   const now = new Date();
   const hour = Number(new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hourCycle: 'h23', timeZone: here.tz }).format(now));
   const date = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: here.tz }).format(now);
-  const count = stickers.length;
-  const capacity = carrier?.capacity ?? 24;
+  const type = carrier ? carrierType(carrier.modelId) : null;
 
   return (
     <section className={styles.screen}>
@@ -81,13 +73,13 @@ export function FlyScreen() {
         </p>
       </div>
 
+      {/* The carrier you travel with, turning slowly: only to look at. The one thing to do here is fly. */}
       <div className={styles.carrierArea}>
-        <CarrierView color={carrier?.color ?? '#2c3b55'} stickers={stickers} />
-        <p className={styles.caption}>
-          {count === 0
-            ? 'Your first sticker is one flight away'
-            : `${count} ${count === 1 ? 'sticker' : 'stickers'} · ${Math.max(0, capacity - count)} spaces left`}
-        </p>
+        {type && (
+          <Suspense fallback={null}>
+            <Carrier3D id={type.id} stickers={stickers} interactive={false} />
+          </Suspense>
+        )}
       </div>
 
       {next && (

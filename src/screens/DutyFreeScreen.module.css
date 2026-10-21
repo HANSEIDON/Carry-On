@@ -1,0 +1,178 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+  padding-bottom: 12px;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  font-size: 34px;
+  line-height: 1.1;
+}
+
+.sub {
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+/* The turning display. */
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-height: 48vh;
+  margin: 0 auto;
+}
+
+.loading {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  color: var(--text-3);
+  font-family: var(--font-display);
+  font-style: italic;
+  text-align: center;
+}
+
+.blurb {
+  color: var(--text-2);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-style: italic;
+  text-align: center;
+}
+
+.action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.buy,
+.secondary {
+  min-width: 220px;
+  height: 46px;
+  padding: 0 20px;
+  border: 1px solid var(--text-1);
+  border-radius: var(--radius-s);
+  font-family: var(--font-display);
+  font-size: 19px;
+}
+
+.buy {
+  background: var(--text-1);
+  color: var(--bg);
+}
+
+.buy[data-armed='true'] {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.buy:disabled {
+  border-color: var(--line-strong);
+  background: transparent;
+  color: var(--text-3);
+}
+
+.secondary {
+  background: transparent;
+}
+
+.note {
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* Everything on sale, in a row you can scroll sideways. */
+.shelf {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  margin: 4px -16px 0;
+  padding: 4px 16px 8px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.chip {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 104px;
+  padding: 6px 8px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  font-size: 12.5px;
+  line-height: 1.25;
+  text-align: center;
+  scroll-snap-align: center;
+}
+
+.chipPicture {
+  display: flex;
+  width: 64px;
+  height: 64px;
+}
+
+.chipName {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip[aria-checked='true'] {
+  border-color: var(--text-1);
+  box-shadow: 0 0 0 1px var(--text-1);
+}
+
+.chip[data-state='locked'] {
+  color: var(--text-3);
+}
+
+.chipTag {
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+}
+
+.chip[data-state='owned'] .chipTag {
+  color: var(--accent);
+}
+
+.more {
+  color: var(--text-3);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-style: italic;
+  text-align: center;
+}
+
+.dev {
+  align-self: center;
+  padding: 4px 12px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}

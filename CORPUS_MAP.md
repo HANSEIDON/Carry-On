@@ -24,19 +24,18 @@ AI 에이전트가 특정 작업 요청을 받았을 때 바로 찾아갈 파일
 | **비행 모니터 상태 (고도/속도/페이즈)** | `src/domain/flightProfile.ts` | `src/screens/FlightScreen.tsx`, `src/screens/FlightScreen.module.css` | `src/domain/flight.test.ts` |
 | **지구본 지도 / 낮밤 음영 / 태양 위치** | `src/map/FlightMap.tsx`, `src/domain/sun.ts` | `src/map/FlightMap.module.css`, `src/map/worldData.ts` | `src/domain/sky.test.ts` |
 | **착륙 처리 / 마일리지 / 스티커 발급** | `src/domain/landing.ts`, `src/db/db.ts` | `src/screens/ArrivalScreen.tsx`, `src/screens/ArrivalScreen.module.css` | `src/domain/flight.test.ts` |
-| **캐리어 표시 / 스티커 데칼(2D 임시)** | `src/components/CarrierView.tsx` | `src/components/CarrierView.module.css`, `src/screens/FlyScreen.tsx` | — |
 | **수하물 태그 및 스티커 디자인** | `src/components/BagTag.tsx` | `src/components/BagTag.module.css`, `src/components/Barcode.tsx` | — |
 | **회원 등급 (Tier) 및 마일리지 보너스** | `src/domain/tier.ts` | `src/store/useTier.ts`, `src/components/TierBadge.tsx` | `src/domain/tier.test.ts` |
 | **로컬 DB 스키마 / IndexedDB 함수** | `src/db/db.ts` | `src/store/appStore.ts` | — |
-| **도시 및 공항 데이터 (IATA/좌표/시차)** | `src/data/countries.ts` | 앱이 가는 43개국: ISO-2/ISO-3(MRZ용, 독일은 `D<<`), 자국어 이름, 여권 표지 색, 도장 스타일(모양·잉크·기관·입국/출국 문구, 솅겐 국가 기호). 괌·사이판은 미국 도장. 국내·관광 비행용 Carry On 자체 도장 `HOUSE_STAMP` | `COUNTRIES`, `countryByCode()`, `HOUSE_STAMP`, `StampStyle` |
-| `src/data/cities.ts` | `src/domain/types.ts` | — |
+| **도시 및 공항 데이터 (IATA/좌표/시차)** | `src/data/cities.ts` | `src/domain/types.ts` | — |
+| **캐리어 30종 카탈로그 / 면세점 / 보관함 3D / 스티커 자리·데칼 / 채우기 보상** | `src/data/carriers.ts`, `src/data/carrierSlots.json`, `src/domain/carrierShop.ts`, `src/domain/stickerArt.ts`, `src/db/db.ts` | `src/screens/LuggageScreen.tsx`, `src/screens/DutyFreeScreen.tsx`, `src/screens/ArrivalScreen.tsx`, `src/components/Carrier3D.tsx`, `src/components/stickerDecals.ts`, `src/components/CarrierThumb.tsx`, `src/components/carrierBake.ts`, `vite.config.ts`, `scripts/models/optimize-carriers.mjs` | `src/domain/carrierShop.test.ts`, `src/domain/stickerArt.test.ts` |
 | **가상 항공사 데이터 (코드/이름/리버리색)** | `src/data/airlines.ts` | `src/components/BagTag.tsx`, `src/domain/flightPlan.ts` | — |
 | **화면 전환 / 내비게이션 / 드래프트 상태** | `src/store/appStore.ts`, `src/App.tsx` | `src/App.module.css`, `src/components/TabBar.tsx` | — |
 | **여권 (책자 넘김·데이터 면·MRZ·사진·이름·국적)** | `src/screens/PassportScreen.tsx`, `src/domain/passport.ts` | `src/components/PassportPages.tsx`, `src/components/PassportEditor.tsx`, `src/audio/passportSound.ts` | `src/domain/passport.test.ts` |
 | **나라별 출입국 도장 (모양·잉크·문구)** | `src/data/countries.ts`, `src/components/PassportStamp.tsx` | `src/domain/passport.ts` (`stampsFor()`, `visaPages()`) | `src/domain/passport.test.ts` |
 | **볼륨 / 맵스타일 / 오디오 설정 (로컬저장)** | `src/store/settings.ts` | `src/screens/FlightScreen.tsx` | — |
 | **글로벌 테마 / 폰트 / 다크모드 스타일** | `src/styles/global.css` | `src/App.module.css` | — |
-| **개발 모드 플래그 (?tier=, ?speed=)** | `src/dev.ts` | `src/store/useTier.ts`, `src/screens/FlightScreen.tsx` | — |
+| **개발 모드 플래그 (?tier=, ?speed=, ?bake-carriers)** | `src/dev.ts` | `src/store/useTier.ts`, `src/screens/FlightScreen.tsx`, `src/main.tsx`, `src/components/carrierBake.ts` | — |
 
 ---
 
@@ -47,7 +46,7 @@ Carry On은 집중 타이머(Pomodoro 대안)를 항공기 여정 경험으로 �
 
 ```mermaid
 flowchart LR
-    Fly["Fly (Home)<br/>`src/screens/FlyScreen.tsx`<br/>현재 위치 / 활성 캐리어 / 스티커 확인"]
+    Fly["Fly (Home)<br/>`src/screens/FlyScreen.tsx`<br/>현재 위치 / 사용 중 캐리어 3D / 스티커 수"]
     Booking["Booking<br/>`src/screens/BookingScreen.tsx`<br/>시간 우선 or 목적지 우선 선택"]
     Checkin["Check-in<br/>`src/screens/CheckinScreen.tsx`<br/>목적(Study 등) & 좌석 선택"]
     Boarding["Boarding Pass<br/>`src/screens/BoardingScreen.tsx`<br/>스텁 끌어서 뜯기"]
@@ -74,14 +73,14 @@ flowchart LR
 | File | Responsibilities | Key Exports / Elements | Dependencies |
 |---|---|---|---|
 | `package.json` | 프로젝트 메타데이터, 의존성, 스크립트 | React 19, Vite 8, Dexie 4, d3-geo 3, Vitest 5, Zustand 5 | — |
-| `vite.config.ts` | Vite 번들러 설정 | `@vitejs/plugin-react` | — |
+| `vite.config.ts` | Vite 번들러 설정. 개발 서버 전용 플러그인 `carrier-bake-writer`: `POST /__dev/carrier-thumb?id=NNN` → `public/models/carriers/thumbs/NNN.webp`, `POST /__dev/carrier-slots` → `src/data/carrierSlots.json`(캐리어당 한 줄) | `@vitejs/plugin-react`, `carrierBakeWriter()` | `src/components/carrierBake.ts` |
 | `tsconfig.json` | TypeScript 설정 | `target: ES2022`, `moduleResolution: bundler` | — |
 | `index.html` | HTML 진입점, 모바일 뷰포트, 다크 테마 배경 | `#root`, 메타 태그, 폰트 선언 | — |
-| `src/main.tsx` | React 렌더링 진입점, 폰트 CSS import | `createRoot` | `src/App.tsx`, `@fontsource/*`, `src/styles/global.css` |
-| `src/App.tsx` | 최상위 화면 라우팅, 초기 프로필 로드, 미완료 비행 복구 | `App()`, `TAB_SCREENS` | `src/store/appStore.ts`, `src/db/db.ts`, `src/App.module.css` |
+| `src/main.tsx` | React 렌더링 진입점, 폰트 CSS import. 개발 모드 `?bake-carriers`면 캐리어 굽기(사진·스티커 자리) 한 번 실행(주소에서 플래그를 지워 파일 저장 후 새로고침돼도 반복 안 함) | `createRoot` | `src/App.tsx`, `@fontsource/*`, `src/styles/global.css`, `src/dev.ts` |
+| `src/App.tsx` | 최상위 화면 라우팅, 초기 프로필 로드, 미완료 비행 복구. 화면마다 `<main key={screen}>`로 새 페이지(스크롤 맨 위부터) | `App()`, `TAB_SCREENS` | `src/store/appStore.ts`, `src/db/db.ts`, `src/App.module.css` |
 | `src/App.module.css` | 앱 뷰포트 컨테이너 레이아웃 (모바일 화면 프레임, 안전영역) | `.app`, `.main` | — |
-| `src/dev.ts` | 개발용 URL 파라미터 제어 (`?tier=`, `?speed=`) | `DEV_TIER`, `TIME_SCALE` | `src/domain/types.ts` |
-| `src/styles/global.css` | 글로벌 CSS 리셋, 테마 토큰, 등급별 색상 변수(`data-tier`), 폰트 패밀리 정의 | `--bg`, `--text`, `--tier-silver/gold/platinum`, `.label`, `.mono` | `@fontsource/*` |
+| `src/dev.ts` | 개발용 URL 파라미터 제어 (`?tier=`, `?speed=`, `?bake-carriers`) | `DEV_TIER`, `TIME_SCALE`, `BAKE_CARRIERS` | `src/domain/types.ts` |
+| `src/styles/global.css` | 글로벌 CSS 리셋, 테마 토큰, 등급별 색상 변수(`data-tier`), 폰트 패밀리 정의. 생성 질감(SVG 필터, 이미지 파일 없음): `--grain` 종이 입자, `--leather` 조명 받은 가죽 결(이음새 없는 타일), `--tooth` 종이 결, `--fibres` 보안 섬유 | `--bg`, `--text`, `--tier-silver/gold/platinum`, `--grain`, `--leather`, `--tooth`, `--fibres`, `.label`, `.mono` | `@fontsource/*` |
 
 ---
 
@@ -89,8 +88,8 @@ flowchart LR
 
 | File | Responsibilities | Key Exports | Consumers |
 |---|---|---|---|
-| `src/db/db.ts` | Dexie(IndexedDB) 스키마 정의 및 트랜잭션 함수 | `db`, `loadOrCreateProfile()`, `updateProfile()` (여권 이름·성·국적·사진), `listFlights()`, `startFlight()`, `getActiveFlight()`, `landFlight()`, `divertFlight()`, `countStickers()`, `Profile`, `Carrier`, `Flight`, `Sticker` | `src/App.tsx`, `src/screens/*` |
-| `src/store/appStore.ts` | UI 전역 화면 전환 및 비행 드래프트/결과 관리 | `useApp`, `Screen`, `Draft`, `AppState` | 모든 화면 및 컴포넌트 |
+| `src/db/db.ts` | Dexie(IndexedDB) 스키마 정의 및 트랜잭션 함수 | `db`, `loadOrCreateProfile()`, `listCarriers()`, `buyCarrier()`, `setActiveCarrier()`, `addMilesForTesting()` (개발용), v2 마이그레이션(임시 캐리어 → 001), `updateProfile()` (여권 이름·성·국적·사진), `listFlights()`, `startFlight()`, `getActiveFlight()`, `landFlight()` (스티커가 캐리어 자리를 다 채우면 그 캐리어는 `filledAt`으로 그대로 보관, 같은 종류 새 캐리어(`copy` +1)가 사용 중으로, 채우기 마일 지급 → `LandingResult.filled`), `divertFlight()`, `countStickers()`, `stickersOn()` (캐리어의 스티커 + 출처 비행 → 인쇄 내용), `Profile`, `Carrier` (`copy`, `filledAt`), `FilledCarrier`, `LandingResult`, `Flight`, `Sticker` | `src/App.tsx`, `src/screens/*` |
+| `src/store/appStore.ts` | UI 전역 화면 전환 및 비행 드래프트/결과 관리. `openShop(id)`: 면세점을 그 캐리어에서 열기(보관함 → 면세점) | `useApp`, `Screen`, `Draft`, `AppState`, `shopFocus`, `openShop()` | 모든 화면 및 컴포넌트 |
 | `src/store/settings.ts` | 사용자 기기별 로컬 스토리지 환경설정 | `useSettings`, `MapStyle` (`'paper'`, `'classic'`, `'dark'`), 소리 볼륨(`volume`, 방송은 고정 비율로 따라감)/차임/방송/집중 모드(`focusMode`)/바이노럴 톤(`focusTones`). v3 마이그레이션에서 `voiceVolume` 제거 | `src/screens/FlightScreen.tsx`, `src/screens/BoardingScreen.tsx`, `src/audio/announcer.ts` |
 | `src/store/useTier.ts` | 현재 사용자 회원 등급 리액티브 훅 (`DEV_TIER` 우선 반영) | `useTier()`: `Tier` | `src/App.tsx`, `src/components/*`, `src/screens/*` |
 
@@ -114,6 +113,8 @@ flowchart LR
 | `src/domain/sun.ts` | 저정밀 태양 천문력 기반 태양 직하점(subsolar point) 계산 및 주야간 경계(isNight) 판별 | `subsolarPoint()`, `centralAngle()`, `isNight()` | `src/domain/sky.test.ts` |
 | `src/domain/tier.ts` | 누적 마일에 따른 회원 등급(Basic, Silver, Gold, Platinum) 및 다음 등급 잔여 마일 계산 | `tierFor()`, `nextTier()`, `tierLabel()`, `TIER_THRESHOLDS`, `TIER_MILE_BONUS` | `src/domain/tier.test.ts` |
 | `src/domain/random.ts` | 문자열 결정론적 시드 해시(djb2) 및 시드 의사난수 생성기(LCG) | `hashString()`, `seededRandom()` | `src/domain/flight.test.ts` |
+| `src/domain/carrierShop.ts` | 면세점 판단: 보유 / 아직 안 만들어짐 / 등급 부족 / 마일 부족 / 구매 가능, 등급 비교, 진열 순서(등급 → 가격 → 번호). 채우기 보상: 스티커 자리당 40마일, 그 종류를 처음 채우면 2배 | `shopState()`, `tierAllows()`, `shopOrder()`, `fillReward()`, `FILL_MILES_PER_SPOT` | `src/domain/carrierShop.test.ts` |
+| `src/domain/stickerArt.ts` | 스티커에 인쇄될 내용: 스티커 + 출처 비행 → 도착 공항·출발 공항·도시명·편명·항공사 이름/색·붙인 시각 (비행 기록이 없어도 그려짐) | `StickerArt`, `stickerArt()` | `src/db/db.ts`, `src/components/stickerDecals.ts`, `src/domain/stickerArt.test.ts` |
 | `src/domain/passport.ts` | 여권 규칙. 소지자(이름·국적 기본값=홈 도시 국가·여권번호=프로필 생성시각 해시 `CO`+7자리·발급/만료 10년), ICAO 9303 MRZ(TD3 2×44, 검증 숫자 7-3-1), 탑승권 승객명(`HAN/SEIDON`), 착륙한 비행 → 도장(국경 넘으면 출국+입국, 국내·관광은 Carry On 도장), 나라별 날짜 표기(동아시아 2026.10.21 / 북미 OCT 21 2026 / 솅겐 21.10.26 / 그 외 21 OCT 2026), 사증 면 배치(면당 6개, 기존 도장 고정, 항상 빈 자리 있는 면 포함), 비행 기록 통계 | `holderOf()`, `mrzLines()`, `checkDigit()`, `mrzName()`, `passengerName()`, `stampsFor()`, `stampDate()`, `visaPages()`, `flightLog()` | `src/domain/passport.test.ts` (ICAO 예시 여권 검증 숫자 포함) |
 | `src/domain/cabinTimbre.ts` | 기종 클래스 → 기내 음색: 협동체는 편명 해시로 A320/737, 광동체·장거리는 777 | `timbreFor()`, `CabinTimbre`, `CABIN_TIMBRES` | `src/domain/cabinTimbre.test.ts` |
 | `src/domain/time.ts` | 특정 IANA 타임존의 현지 시각 문자열("HH:MM") 및 시/분 숫자 | `localTime()`, `localHourMinute()` | `src/domain/time.test.ts` |
@@ -137,6 +138,7 @@ flowchart LR
 
 | File | Responsibilities | Notes |
 |---|---|---|
+| `scripts/models/optimize-carriers.mjs` | 이미지→3D로 만든 `<번호>.glb`(기본 ~/Downloads)를 폰용으로 줄여 `public/models/carriers/NNN.glb`로(삼각형 4~6만, 1024 WebP, meshopt, 13~25MB → 0.6~2MB). 번호 지정 가능 | 실행: `node scripts/models/optimize-carriers.mjs [폴더] [번호…]`, 이후 `src/data/carriers.ts`에 `model: true` |
 | `scripts/tts/generate_clips.py` | **앱용 전체 클립 생성**. `parts.json`의 구절을 목소리별로 생성 → 앞뒤 무음 제거·음량 통일(-20dB RMS)·약 25kbps MP3 → `public/audio/voice/<목소리>/<키>.mp3` + `clips.json`. 이미 있는 클립은 건너뜀(이어서 생성), 구절별 고정 시드. 가상환경에 따라 Kokoro(승무원)/Chatterbox(기장, CUDA 자동) | `--voice`, `--match`, `--limit`, `--device`. 데스크톱 절차: `docs/VOICE_CLIPS.md` |
 | `scripts/tts/list_parts.mjs` | `allParts()`를 Node(타입 스트리핑 + `.ts` 확장자 보완 훅)로 실행해 `scripts/tts/parts.json`(목소리 + 구절 2,213개) 작성 | 대본·도시·항공사 변경 후 재실행 |
 | `scripts/tts/generate_samples.py` | Kokoro-82M(Apache 2.0)으로 기장·승무원 목소리 후보 WAV + `manifest.json`을 `public/voice-samples/`에 생성 | 환경: `scripts/tts/.venv` (kokoro-onnx, soundfile), 모델: `scripts/tts/models/` — 둘 다 git 제외 |
@@ -160,14 +162,15 @@ flowchart LR
 
 | Screen File | Style File | Route Name | Responsibilities |
 |---|---|---|---|
-| `src/screens/FlyScreen.tsx` | `src/screens/FlyScreen.module.css` | `'fly'` | 홈 화면. 현재 체류 공항, 현지 시각 인사말, 캐리어 상태, 마일리지/등급, 'Book flight' CTA |
+| `src/screens/FlyScreen.tsx` | `src/screens/FlyScreen.module.css` | `'fly'` | 홈 화면. 현재 체류 공항, 현지 시각 인사말, 사용 중인 캐리어 3D(스티커 포함, 천천히 회전, 보기만 — 조작·이름·문구 없음), 회원 등급 진행 바, 예약 버튼(이 화면의 유일한 조작). 캐리어가 남는 높이만 차지해 예약 버튼이 첫 화면에 보임 |
 | `src/screens/BookingScreen.tsx` | `src/screens/BookingScreen.module.css` | `'booking'` | 출발지 선택, 집중 시간 기준(By focus time) 또는 목적지 기준(By destination) 노선 탐색 및 관광비행 선택 |
 | `src/screens/CheckinScreen.tsx` | `src/screens/CheckinScreen.module.css` | `'checkin'` | 비행 목적(Study, Work 등) 선택, 좌석 배치도에서 좌석 선택 또는 'Assign for me' 자동 배정 |
 | `src/screens/BoardingScreen.tsx` | `src/screens/BoardingScreen.module.css` | `'boarding'` | 탑승 대기 화면. 찢을 수 있는 탑승권(`BoardingPass`) 렌더 및 제스처 시 오디오 언락 |
 | `src/screens/FlightScreen.tsx` | `src/screens/FlightScreen.module.css` | `'flight'` | 비행 중 화면. 벡터 지구본 지도, 기내 모니터 정보(고도/속도/남은시간), 백색소음 재생, 페이즈별 방송. 소리 조작은 볼륨 슬라이더 + "Sound settings" 패널(방송·차임·집중 모드·바이노럴 톤)만 |
-| `src/screens/ArrivalScreen.tsx` | `src/screens/ArrivalScreen.module.css` | `'arrival'` | 착륙 화면. 환영 방송, 입국 도장, 획득 마일리지 표시, 획득한 수하물 태그/스티커 부착 연출 |
-| `src/screens/PlaceholderScreen.tsx` | `src/screens/PlaceholderScreen.module.css` | `'luggage'`, `'dutyfree'` | Phase 2 구현 예정 기능들을 위한 안내 플레이스홀더 화면 |
-| `src/screens/PassportScreen.tsx` | `src/screens/PassportScreen.module.css` | `'passport'` | 여권 책자. 닫히면 세로 표지(카메라 가깝게 1.32배) → 탭하면 ① 책자가 옆으로 눕는 90° 회전 + 카메라가 물러나듯 축소(0.7초) ② 이어서 표지가 철 위로 넘어감 → 철이 가운데 가로로 놓인 위·아래 두 면(첫 펼침면: 위 표지 안쪽, 아래 데이터 면). 넘기기: 아래 면이 손가락을 따라 들리며 넘어가는 종이 슬라이드(위·옆 스와이프, 놓을 때 1/3 넘거나 튕기면 넘김·아니면 되돌아옴), 탭 = 한 장. 첫 펼침면에서 뒤로 = 표지가 내려온 뒤 책자가 다시 서며 닫힘, 닫기 버튼. 모든 움직임은 rAF로 DOM 직접 갱신(+숨은 탭 대비 타이머 마무리), '모션 줄이기' 설정이어도 재생(사용자 동작에서만 시작). 진행 중인 넘김은 ref로 즉시 참조. 편집 중엔 데이터 면이 입력 즉시 바뀜 |
+| `src/screens/ArrivalScreen.tsx` | `src/screens/ArrivalScreen.module.css` | `'arrival'` | 착륙 화면. 환영 방송, 입국 도장, 획득 마일리지 표시, 획득한 수하물 태그/스티커 부착 연출. 캐리어가 다 차면 "Carrier full" 카드(그대로 보관·새 캐리어 준비·보너스 마일, 처음이면 2배 표시) |
+| `src/screens/LuggageScreen.tsx` | `src/screens/LuggageScreen.module.css` | `'luggage'` | 캐리어 보관함. 도감 30칸 어느 것이든 누르면 위 무대에 올라오고 맨 위로 스크롤: 내 것은 스티커 붙은 3D(드래그·핀치) + 스티커 수/용량 + "Travel with this one", 못 찾은 것(모델 있음)은 실루엣 + 등급·가격 + "Find it in Duty Free"(면세점 그 상품으로), 아직 안 만든 것은 물음표. 채운 적 있는 종류는 "✓ No. 1 · 날짜" 칩으로 채운 캐리어들(스티커 그대로)과 진행 중인 것을 골라 봄. 카드: 내 것은 구운 사진(채운 횟수 ✓×n), 못 찾은 건 실루엣, 안 만든 건 ?. 도감 수는 종류 기준 |
+| `src/screens/DutyFreeScreen.tsx` | `src/screens/DutyFreeScreen.module.css` | `'dutyfree'` | 면세점. 위 3D 진열대는 손가락으로 돌려 보기(옆으로 끌면 회전, 세로는 페이지 스크롤, 확대 없음), 아래 사진 칩 줄을 스와이프해 넘기고 탭하면 진열대가 바뀜(칩 줄만 가로로 이동), 이웃 모델 미리 로드, 보관함에서 오면 그 캐리어부터, 등급 → 마일 순으로 구매 가능 판단(잠긴 건 필요한 등급까지 남은 누적 마일), 두 번 탭해 구매, 산 뒤 바로 사용 전환. 개발 모드 전용 "+10,000 mi" 버튼 |
+| `src/screens/PassportScreen.tsx` | `src/screens/PassportScreen.module.css` | `'passport'` | 여권 책자. 닫히면 세로 표지(카메라 가깝게 1.32배) → 탭하면 ① 책자가 옆으로 눕는 90° 회전 + 카메라가 물러나듯 축소(0.7초) ② 이어서 표지가 철 위로 넘어감 → 철이 가운데 가로로 놓인 위·아래 두 면(첫 펼침면: 위 표지 안쪽, 아래 데이터 면). 넘기기: 아래 면이 손가락을 따라 들리며 넘어가는 종이 슬라이드(위·옆 스와이프, 놓을 때 1/3 넘거나 튕기면 넘김·아니면 되돌아옴), 탭 = 한 장. 첫 펼침면에서 뒤로 = 표지가 내려온 뒤 책자가 다시 서며 닫힘. 머리글 오른쪽 모서리 Close(제목을 밀지 않게 띄움), 아래엔 점(펼침면이 많으면 얇은 진행선)만 — 화살표·설명 문구 없음. 실물감: 닫힌 책자는 표지 아래로 종이 단면·뒤표지가 비치고 그림자, 표지는 종이보다 조금 커서(`--rim`) 펼치면 가죽 테두리(뒤표지는 아래, 넘긴 앞표지는 위) — 넘어가는 표지도 같은 크기라 열고 닫을 때 가장자리에 아무것도 잠깐 생기지 않음, 종이 묶음 단면, 철 쪽으로 휘어 어두워지는 골과 빛. 모든 움직임은 rAF로 DOM 직접 갱신(+숨은 탭 대비 타이머 마무리), '모션 줄이기' 설정이어도 재생(사용자 동작에서만 시작). 진행 중인 넘김은 ref로 즉시 참조. 편집 중엔 데이터 면이 입력 즉시 바뀜 |
 
 ---
 
@@ -177,7 +180,6 @@ flowchart LR
 |---|---|---|---|
 | `BoardingPass` | `src/components/BoardingPass.tsx` | `src/components/BoardingPass.module.css` | 실제 항공권 스타일 탑승권. 스텁 드래그/클릭으로 뜯기 인터랙션, 바코드, 승객 정보, 등급별 색상 테두리 |
 | `SeatMapView` | `src/components/SeatMapView.tsx` | `src/components/SeatMapView.module.css` | 항공기 단면 좌석도 뷰. First/Business/Economy 구역, 통로, 날개 위치, 비상구 및 범례(`SeatLegend`) 표시 |
-| `CarrierView` | `src/components/CarrierView.tsx` | `src/components/CarrierView.module.css` | 2D 캐리어 외형 SVG 및 획득한 스티커 배치/에이징 연출 (Phase 2에서 3D Three.js로 교체 예정) |
 | `BagTag` | `src/components/BagTag.tsx` | `src/components/BagTag.module.css` | 실제 감열지 수하물 태그 스타일 렌더 (도착지 IATA 코드, 바코드, 가상 항공사 색상 띠, 일련번호) |
 | `TicketButton` | `src/components/TicketButton.tsx` | `src/components/TicketButton.module.css` | 천공선과 스텁 화살표가 있는 항공권 모티브의 메인 액션 버튼 |
 | `Barcode` | `src/components/Barcode.tsx` | — (SVG 인라인) | 순수 SVG 기반 결정론적 바코드 렌더러 |
@@ -187,6 +189,9 @@ flowchart LR
 | `MilesStamp` | `src/components/MilesStamp.tsx` | `src/components/MilesStamp.module.css` | 보유 마일리지 잔액 뱃지 |
 | `ScreenHeader` | `src/components/ScreenHeader.tsx` | `src/components/ScreenHeader.module.css` | 뒤로가기 버튼과 타이틀/서브타이틀이 포함된 화면 헤더 |
 | `Icon` | `src/components/Icon.tsx` | — (SVG 인라인) | 경량 인라인 SVG 아이콘 세트 (plane, ticket, suitcase, globe, volume 등) |
+| `Carrier3D` | `src/components/Carrier3D.tsx` | `src/components/Carrier3D.module.css` | react-three-fiber 3D 캐리어. GLB(meshopt) 로드, `fitModel()`로 `orient` 보정(바로 세우고 앞면 +Z) 후 정확한 정점 상자 기준 가장 긴 변 1·바닥에 세움, 스티커 데칼(`stickers` → 캐리어의 스티커 자리, 폰트 로드 후), 조명(`LIGHTS`·`PANELS`, 굽기와 공유), `VIEW` 카메라, 접촉 그림자, OrbitControls(자동 회전·드래그·핀치, 팬 없음). `interactive={false}`면 보기만(터치는 아래 페이지로), `scrollable`이면 옆으로만 돌리고 세로 스와이프는 페이지 스크롤(확대 없음). `preloadCarrier()`로 모델 미리 로드 |
+| `CarrierThumb` | `src/components/CarrierThumb.tsx`, `src/components/carrierBake.ts` | `src/components/CarrierThumb.module.css` | 카드용 캐리어 정지 사진: 미리 구운 `public/models/carriers/thumbs/NNN.webp` (`carrierThumbUrl()`, 다시 구우면 `THUMB_VERSION` 올림). `silhouette`면 모양만 그림자처럼. 굽기(개발 전용, `?bake-carriers`): 3D와 같은 스튜디오·각도로 그려 캐리어 모양대로 정사각 크롭. 같은 굽기에서 스티커 자리도 계산: 면마다 정사영 깊이를 렌더링 → 평활 깊이로 기울기(35° 이내)·튀어나옴(손잡이·바퀴·장식 제외)·부품 분리 → 스티커가 통째로 들어가고 평면에서 덜 휘는 곳만 → 앞면 가운데서 바깥으로 자라는 무리, 이웃과 최대 14%만 겹침, 최대 40개, 6개 미만이면 작은 스티커(0.8·0.65배)로 다시. 개발 도우미 `previewCarrier()`·`previewSlots()`·`previewPanels()` |
+| `stickerDecals` | `src/components/stickerDecals.ts` | — | 스티커를 3D 캐리어 표면에 데칼로 투영. 캔버스로 그린 수하물 태그(항공사 색 띠·편명·날짜·도착 코드·도시·바코드, 오래된 것일수록 누렇게)·PRIORITY 라벨. n번째 스티커는 캐리어의 n번째 자리(`slots`)에, 그 면 방향으로 똑바로 + 스티커마다 시드 고정된 약간의 기울기·어긋남, 근처 삼각형만 잘라 `DecalGeometry`, 최신이 위 |
 | `PassportStamp` | `src/components/PassportStamp.tsx` | `src/components/PassportStamp.module.css` | 출입국 도장 SVG. 모양 6종(원·타원·사각·솅겐 별 고리·육각·아치), 나라별 잉크·문구, 입국은 비행기 하강·출국은 상승, 시드 고정 잉크 번짐 필터(가장자리 거칠기 + 얼룩) |
 | `PassportPages` | `src/components/PassportPages.tsx` | `src/components/PassportPages.module.css` | 여권 각 면(펼친 면은 가로 125×88): 표지(세로, 가죽 결·형압 테두리·금박·가상 문장·칩 마크), 표지 안쪽(앞: 문구, 뒤: 무지), 데이터 면(사진·고스트 이미지·필드·서명·키네그램 띠·라미네이트 홀로그램·MRZ), 배서 면(타자기 비행 기록 + 멤버십 인장), 사증 면(3열×2행 도장). 모두 컨테이너 단위(cqw) |
 | `PassportEditor` | `src/components/PassportEditor.tsx` | `src/components/PassportEditor.module.css` | 여권 정보 편집 시트: 맨 위에 데이터 면 실시간 미리보기, 사진(가운데 위쪽 기준 35:45로 잘라 350×450 JPEG ≈30KB, 기기에만 저장), 이름·성·국적. 입력할 때마다 `onChange`로 화면에 바로 반영, 취소하면 되돌림 |
@@ -198,6 +203,9 @@ flowchart LR
 | File | Content & Rules |
 |---|---|
 | `src/data/cities.ts` | 65개 주요 공항 좌표(WGS84), IATA 코드, 공항명, 국가, IANA 타임존 (출처: OurAirports 공공도메인). 기본 출발지: `ICN` |
+| `src/data/carriers.ts` | 캐리어 30종 카탈로그(`docs/CARRIER_PROMPTS.md` 번호): 이름·필요 등급·가격(기본 2,500 / 실버 6,000 / 골드 15,000 / 플래티넘 30,000마일, 001은 무료 지급)·용량(= 스티커 자리 수, `carrierSlots.json`)·스티커 자리·한 줄 소개·3D 모델 유무·`orient`(009는 부엉이가 정면을 보게 yaw 53). 출시 전 교체할 팬메이드 외형 표시(017·022·027, 016) | `CARRIERS`, `carrierType()`, `carrierModelUrl()`, `STARTER_CARRIER_ID`, `TIER_PRICE`, `StickerSlot`, `STICKER_SIDES`, `STICKER_SIZE`, `carrierThumbUrl()` |
+| `src/data/carrierSlots.json` | 굽기 결과(손으로 고치지 않음): 캐리어별 스티커 자리 `[면, x, y, z, 크기]` 목록, 채우는 순서대로. 길이가 곧 용량 (001 30 · 002 30 · 003 38 · 006 40 · 009 40 · 010 26 · 012 40 · 015 23 · 017 40 · 022 10 · 023 39 · 025 7 · 027 9) | — | `src/components/carrierBake.ts`, `src/data/carriers.ts` |
+| `src/data/countries.ts` | 앱이 가는 43개국: ISO-2/ISO-3(MRZ용, 독일은 `D<<`), 자국어 이름, 공식 국명, 자국어 '여권', 여권 표지 색, 도장 스타일(모양·잉크·기관·입국/출국 문구, 솅겐 국가 기호). 괌·사이판은 미국 도장. 국내·관광 비행용 Carry On 자체 도장 `HOUSE_STAMP` | `COUNTRIES`, `countryByCode()`, `HOUSE_STAMP`, `StampStyle` |
 | `src/data/airlines.ts` | 상표권 문제를 회피하기 위한 국가별 12개 가상 항공사 (예: Hanul Air `HL`, Sakura Wings `SW`, Carry On Airways `CO` 등) 및 리버리 색상 |
 
 ---
@@ -208,6 +216,7 @@ flowchart LR
 |---|---|
 | `docs/SPEC.md` | 전체 기능 기획 설계서 v1.0 (핵심 루프, 비행 시스템, 사운드, 스티커, 캐리어 3D 계획, 경제/마일리지 시스템, 로드맵) |
 | `docs/ASSETS.md` | 오픈소스 폰트, 데이터셋, 에셋 라이선스 및 출처 기록부 |
+| `docs/CARRIER_PROMPTS.md` | 캐리어·가방 30종 이미지 → 3D(ComfyUI) 프롬프트. 한 줄에 하나씩 통째로 복붙, 공통 네거티브. 손에 드는 가방류(3·5·6·9·12·21·23·28·29)는 바퀴 없음 |
 | `docs/VOICE_CLIPS.md` | 안내방송 클립 체계와 데스크톱(GPU)에서 전체 클립을 만드는 절차 |
 
 ---

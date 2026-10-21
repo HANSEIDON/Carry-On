@@ -14,6 +14,9 @@
 | `scripts/tts/refs/ref-george.wav` | `cb-george` 기장의 음색 참조. Kokoro `bm_george` 낭독(실제 사람 목소리 아님) | 이 저장소에서 생성 | Apache 2.0 파생 | 아니오 |
 | Cinzel (글꼴) | 여권 표지 "PASSPORT"·나라 이름 (새긴 로마 대문자) | [@fontsource/cinzel](https://fontsource.org/fonts/cinzel) | OFL 1.1 | 아니오 |
 | Noto Serif KR · Noto Serif JP (글꼴) | 여권 표지의 자국어 국가명 (한글·한자·키릴 명조) | [@fontsource/noto-serif-kr](https://fontsource.org/fonts/noto-serif-kr), [@fontsource/noto-serif-jp](https://fontsource.org/fonts/noto-serif-jp) | OFL 1.1 | 아니오 |
+| three.js · @react-three/fiber · @react-three/drei | 캐리어 3D 렌더링 (보관함 탭에서만 지연 로드) | npm | MIT | 아니오 |
+| `public/models/carriers/*.glb` | 3D 캐리어 13종(001·002·003·006·009·010·012·015·017·022·023·025·027). 자체 프롬프트(`docs/CARRIER_PROMPTS.md`)로 만든 이미지를 ComfyUI 이미지→3D로 변환 후 경량화 | 이 프로젝트에서 생성 | 자체 제작 (변환 모델 라이선스 확인 필요: Pixal3D 가중치 조건 미확정 시 TRELLIS.2(MIT)로 재생성) | 아니오 |
+| `public/models/carriers/thumbs/*.webp` | 위 13종의 카드용 정지 사진(384px, 투명 배경). 개발 서버에서 `?bake-carriers`로 3D 모델을 그려 생성 | 이 프로젝트에서 생성 | 자체 제작 (모델과 같은 조건) | 아니오 |
 | Kokoro-82M (모델·보이스) | 안내방송 음성 생성 (PC에서 오프라인 생성, 앱엔 결과 오디오만 포함) | [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) via [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx) model-files-v1.0 | Apache 2.0 | 아니오 |
 
 ## 기내 소음 음색 필터 (앱에 포함)

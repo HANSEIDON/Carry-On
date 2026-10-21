@@ -12,7 +12,10 @@
   container-type: inline-size;
   border-radius: inherit;
   background-color: color-mix(in srgb, var(--cover) 5%, #fbf8f1);
-  background-image: var(--grain);
+  /* Security fibres, the paper's tooth, its grain. */
+  background-image: var(--fibres), var(--tooth), var(--grain);
+  background-size: 260px, 200px, 160px;
+  background-blend-mode: normal, soft-light, normal;
   color: var(--text-1);
   font-size: 2.4cqw;
 }
@@ -45,21 +48,24 @@
     radial-gradient(130% 90% at 28% 18%, rgba(255, 255, 255, 0.1), transparent 55%),
     radial-gradient(90% 70% at 80% 100%, rgba(0, 0, 0, 0.28), transparent 70%);
   border-radius: 1.2cqw 3cqw 3cqw 1.2cqw;
+  /* The hinge by the spine, and the leather rolling over its edges (light above, dark below). */
   box-shadow:
     inset 2.4cqw 0 2.6cqw -1.6cqw rgba(0, 0, 0, 0.5),
-    inset -0.3cqw 0 0 rgba(255, 255, 255, 0.06);
+    inset 0 0.5cqw 0.4cqw -0.2cqw rgba(255, 255, 255, 0.1),
+    inset -0.5cqw 0 0.5cqw -0.2cqw rgba(0, 0, 0, 0.3),
+    inset 0 -0.8cqw 0.9cqw -0.3cqw rgba(0, 0, 0, 0.38);
   color: #d6b064;
 }
 
-/* Leather grain. */
+/* Pebbled leather grain, catching the light. */
 .cover::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: var(--grain), var(--grain);
-  background-size: 90px, 37px;
+  background-image: var(--leather), var(--grain);
+  background-size: 240px, 160px;
   mix-blend-mode: overlay;
-  opacity: 0.9;
+  opacity: 0.7;
   pointer-events: none;
 }
 

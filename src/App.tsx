@@ -5,10 +5,11 @@ import { ArrivalScreen } from './screens/ArrivalScreen';
 import { BoardingScreen } from './screens/BoardingScreen';
 import { BookingScreen } from './screens/BookingScreen';
 import { CheckinScreen } from './screens/CheckinScreen';
+import { DutyFreeScreen } from './screens/DutyFreeScreen';
 import { FlightScreen } from './screens/FlightScreen';
 import { FlyScreen } from './screens/FlyScreen';
+import { LuggageScreen } from './screens/LuggageScreen';
 import { PassportScreen } from './screens/PassportScreen';
-import { PlaceholderScreen } from './screens/PlaceholderScreen';
 import { useApp, type Screen } from './store/appStore';
 import { useTier } from './store/useTier';
 import styles from './App.module.css';
@@ -44,19 +45,16 @@ export function App() {
 
   return (
     <div className={styles.app}>
-      <main className={styles.main}>
+      {/* A fresh page per screen, so each one opens at its top. */}
+      <main className={styles.main} key={screen}>
         {screen === 'fly' && <FlyScreen />}
         {screen === 'booking' && <BookingScreen />}
         {screen === 'checkin' && <CheckinScreen />}
         {screen === 'boarding' && <BoardingScreen />}
         {screen === 'flight' && <FlightScreen />}
         {screen === 'arrival' && <ArrivalScreen />}
-        {screen === 'luggage' && (
-          <PlaceholderScreen title="Luggage" note="Your carriers and stickers, in 3D. Coming in phase 2." />
-        )}
-        {screen === 'dutyfree' && (
-          <PlaceholderScreen title="Duty Free" note="Spend miles on new carriers. Coming in phase 2." />
-        )}
+        {screen === 'luggage' && <LuggageScreen />}
+        {screen === 'dutyfree' && <DutyFreeScreen />}
         {screen === 'passport' && <PassportScreen />}
       </main>
       {TAB_SCREENS.includes(screen) && <TabBar />}

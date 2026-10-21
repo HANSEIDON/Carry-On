@@ -1,4 +1,14 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent,
+  type ReactNode,
+} from 'react';
 import { passportSound } from '../audio/passportSound';
 import { PassportEditor } from '../components/PassportEditor';
 import { Cover, CoverInside, DataPage, LogPage, VisaPage } from '../components/PassportPages';
@@ -334,6 +344,8 @@ export function PassportScreen() {
     top = back(turned - 1);
   }
 
+  /** The leaf turning is the front cover (opening or closing): it's larger than a page. */
+  const coverLeaf = turn?.kind === 'open' || turn?.kind === 'close';
   const name = (i: number) => (i === 0 ? 'Data page' : i === 1 ? 'Endorsements' : i < pageCount ? `Visas ${i - 1}` : 'Back cover');
   const at = turn ? turn.to : turned;
   const where = at === 0 ? 'Cover' : at === 1 ? 'Data page' : `${name(2 * at - 3)} · ${name(2 * at - 2)}`;
@@ -341,12 +353,19 @@ export function PassportScreen() {
   return (
     <section className={styles.screen}>
       <header className={styles.head}>
-        <p className="label">Passport</p>
-        <h1 className={styles.title}>
-          {stamps.length} {stamps.length === 1 ? 'stamp' : 'stamps'} · {log.countries}{' '}
-          {log.countries === 1 ? 'country' : 'countries'}
-        </h1>
-        <p className={styles.sub}>{formatDuration(log.minutes)} of focus, flown and stamped</p>
+        <div>
+          <p className="label">Passport</p>
+          <h1 className={styles.title}>
+            {stamps.length} {stamps.length === 1 ? 'stamp' : 'stamps'} · {log.countries}{' '}
+            {log.countries === 1 ? 'country' : 'countries'}
+          </h1>
+          <p className={styles.sub}>{formatDuration(log.minutes)} of focus, flown and stamped</p>
+        </div>
+        {at > 0 && (
+          <button className={styles.close} onClick={() => go(false, true)} disabled={!!turn}>
+            Close
+          </button>
+        )}
       </header>
 
       <div
@@ -366,8 +385,15 @@ export function PassportScreen() {
           ref={bookEl}
           className={styles.book}
           data-open={open}
-          style={{ transform: turned > 0 ? 'none' : `translateY(-25%) rotate(-90deg) scale(${CLOSED_SCALE})` }}
+          style={
+            {
+              '--cover': country.cover,
+              transform: turned > 0 ? 'none' : `translateY(-25%) rotate(-90deg) scale(${CLOSED_SCALE})`,
+            } as CSSProperties
+          }
         >
+          <div className={styles.caseBottom} />
+          {turned > 0 && turn?.kind !== 'close' && <div className={styles.caseTop} />}
           {top !== null && (
             <div className={styles.top}>
               {top}
@@ -379,32 +405,34 @@ export function PassportScreen() {
             <div ref={castBottomEl} className={styles.castBottom} />
           </div>
           {leaf && (
-            <div ref={leafEl} className={styles.leaf}>
+            <div ref={leafEl} className={styles.leaf} data-cover={coverLeaf}>
               <div className={styles.front}>
                 {leaf.front}
                 <div ref={shadeEl} className={styles.shade} />
               </div>
-              <div className={styles.back}>{leaf.back}</div>
+              <div className={styles.back}>
+                {coverLeaf && <div className={styles.backRim} />}
+                {leaf.back}
+              </div>
             </div>
           )}
           {turned > 0 && turn?.kind !== 'close' && <div className={styles.spine} aria-hidden="true" />}
+          {open && <div className={styles.light} aria-hidden="true" />}
         </div>
       </div>
 
-      <div className={styles.foot}>
+      {/* Where you are in the booklet: a dot a spread, or a thin line once there are too many to dot. */}
+      {lastSpread < 12 ? (
         <div className={styles.dots} aria-hidden="true">
           {Array.from({ length: lastSpread + 1 }, (_, i) => (
             <span key={i} data-on={i === at} />
           ))}
         </div>
-        <p className={styles.where}>{where}</p>
-        <p className={styles.hint}>{at === 0 ? 'Tap the cover to open' : 'Swipe the page up to turn it'}</p>
-        {at > 0 && (
-          <button className={styles.close} onClick={() => go(false, true)} disabled={!!turn}>
-            Close passport
-          </button>
-        )}
-      </div>
+      ) : (
+        <div className={styles.track} aria-hidden="true">
+          <span style={{ left: `${(at / lastSpread) * 100}%` }} />
+        </div>
+      )}
 
       {editing && (
         <PassportEditor

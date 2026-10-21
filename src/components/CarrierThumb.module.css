@@ -1,0 +1,42 @@
+.frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 6px rgba(60, 40, 20, 0.18));
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.frame[data-loaded='true'] .img {
+  opacity: 1;
+}
+
+/* Not found yet: just the shape, like a shadow on the closet wall. */
+.frame[data-loaded='true'] .img[data-silhouette='true'] {
+  filter: brightness(0);
+  opacity: 0.16;
+}
+
+/* While the picture loads: a soft pulse where the carrier will be. */
+.frame[data-loaded='false']::before {
+  content: '';
+  position: absolute;
+  inset: 19% 27%;
+  border-radius: 12px;
+  background: var(--line);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}

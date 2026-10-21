@@ -4,6 +4,7 @@ import { BagTag } from '../components/BagTag';
 import { StageBar } from '../components/StageBar';
 import { TicketButton } from '../components/TicketButton';
 import { airlineByCode } from '../data/airlines';
+import { carrierType } from '../data/carriers';
 import { cityByCode } from '../data/cities';
 import { arrival } from '../domain/announcements';
 import { formatDuration } from '../domain/geo';
@@ -18,7 +19,7 @@ export function ArrivalScreen() {
   const landing = useApp((s) => s.landing)!;
   const go = useApp((s) => s.go);
   const setLanding = useApp((s) => s.setLanding);
-  const { flight, stickers } = landing;
+  const { flight, stickers, filled } = landing;
   const city = cityByCode(flight.toCode)!;
   const airline = airlineByCode(flight.airlineCode);
   const landed = new Date(flight.endedAt ?? Date.now());
@@ -91,6 +92,19 @@ export function ArrivalScreen() {
           ))}
         </div>
       </div>
+
+      {/* The last spot taken: the carrier is kept as it is, a fresh one is packed, and miles come back. */}
+      {filled.map((f) => (
+        <div key={f.carrier.id} className={styles.filled} style={{ animationDelay: `${1.3 + stickers.length * 0.35}s` }}>
+          <p className="label">Carrier full</p>
+          <p className={styles.filledTitle}>Your {carrierType(f.carrier.modelId).name} is covered.</p>
+          <p className={styles.filledNote}>It stays in your luggage just as it is. A fresh one is packed for the next trip.</p>
+          <p className={styles.filledMiles}>
+            +{f.bonus.toLocaleString('en-US')} mi
+            {f.first && <span className={styles.filledFirst}>first time · double</span>}
+          </p>
+        </div>
+      ))}
 
       <TicketButton onClick={done} sub={`Back to ${city.city}`}>
         Collect and continue

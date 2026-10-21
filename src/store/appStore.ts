@@ -20,7 +20,10 @@ interface AppState {
   draft: Draft | null;
   flight: Flight | null;
   landing: LandingResult | null;
+  /** The carrier Duty Free should open on (set when you come from the luggage room). */
+  shopFocus: string | null;
   go: (screen: Screen) => void;
+  openShop: (carrierTypeId: string | null) => void;
   setProfile: (profile: Profile) => void;
   setDraft: (draft: Draft | null) => void;
   setFlight: (flight: Flight | null) => void;
@@ -33,7 +36,9 @@ export const useApp = create<AppState>((set) => ({
   draft: null,
   flight: null,
   landing: null,
+  shopFocus: null,
   go: (screen) => set({ screen }),
+  openShop: (shopFocus) => set({ screen: 'dutyfree', shopFocus }),
   setProfile: (profile) => set({ profile }),
   setDraft: (draft) => set({ draft }),
   setFlight: (flight) => set({ flight }),

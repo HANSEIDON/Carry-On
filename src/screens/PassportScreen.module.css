@@ -5,10 +5,9 @@
   min-height: 100%;
 }
 
+/* Close sits in the corner, on the label's line: it never pushes the title around. */
 .head {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  position: relative;
 }
 
 .title {
@@ -52,6 +51,7 @@
  * The inline style below is only the first frame before that takes over.
  */
 .book {
+  --rim: 1.8cqw;
   position: absolute;
   inset: 0;
   perspective: 1700px;
@@ -68,31 +68,33 @@
   height: 50%;
 }
 
+/* Each half is a stack of pages: their edges show along the outer side, on the cover's rim. */
 .top {
   top: 0;
   border-radius: 2.4cqw 2.4cqw 0.4cqw 0.4cqw;
   box-shadow:
-    0 -0.5px 0 #ebe4d6,
-    0 -1.2px 0 #e2dacb,
-    0 -2px 0 #ebe4d6,
-    var(--shadow-paper);
+    0 -0.25cqw 0 #efe8da,
+    0 -0.5cqw 0 #d9cfbb,
+    0 -0.75cqw 0 #eee6d6,
+    0 -1cqw 0 #d6cbb5,
+    0 -1.1cqw 0.6cqw rgba(30, 20, 10, 0.18);
 }
 
 .bottom {
   top: 50%;
   border-radius: 0.4cqw 0.4cqw 2.4cqw 2.4cqw;
   box-shadow:
-    0 0.5px 0 #ebe4d6,
-    0 1.2px 0 #e2dacb,
-    0 2px 0 #ebe4d6,
-    0 2.8px 0 #ddd4c3,
-    var(--shadow-lift);
+    0 0.25cqw 0 #efe8da,
+    0 0.5cqw 0 #d9cfbb,
+    0 0.75cqw 0 #eee6d6,
+    0 1cqw 0 #d6cbb5,
+    0 1.25cqw 0 #ebe2d0,
+    0 1.4cqw 0.7cqw rgba(30, 20, 10, 0.22);
 }
 
+/* Closed, the thickness and shadow come with the cover (.coverTurn). */
 .book:not([data-open='true']) .bottom {
-  box-shadow:
-    -1.5px 1px 0 rgba(0, 0, 0, 0.25),
-    var(--shadow-lift);
+  box-shadow: none;
 }
 
 /* The leaf turning around the spine (its top edge). */
@@ -123,19 +125,100 @@
   transform: rotateX(180deg);
 }
 
-/* The closed cover's art is portrait: stood up inside the landscape slot. */
+/*
+ * The closed cover's art is portrait: stood up inside the landscape slot. Like a real cover it's a
+ * little larger than the pages (by --rim, past the three edges away from the spine), so it's the
+ * same size as the leather around the open pages: nothing shows round it as it turns.
+ */
 .coverTurn {
   position: absolute;
-  top: 50%;
+  top: calc(50% + var(--rim) / 2);
   left: 50%;
-  width: 70.4cqw;
-  height: 100cqw;
+  width: calc(70.4cqw + var(--rim));
+  height: calc(100cqw + 2 * var(--rim));
   border-radius: 1.2cqw 3cqw 3cqw 1.2cqw;
   container-type: inline-size;
   transform: translate(-50%, -50%) rotate(90deg);
 }
 
-/* The lifted page catches less light toward its free edge. */
+/*
+ * Closed, it's a booklet with some thickness: under the cover, the edges of the pages and then
+ * the back cover show along the open sides, and it casts a shadow (light from the top left).
+ */
+.coverTurn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow:
+    0.2cqw 0.3cqw 0 #f4eee1,
+    0.4cqw 0.55cqw 0 #ddd3bf,
+    0.6cqw 0.8cqw 0 #f1eadb,
+    0.8cqw 1.05cqw 0 #d9ceb8,
+    1cqw 1.3cqw 0 #efe7d6,
+    1.35cqw 1.65cqw 0 color-mix(in srgb, var(--cover) 80%, #000),
+    2cqw 3.2cqw 4.5cqw -0.5cqw rgba(30, 20, 10, 0.4),
+    0.6cqw 1cqw 1.2cqw rgba(30, 20, 10, 0.25);
+  pointer-events: none;
+}
+
+.book[data-open='true'] .coverTurn::before {
+  opacity: 0;
+}
+
+/*
+ * Open, the covers are a little larger than the pages: a rim of leather around them, the back
+ * cover under the bottom page and (once it's turned over) the front cover under the top one.
+ */
+.caseTop,
+.caseBottom,
+.backRim {
+  position: absolute;
+  right: calc(-1 * var(--rim));
+  left: calc(-1 * var(--rim));
+  background-color: color-mix(in srgb, var(--cover) 88%, #000);
+  background-image: var(--leather);
+  background-size: 240px;
+  background-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.caseTop {
+  top: calc(-1 * var(--rim));
+  bottom: 50%;
+  border-radius: 3.6cqw 3.6cqw 0 0;
+  box-shadow:
+    inset 0 0.4cqw 0.3cqw -0.1cqw rgba(255, 255, 255, 0.1),
+    var(--shadow-paper);
+}
+
+/* The front cover's leather round the page on its inside, as it turns over (the back of the leaf). */
+.backRim {
+  top: calc(-1 * var(--rim));
+  bottom: 0;
+  border-radius: 3.6cqw 3.6cqw 0 0;
+}
+
+.caseBottom {
+  top: 50%;
+  bottom: calc(-1 * var(--rim));
+  border-radius: 0 0 3.6cqw 3.6cqw;
+  box-shadow:
+    inset 0 -0.6cqw 0.6cqw -0.2cqw rgba(0, 0, 0, 0.35),
+    var(--shadow-lift);
+}
+
+.book:not([data-open='true']) .caseBottom {
+  opacity: 0;
+}
+
+
+/* The lifted page catches less light toward its free edge (the cover: all of it, rim and all). */
+.leaf[data-cover='true'] .shade {
+  inset: 0 calc(-1 * var(--rim)) calc(-1 * var(--rim));
+}
+
 .shade {
   position: absolute;
   inset: 0;
@@ -164,40 +247,75 @@
   background: linear-gradient(to bottom, rgba(40, 28, 16, 0.45), rgba(40, 28, 16, 0.06) 55%, transparent);
 }
 
-/* The stitched spine across the middle. */
+/*
+ * The gutter: both pages curve down into the binding, so they darken toward it, with the stitched
+ * fold itself a fine dark line and a glint of light on the paper just beside it.
+ */
 .spine {
   position: absolute;
   top: 50%;
   right: 0;
   left: 0;
   z-index: 4;
-  height: 2.4cqw;
+  height: 11cqw;
   transform: translateY(-50%);
   background: linear-gradient(
     to bottom,
     transparent,
-    rgba(40, 28, 16, 0.12) 40%,
-    rgba(40, 28, 16, 0.2) 50%,
-    rgba(40, 28, 16, 0.12) 60%,
+    rgba(40, 28, 16, 0.05) 30%,
+    rgba(40, 28, 16, 0.16) 44%,
+    rgba(40, 28, 16, 0.34) 49.4%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(40, 28, 16, 0.26) 50.6%,
+    rgba(40, 28, 16, 0.12) 56%,
+    rgba(40, 28, 16, 0.04) 70%,
     transparent
   );
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
-.foot {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+/* Light on the open spread: brighter toward the top left, falling off at the far corners. */
+.light {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: 2.4cqw;
+  background:
+    radial-gradient(120% 70% at 18% 8%, rgba(255, 252, 240, 0.12), transparent 60%),
+    radial-gradient(90% 60% at 90% 100%, rgba(40, 28, 16, 0.1), transparent 70%);
+  pointer-events: none;
+}
+
+.track {
+  position: relative;
+  width: min(60%, 220px);
+  height: 2px;
+  margin: 8px auto 0;
+  border-radius: 1px;
+  background: var(--line-strong);
+}
+
+.track span {
+  position: absolute;
+  top: -2px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: var(--text-1);
+  transition: left 0.2s;
 }
 
 .dots {
   display: flex;
+  justify-content: center;
   gap: 6px;
-  margin-bottom: 4px;
+  margin-top: 6px;
 }
 
 .dots span {
+  flex: none;
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -209,27 +327,16 @@
   background: var(--text-1);
 }
 
-.where {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-}
-
-.hint {
-  color: var(--text-3);
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-style: italic;
-}
-
 .close {
-  margin-top: 6px;
-  padding: 6px 14px;
+  position: absolute;
+  top: -4px;
+  right: 0;
+  padding: 4px 12px;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
-  background: transparent;
+  background: var(--bg);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11.5px;
 }
 
 .close:disabled {
