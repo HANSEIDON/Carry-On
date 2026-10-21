@@ -152,13 +152,15 @@
   text-overflow: ellipsis;
 }
 
+/* One quiet row: volume and a way into the sound settings. */
 .sound {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 14px;
 }
 
 .soundOn {
+  flex: 1;
   height: 46px;
   border: 1px solid var(--text-1);
   border-radius: var(--radius-s);
@@ -170,6 +172,7 @@
 
 .volume {
   display: flex;
+  flex: 1;
   align-items: center;
   gap: 12px;
   color: var(--text-2);
@@ -178,28 +181,69 @@
 
 .volume input {
   flex: 1;
+  min-width: 0;
   accent-color: var(--text-1);
 }
 
-.toggles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
+.soundMenuButton {
+  flex: none;
+  padding: 6px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
 }
 
-.toggle {
-  display: inline-flex;
+.soundMenuButton[aria-expanded='true'] {
+  border-color: var(--text-1);
+  background: var(--text-1);
+  color: var(--bg);
+}
+
+/* The settings, printed like the flight data above. */
+.soundMenu {
+  display: flex;
+  flex-direction: column;
+  margin-top: -6px;
+  border-top: 1px solid var(--text-1);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.setting {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 2px;
   border: 0;
+  border-bottom: 1px dashed var(--line-strong);
   background: none;
-  color: var(--text-2);
-  font-size: 13px;
+  color: var(--text-1);
+  text-align: left;
+}
+
+.setting:last-child {
+  border-bottom: 0;
+}
+
+.settingText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 14px;
+}
+
+.settingNote {
+  color: var(--text-3);
+  font-size: 12px;
 }
 
 .knob {
   position: relative;
+  flex: none;
   width: 32px;
   height: 18px;
   border: 1px solid var(--text-1);
@@ -222,11 +266,11 @@
     background 0.2s;
 }
 
-.toggle[aria-checked='true'] .knob {
+.setting[aria-checked='true'] .knob {
   background: var(--text-1);
 }
 
-.toggle[aria-checked='true'] .knob::after {
+.setting[aria-checked='true'] .knob::after {
   background: var(--bg);
   transform: translateX(14px);
 }

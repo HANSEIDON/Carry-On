@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>사운드 랩 · Carry On</title>
+    <style>
+      :root {
+        --bg: #f1ebe0;
+        --card: #faf6ee;
+        --ink: #1f1b16;
+        --ink-2: #5b5449;
+        --ink-3: #8f8676;
+        --line: rgba(32, 27, 20, 0.14);
+        --accent: #b9392a;
+        color-scheme: light;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font: 15px/1.6 'Inter Variable', system-ui, -apple-system, 'Segoe UI', 'Malgun Gothic', sans-serif;
+      }
+      main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+      h1, h2 { margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; }
+      h1 { font-size: 40px; line-height: 1.05; }
+      h2 { margin-top: 36px; font-size: 28px; }
+      .lede { margin: 8px 0 0; color: var(--ink-2); }
+      .line { margin: 10px 0 14px; color: var(--ink-2); font-size: 14.5px; }
+      .toggles { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 16px; padding: 12px 0; border-top: 1px solid var(--ink); border-bottom: 1px dashed var(--line); }
+      .toggles label { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+      .toggles input[type='range'] { width: 120px; accent-color: var(--ink); }
+      .toggles select { padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--ink); font: inherit; font-size: 14px; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+      .card { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: var(--card); box-shadow: 0 0 0 1px rgba(32, 27, 20, 0.05), 0 10px 24px -16px rgba(60, 40, 20, 0.4); }
+      .card[data-picked='true'] { box-shadow: 0 0 0 2px var(--accent); }
+      .voice { font-family: ui-monospace, 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 600; }
+      .note { color: var(--ink-3); font-size: 13px; }
+      .row { display: flex; gap: 8px; margin-top: 4px; }
+      button { flex: 1; height: 38px; border: 1px solid var(--ink); border-radius: 8px; background: transparent; color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
+      button[data-playing='true'] { background: var(--ink); color: var(--bg); }
+      button.pick[aria-pressed='true'] { border-color: var(--accent); background: var(--accent); color: #fffaf2; }
+      .summary { margin-top: 28px; padding: 14px 16px; border-radius: 12px; background: var(--ink); color: var(--bg); font-family: ui-monospace, 'IBM Plex Mono', monospace; font-size: 14px; }
+      .error { color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>사운드 랩</h1>
+      <p class="lede">개발용 페이지예요. 앱에 들어갈 기내 소리와 안내방송 목소리를 직접 들어보고 고르는 곳이에요.</p>
+
+      <h2>기내 소리</h2>
+      <p class="line">
+        앱이 실제로 내는 기내 소리예요. 실시간으로 생성해서 반복이 없어요.
+        <b>기종 음색</b>을 고르면 실제 비행기 녹음에서 뽑아낸 주파수 분포(말소리·아기 소리는 빠진 상시 소음)로 소리를 다듬어요.
+        앱에서는 단거리면 A320·737, 중장거리면 777 음색이 자동으로 정해져요.
+      </p>
+      <div class="toggles">
+        <label>기종 음색
+          <select id="timbre">
+            <option value="a320" selected>Airbus A320</option>
+            <option value="b737">Boeing 737</option>
+            <option value="b777">Boeing 777 (비즈니스)</option>
+            <option value="">합성 (녹음 없이)</option>
+          </select>
+        </label>
+        <label>좌석
+          <select id="zone">
+            <option value="front">앞쪽</option>
+            <option value="wing" selected>날개 위</option>
+            <option value="rear">뒤쪽</option>
+          </select>
+        </label>
+        <label>비행 단계
+          <select id="phase">
+            <option value="climb">상승</option>
+            <option value="cruise" selected>순항</option>
+            <option value="descent">하강</option>
+          </select>
+        </label>
+        <label>클래스
+          <select id="cabin-class">
+            <option value="economy" selected>이코노미</option>
+            <option value="business">비즈니스</option>
+            <option value="first">퍼스트</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="focus-mode" /> 집중 모드 · 저음 더 줄임</label>
+        <label><input type="checkbox" id="focus" /> 바이노럴 톤 · 헤드폰 전용</label>
+        <label>기내 볼륨 <input type="range" id="cabin-volume" min="0.05" max="1" step="0.05" value="0.45" /></label>
+      </div>
+      <div class="row" style="max-width: 240px; margin-top: 12px"><button id="cabin-play">기내 소리 재생</button></div>
+
+      <h2>원본 녹음 (비교용)</h2>
+      <p class="line">
+        위 음색을 뽑아낸 실제 녹음이에요. 90초 루프라 반복되고, 녹음에 따라 말소리·아기 소리가 섞여 있어요.
+        위의 기내 소리와 번갈아 들어보며 음색이 비슷한지 비교해 보세요.
+      </p>
+      <div class="grid" id="recordings"></div>
+      <p class="note" id="recordings-empty" hidden>아직 녹음이 없어요. scripts/sound/raw/ 에 WAV를 넣고 scripts/sound/make_cabin_loop.py 를 실행하세요.</p>
+
+      <h2>기장·승무원 목소리</h2>
+      <p class="lede">기장 후보와 승무원(Alice) 속도별 후보예요. 하나씩 고르고, PA 필터 강도도 골라 주세요.</p>
+
+      <div class="toggles">
+        <label>PA 필터
+          <select id="pa">
+            <option value="off">끄기 (스튜디오 음질)</option>
+            <option value="light">약하게</option>
+            <option value="cabin" selected>기내</option>
+            <option value="vintage">구형 기체</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="noise" checked /> 기내 소리 깔기</label>
+        <label><input type="checkbox" id="chime" checked /> 차임 먼저</label>
+        <span class="note" id="volume-out">방송 볼륨은 앱과 같이 기내 볼륨에 고정 비율로 따라가요.</span>
+      </div>
+
+      <h2>기장</h2>
+      <p class="line" id="captain-line"></p>
+      <div class="grid" id="captain"></div>
+
+      <h2>승무원</h2>
+      <p class="line" id="crew-line"></p>
+      <div class="grid" id="crew"></div>
+
+      <p class="summary" id="summary">기장과 승무원 목소리를 하나씩 골라 주세요.</p>
+
+      <h2>완성 방송 미리듣기</h2>
+      <p class="line">
+        앱이 실제로 내는 방송이에요. 구절별 클립을 이어 붙여 앱의 기내 PA 필터로 내보내요(위 PA 선택과는 별개).
+        클립이 아직 없는 방송은 기기 음성으로 나와요. 시각은 오후 2:13 기준이에요.
+      </p>
+      <div class="toggles">
+        <label>노선
+          <select id="demo-route">
+            <option value="HND" selected>서울 → 도쿄</option>
+            <option value="scenic">서울 관광 비행 (25분)</option>
+          </select>
+        </label>
+        <label>기장 <select id="demo-captain"></select></label>
+      </div>
+      <div class="grid" id="demo" style="margin-top: 12px"></div>
+      <p class="line" id="demo-now"></p>
+    </main>
+
+    <script type="module">
+      // The app's own cabin engine, PA filter, script and announcer (served by the Vite dev server).
+      import {
+        ANNOUNCEMENT_SHARE, PA_PRESETS, VOICES, announce, cabinAudio, cityByCode, clipKey, flightState, keyLine,
+        paChain, phaseBounds, planRoute, planScenic, script, setAnnouncementFlight, silenceAnnouncements, voiceFor,
+      } from '/src/audio/soundLab.ts';
+
+      const picks = { captain: null, crew: null };
+      let ctx, current, noiseNode, noiseGain;
+      const val = (id) => document.getElementById(id).value;
+
+      const cabin = cabinAudio;
+      // Announcements follow the cabin volume at the app's fixed share.
+      const voiceShare = ANNOUNCEMENT_SHARE;
+      const voiceLevel = () => Number(val('cabin-volume')) * voiceShare;
+      function showVoiceLevel() {
+        document.getElementById('volume-out').textContent =
+          `방송 볼륨 = 기내 볼륨 × ${voiceShare} (고정) → 지금 ${Math.round(voiceLevel() * 100)}%`;
+      }
+      showVoiceLevel();
+      let cabinOn = false;
+      // A playing original recording replaces the cabin engine under the voices.
+      let recording = null; // { buffer, src, gain }
+      const recordingButtons = [];
+
+      async function startCabin() {
+        const timbre = val('timbre') || undefined;
+        if (timbre) await cabin.loadTimbres();
+        cabin.setFocusMode(document.getElementById('focus-mode').checked);
+        cabin.start(val('zone'), val('cabin-class'), val('phase'), 'study', document.getElementById('focus').checked, timbre);
+        cabin.setVolume(Number(val('cabin-volume')));
+      }
+
+      document.getElementById('cabin-play').onclick = (e) => {
+        if (!cabin) return;
+        cabinOn = !cabinOn;
+        if (cabinOn) startCabin();
+        else cabin.stop();
+        e.target.textContent = cabinOn ? '기내 소리 정지' : '기내 소리 재생';
+        e.target.dataset.playing = cabinOn;
+      };
+      for (const id of ['timbre', 'zone', 'cabin-class']) document.getElementById(id).onchange = () => cabinOn && startCabin();
+      document.getElementById('phase').onchange = () => cabinOn && cabin.setPhase(val('phase'));
+      document.getElementById('focus').onchange = (e) => cabinOn && cabin.setFocusTones(e.target.checked, 'study');
+      document.getElementById('focus-mode').onchange = (e) => cabin?.setFocusMode(e.target.checked);
+      document.getElementById('cabin-volume').oninput = () => {
+        cabin?.setVolume(Number(val('cabin-volume')));
+        recording?.gain?.gain.setTargetAtTime(Number(val('cabin-volume')), ctx.currentTime, 0.1);
+        current?.level.gain.setTargetAtTime(voiceLevel(), ctx.currentTime, 0.05);
+        showVoiceLevel();
+      };
+
+      function playRecording(buffer) {
+        const ac = audio();
+        stopRecording();
+        const src = new AudioBufferSourceNode(ac, { buffer, loop: true });
+        const gain = new GainNode(ac, { gain: 0 });
+        src.connect(gain).connect(ac.destination);
+        src.start();
+        gain.gain.setTargetAtTime(Number(val('cabin-volume')), ac.currentTime, 0.6);
+        recording = { buffer, src, gain };
+      }
+
+      function stopRecording() {
+        if (!recording?.src) return;
+        const { src, gain } = recording;
+        gain.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
+        setTimeout(() => src.stop(), 1500);
+        recording.src = null;
+      }
+
+      fetch('/sound-lab/cabin-manifest.json', { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : []))
+        .catch(() => [])
+        .then((list) => {
+          document.getElementById('recordings-empty').hidden = list.length > 0;
+          for (const rec of list) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `<span class="voice">${rec.name}</span><span class="note">${rec.author} · ${rec.license} · 원본 ${rec.from}초부터</span>
+              <div class="row"><button>재생</button></div>`;
+            const button = card.querySelector('button');
+            recordingButtons.push(button);
+            button.onclick = async () => {
+              const playingThis = button.dataset.playing === 'true';
+              recordingButtons.forEach((b) => { b.dataset.playing = 'false'; b.textContent = '재생'; });
+              document.querySelectorAll('#recordings .card').forEach((c) => (c.dataset.picked = 'false'));
+              if (playingThis) {
+                stopRecording();
+                recording = null;
+                return;
+              }
+              const res = await fetch('/sound-lab/' + rec.file);
+              const buffer = await audio().decodeAudioData(await res.arrayBuffer());
+              playRecording(buffer);
+              button.dataset.playing = 'true';
+              button.textContent = '정지';
+              card.dataset.picked = 'true';
+            };
+            document.getElementById('recordings').appendChild(card);
+          }
+        });
+
+      function audio() {
+        ctx ??= new AudioContext();
+        if (ctx.state === 'suspended') ctx.resume();
+        return ctx;
+      }
+
+      // Same PA as the app (src/audio/pa.ts), plus "off" for comparison.
+      const PA = { off: null, ...PA_PRESETS };
+
+      // Under a voice: a playing original recording, else the app's cabin engine, else plain brown noise.
+      function startNoise(ac) {
+        if (recording) {
+          if (!recording.src) playRecording(recording.buffer);
+          return;
+        }
+        if (cabin) {
+          if (!cabinOn) startCabin();
+          return;
+        }
+        if (noiseNode) return;
+        const len = ac.sampleRate * 6, buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0);
+        let last = 0;
+        for (let i = 0; i < len; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.5; }
+        noiseNode = new AudioBufferSourceNode(ac, { buffer: buf, loop: true });
+        const lp = new BiquadFilterNode(ac, { type: 'lowpass', frequency: 500 });
+        noiseGain = new GainNode(ac, { gain: 0 });
+        noiseNode.connect(lp).connect(noiseGain).connect(ac.destination);
+        noiseNode.start();
+        noiseGain.gain.setTargetAtTime(0.5, ac.currentTime, 0.4);
+      }
+
+      function stopNoise() {
+        if (recording) {
+          if (!recordingButtons.some((b) => b.dataset.playing === 'true')) stopRecording();
+          return;
+        }
+        if (cabin) {
+          if (!cabinOn) cabin.stop();
+          return;
+        }
+        if (!noiseNode) return;
+        const n = noiseNode;
+        noiseGain.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
+        setTimeout(() => n.stop(), 1200);
+        noiseNode = null;
+      }
+
+      function chime(ac, at) {
+        for (const [hz, t] of [[784, 0], [622, 0.55]]) {
+          for (const [mult, level] of [[1, 0.1], [2, 0.02], [3, 0.007]]) {
+            const osc = new OscillatorNode(ac, { frequency: hz * mult });
+            const env = new GainNode(ac, { gain: 0 });
+            env.gain.setValueAtTime(0, at + t);
+            env.gain.linearRampToValueAtTime(level, at + t + 0.01);
+            env.gain.exponentialRampToValueAtTime(0.0001, at + t + 2);
+            osc.connect(env).connect(ac.destination);
+            osc.start(at + t);
+            osc.stop(at + t + 2.1);
+          }
+        }
+        return 1.1;
+      }
+
+      const buffers = new Map();
+      async function load(file) {
+        if (!buffers.has(file)) {
+          const res = await fetch(file);
+          buffers.set(file, await audio().decodeAudioData(await res.arrayBuffer()));
+        }
+        return buffers.get(file);
+      }
+
+      function stopCurrent() {
+        if (!current) return;
+        try { current.src.stop(); } catch {}
+        current.button.dataset.playing = 'false';
+        current.button.textContent = '재생';
+        current = null;
+        stopNoise();
+      }
+
+      async function play(sample, button) {
+        const wasThis = current?.button === button;
+        stopCurrent();
+        if (wasThis) return;
+        const ac = audio();
+        const buffer = await load(sample.file);
+        if (document.getElementById('noise').checked) startNoise(ac);
+        let at = ac.currentTime + 0.15;
+        if (document.getElementById('chime').checked) at += chime(ac, at);
+        const src = new AudioBufferSourceNode(ac, { buffer });
+        const level = new GainNode(ac, { gain: voiceLevel() });
+        level.connect(ac.destination);
+        const preset = PA[document.getElementById('pa').value];
+        if (preset) {
+          const pa = paChain(ac, preset);
+          src.connect(pa.input);
+          pa.out.connect(level);
+          keyLine(ac, preset, at - 0.18, at + buffer.duration + 0.25, level);
+        } else {
+          src.connect(level);
+        }
+        current = { src, button, level };
+        src.start(at);
+        button.dataset.playing = 'true';
+        button.textContent = '정지';
+        src.onended = () => { if (current?.src === src) stopCurrent(); };
+      }
+
+      const SPEAKER = { captain: '기장', crew: '승무원' };
+
+      function render(manifest) {
+        document.getElementById('captain-line').textContent = '“' + manifest.lines.captain + '”';
+        document.getElementById('crew-line').textContent = '“' + manifest.lines.crew + '”';
+        for (const s of manifest.samples) {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `<span class="voice">${s.voice}</span><span class="note">${s.note} · ${s.seconds}초</span>
+            <div class="row"><button class="play">재생</button><button class="pick" aria-pressed="false">선택</button></div>`;
+          const [playBtn, pickBtn] = card.querySelectorAll('button');
+          playBtn.onclick = () => play(s, playBtn);
+          pickBtn.onclick = () => {
+            picks[s.speaker] = s.voice;
+            document.querySelectorAll(`#${s.speaker} .card`).forEach((c) => {
+              const mine = c === card;
+              c.dataset.picked = mine;
+              c.querySelector('.pick').setAttribute('aria-pressed', mine);
+            });
+            document.getElementById('summary').textContent =
+              `${SPEAKER.captain}: ${picks.captain ?? '—'}   ·   ${SPEAKER.crew}: ${picks.crew ?? '—'}`;
+          };
+          document.getElementById(s.speaker).appendChild(card);
+        }
+      }
+
+      fetch('manifest.json', { cache: 'no-store' })
+        .then((r) => r.json())
+        .then(render)
+        .catch(() => {
+          document.getElementById('summary').innerHTML =
+            '<span class="error">아직 목소리 샘플이 없어요. scripts/tts/generate_samples.py 를 먼저 실행하세요.</span>';
+        });
+
+      // --- Finished announcements, exactly as the app plays them ---
+      const DEMO_TIME = { hour: 14, minute: 13 };
+      const DEMO_LABEL = {
+        welcome: '환영 · 승무원', takeoff: '이륙 준비 · 기장', cruise: '순항 · 기장', descent: '하강 · 기장',
+        landing: '착륙 준비 · 기장', arrival: '도착 · 승무원', seatbelt: '난기류 · 기장', breakStart: '식사·휴식 · 승무원',
+      };
+
+      function demoFlight() {
+        const from = cityByCode('ICN');
+        const route = val('demo-route');
+        const plan = route === 'scenic' ? planScenic(from, 25) : planRoute(from, cityByCode(route));
+        const { climbEnd, descentStart } = phaseBounds(plan.minutes);
+        const c = {
+          airline: plan.airline.name, flightNumber: plan.flightNumber, fromCity: from.city, toCity: cityByCode(plan.toCode).city,
+          scenic: plan.scenic, minutes: plan.minutes, altitudeFt: flightState(0.5, plan.minutes, plan.aircraft, plan.scenic).altitudeFt,
+          local: DEMO_TIME,
+        };
+        return [
+          script.welcome(c), script.takeoff(),
+          script.cruise({ ...c, remainingMinutes: Math.round(plan.minutes * (1 - climbEnd)) }),
+          script.descent({ ...c, remainingMinutes: Math.round(plan.minutes * (1 - descentStart)) }),
+          script.landing(), script.arrival(c), script.seatbelt(), script.breakStart(),
+        ];
+      }
+
+      // The app picks the captain by flight number; find one that gets the captain chosen here.
+      function flightFor(captain) {
+        for (let n = 100; n < 1000; n++) if (voiceFor('captain', `CO ${n}`) === captain) return `CO ${n}`;
+        return '';
+      }
+
+      const clipSets = {};
+      function clipSet(voice) {
+        clipSets[voice] ??= fetch(`/audio/voice/${voice}/clips.json`, { cache: 'no-store' })
+          .then((r) => (r.ok ? r.json() : []))
+          .catch(() => [])
+          .then((keys) => new Set(keys));
+        return clipSets[voice];
+      }
+
+      async function renderDemo() {
+        const cards = [];
+        for (const a of demoFlight()) {
+          const voice = a.speaker === 'captain' ? val('demo-captain') : voiceFor('crew', '');
+          const have = await clipSet(voice);
+          const missing = a.parts.filter((p) => !have.has(clipKey(p))).length;
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `<span class="voice">${DEMO_LABEL[a.id]}</span>
+            <span class="note">${missing ? `클립 ${missing}개 없음 → 기기 음성` : `구절 ${a.parts.length}개 · ${voice}`}</span>
+            <div class="row"><button>재생</button></div>`;
+          card.querySelector('button').onclick = () => playDemo(a);
+          cards.push(card);
+        }
+        document.getElementById('demo').replaceChildren(...cards);
+      }
+
+      function playDemo(a) {
+        cabin.unlock();
+        cabin.setVolume(Number(val('cabin-volume')));
+        if (document.getElementById('noise').checked && !cabinOn) document.getElementById('cabin-play').click();
+        setAnnouncementFlight(flightFor(val('demo-captain')));
+        silenceAnnouncements();
+        document.getElementById('demo-now').textContent = '“' + a.text + '”';
+        announce(a);
+      }
+
+      document.getElementById('demo-captain').innerHTML = VOICES.captain.map((v) => `<option>${v}</option>`).join('');
+      for (const id of ['demo-route', 'demo-captain']) document.getElementById(id).onchange = renderDemo;
+      renderDemo();
+    </script>
+  </body>
+</html>

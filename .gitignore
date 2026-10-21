@@ -5,3 +5,21 @@ dist
 .vscode/*
 !.vscode/extensions.json
 coverage
+
+# Voice generation (Kokoro): local env, model files and listening samples
+scripts/tts/.venv/
+scripts/tts/models/
+public/voice-samples/*.wav
+public/voice-samples/manifest.json
+scripts/tts/.venv-chatterbox/
+scripts/sound/raw/
+public/sound-lab/
+# Reference clips for Chatterbox: only the one a chosen captain uses is kept (a Kokoro reading, no real person)
+scripts/tts/refs/*
+!scripts/tts/refs/ref-george.wav
+
+# Python bytecode
+__pycache__/
+
+# TypeScript build info (tsc -b)
+*.tsbuildinfo

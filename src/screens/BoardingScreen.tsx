@@ -3,6 +3,8 @@ import { BoardingPass } from '../components/BoardingPass';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { StageBar } from '../components/StageBar';
 import { startFlight } from '../db/db';
+import { timbreFor } from '../domain/cabinTimbre';
+import { useSettings } from '../store/settings';
 import { useApp } from '../store/appStore';
 import { useTier } from '../store/useTier';
 import styles from './BoardingScreen.module.css';
@@ -19,7 +21,11 @@ export function BoardingScreen() {
   // The pass has been handed over: board, and the engines spool up.
   const board = async () => {
     const flight = await startFlight(plan, seat!, purpose);
-    cabinAudio.start(seat!.zone, seat!.cabin, 'climb', purpose);
+    const timbre = timbreFor(plan.aircraft, plan.flightNumber);
+    const sound = useSettings.getState();
+    cabinAudio.setVolume(sound.volume);
+    cabinAudio.setFocusMode(sound.focusMode);
+    cabinAudio.start(seat!.zone, seat!.cabin, 'climb', purpose, sound.focusTones, timbre);
     setFlight(flight);
     setDraft(null);
     go('flight');

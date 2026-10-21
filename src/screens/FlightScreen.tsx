@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { announce, silenceAnnouncements } from '../audio/announcer';
+import { announce, setAnnouncementFlight, silenceAnnouncements } from '../audio/announcer';
 import { cabinAudio } from '../audio/cabinAudio';
 import { airlineByCode } from '../data/airlines';
 import { cityByCode } from '../data/cities';
 import { divertFlight, landFlight, type Flight } from '../db/db';
 import { TIME_SCALE } from '../dev';
 import * as scripts from '../domain/announcements';
+import { timbreFor } from '../domain/cabinTimbre';
 import { flightState, phaseBounds, type FlightPhase } from '../domain/flightProfile';
 import { aircraftFor, distanceKm } from '../domain/geo';
 import { formatClock, progress, remainingMs } from '../domain/landing';
@@ -52,6 +53,7 @@ export function FlightScreen() {
   const [now, setNow] = useState(Date.now());
   const [needsTap, setNeedsTap] = useState(!cabinAudio.playing);
   const [mapMenu, setMapMenu] = useState(false);
+  const [soundMenu, setSoundMenu] = useState(false);
   const landing = useRef(false);
 
   const from = cityByCode(flight.fromCode)!;
@@ -87,8 +89,12 @@ export function FlightScreen() {
     return () => clearInterval(id);
   }, []);
 
-  // Cabin volume follows the setting.
+  // The cabin follows the settings.
   useEffect(() => cabinAudio.setVolume(settings.volume), [settings.volume]);
+  useEffect(() => cabinAudio.setFocusMode(settings.focusMode), [settings.focusMode]);
+
+  // This flight's crew does the talking (one captain per flight number).
+  useEffect(() => setAnnouncementFlight(flight.flightNumber), [flight.flightNumber]);
 
   // Welcome aboard, then the captain readies the cabin: once, for a flight that has just taken off.
   useEffect(() => {
@@ -155,7 +161,7 @@ export function FlightScreen() {
   }, [left, flight.id, go, setFlight, setLanding, setProfile]);
 
   const turnOnSound = () => {
-    cabinAudio.start(zone, flight.cabin, state.phase, flight.purpose);
+    cabinAudio.start(zone, flight.cabin, state.phase, flight.purpose, settings.focusTones, timbreFor(aircraft, flight.flightNumber));
     cabinAudio.setVolume(settings.volume);
     setNeedsTap(false);
   };
@@ -234,6 +240,7 @@ export function FlightScreen() {
         <Stat label="Cabin sound" value={ZONE_LABEL[zone].sound} />
       </dl>
 
+      {/* Just the volume here; everything else waits behind "Sound settings". */}
       <div className={styles.sound}>
         {needsTap ? (
           <button className={styles.soundOn} onClick={turnOnSound}>
@@ -241,7 +248,7 @@ export function FlightScreen() {
           </button>
         ) : (
           <label className={styles.volume}>
-            <span>Volume</span>
+            <span>Sound</span>
             <input
               type="range"
               min={0}
@@ -252,18 +259,50 @@ export function FlightScreen() {
             />
           </label>
         )}
-        <div className={styles.toggles}>
-          <Toggle
+        <button
+          className={styles.soundMenuButton}
+          aria-expanded={soundMenu}
+          aria-controls="sound-settings"
+          onClick={() => setSoundMenu((o) => !o)}
+        >
+          Sound settings
+        </button>
+      </div>
+
+      {soundMenu && (
+        <div id="sound-settings" className={styles.soundMenu}>
+          <Setting
             label="Announcements"
+            note="Captain and crew, a little under the cabin sound"
             on={settings.announcements}
             onChange={(on) => {
               settings.setAnnouncements(on);
               if (!on) silenceAnnouncements();
             }}
           />
-          <Toggle label="Seatbelt chimes" on={settings.chimes} onChange={settings.setChimes} />
+          <Setting
+            label="Seatbelt chimes"
+            note="Now and then during cruise, like a real flight"
+            on={settings.chimes}
+            onChange={settings.setChimes}
+          />
+          <Setting
+            label="Focus mode"
+            note="Less low rumble, easier on long sessions"
+            on={settings.focusMode}
+            onChange={settings.setFocusMode}
+          />
+          <Setting
+            label="Binaural tones"
+            note="Experimental · headphones only"
+            on={settings.focusTones}
+            onChange={(on) => {
+              settings.setFocusTones(on);
+              cabinAudio.setFocusTones(on, flight.purpose);
+            }}
+          />
         </div>
-      </div>
+      )}
 
       <button className={styles.end} onClick={endEarly}>
         End flight early
@@ -305,11 +344,24 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Toggle({ label, on, onChange }: { label: string; on: boolean; onChange: (on: boolean) => void }) {
+function Setting({
+  label,
+  note,
+  on,
+  onChange,
+}: {
+  label: string;
+  note: string;
+  on: boolean;
+  onChange: (on: boolean) => void;
+}) {
   return (
-    <button className={styles.toggle} role="switch" aria-checked={on} onClick={() => onChange(!on)}>
+    <button className={styles.setting} role="switch" aria-checked={on} onClick={() => onChange(!on)}>
+      <span className={styles.settingText}>
+        <span>{label}</span>
+        <span className={styles.settingNote}>{note}</span>
+      </span>
       <span className={styles.knob} />
-      {label}
     </button>
   );
 }

@@ -10,6 +10,29 @@
 | world-atlas | 지도 국경 데이터 | npm world-atlas (Natural Earth 기반) | ISC / Public domain | 아니오 |
 | 공항 좌표·코드 | 도시 DB | OurAirports | Public domain | 아니오 |
 
+| Chatterbox (Resemble AI, 모델) | 기장 목소리 클립 생성 (PC/데스크톱에서 오프라인, 앱엔 결과 오디오만) | [ResembleAI/chatterbox](https://huggingface.co/ResembleAI/chatterbox) | MIT | 아니오 (출력물에 Perth 워터마크가 들어감) |
+| `scripts/tts/refs/ref-george.wav` | `cb-george` 기장의 음색 참조. Kokoro `bm_george` 낭독(실제 사람 목소리 아님) | 이 저장소에서 생성 | Apache 2.0 파생 | 아니오 |
+| Kokoro-82M (모델·보이스) | 안내방송 음성 생성 (PC에서 오프라인 생성, 앱엔 결과 오디오만 포함) | [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) via [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx) model-files-v1.0 | Apache 2.0 | 아니오 |
+
+## 기내 소음 음색 필터 (앱에 포함)
+
+| 파일 | 만든 원본 | 라이선스 | 출처 표기 |
+|---|---|---|---|
+| `public/audio/cabin/a320.wav` | Kinoton · Freesound 438972 (아래 표) 의 중앙값 스펙트럼 | CC0 파생 | 아니오 |
+| `public/audio/cabin/b737.wav` | fassaria · Freesound 433005 | CC0 파생 | 아니오 |
+| `public/audio/cabin/b777.wav` | digifishmusic · Freesound 396292 | CC BY 4.0 파생 | **예**: 앱 크레딧에 "Cabin ambience based on a recording by digifishmusic (freesound.org), CC BY 4.0" |
+
+## 기내 소음 실제 녹음 (원본 · 사운드 랩 비교용)
+
+원본은 `scripts/sound/raw/`(git 제외), 90초 루프는 `scripts/sound/make_cabin_loop.py`로 생성. 앱에 넣는 것만 확정 후 이 표의 위 표로 옮김.
+
+| 녹음 | 출처 | 라이선스 | 출처 표기 |
+|---|---|---|---|
+| Airbus A320 in flight | [Kinoton · Freesound 438972](https://freesound.org/people/Kinoton/sounds/438972/) | CC0 | 아니오 |
+| Boeing 737 in flight | [fassaria · Freesound 433005](https://freesound.org/people/fassaria/sounds/433005/) | CC0 | 아니오 |
+| Large jet in flight | [richwise · Freesound 451741](https://freesound.org/people/richwise/sounds/451741/) | CC0 | 아니오 |
+| Boeing 777 business, binaural | [digifishmusic · Freesound 396292](https://freesound.org/people/digifishmusic/sounds/396292/) | CC BY 4.0 | **예**: "Cabin ambience by digifishmusic (freesound.org), CC BY 4.0" |
+
 ## 예정
 - Poly Haven / ambientCG — 스티커 실사 재질, HDRI (CC0)
 - 3D 캐리어 — 오픈소스 우선 (Sketchfab CC0/CC-BY 등), 모델마다 작성자·링크 기록

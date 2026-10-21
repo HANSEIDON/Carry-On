@@ -3,3 +3,5 @@
 *.jpg binary
 *.glb binary
 *.woff2 binary
+*.wav binary
+*.mp3 binary

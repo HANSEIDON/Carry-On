@@ -42,6 +42,8 @@ describe('spoken helpers', () => {
     expect(spokenAbout(22)).toBe('twenty minutes');
     expect(spokenAbout(7)).toBe('seven minutes');
     expect(spokenAbout(0)).toBe('one minute');
+    expect(spokenAbout(128)).toBe('two hours and fifteen minutes');
+    expect(spokenAbout(442)).toBe('seven hours and fifteen minutes');
   });
 
   it('reads flight numbers digit by digit', () => {
@@ -74,7 +76,7 @@ describe('script', () => {
     expect(a.speaker).toBe('crew');
     expect(a.chime).toBe('double');
     expect(a.text).toBe(
-      'Ladies and gentlemen, welcome aboard Hanul Air flight four seven four to Tokyo. ' +
+      'Ladies and gentlemen, welcome aboard Hanul Air, flight four seven four, to Tokyo. ' +
         'Our flight time today is two hours. Please fasten your seatbelt, and set your phone to flight mode.',
     );
   });
@@ -89,7 +91,7 @@ describe('script', () => {
     expect(a.speaker).toBe('captain');
     expect(a.text).toBe(
       "Good afternoon from the flight deck. We've reached our cruising altitude of thirty-five thousand feet, " +
-        "and the seatbelt sign is now off. We'll have you in Tokyo in about one hour and thirty minutes. " +
+        "and the seatbelt sign is now off. We'll have you in Tokyo, in about one hour and thirty minutes. " +
         'Sit back, and enjoy the quiet.',
     );
   });
@@ -101,10 +103,19 @@ describe('script', () => {
     );
   });
 
-  it('welcomes passengers to the destination with the local time', () => {
+  it('welcomes passengers to the destination with the local time, to the nearest 5 minutes', () => {
     const a = arrival(ctx);
     expect(a.speaker).toBe('crew');
-    expect(a.text).toBe('Ladies and gentlemen, welcome to Tokyo. The local time is two thirteen p.m. Thank you for flying Hanul Air.');
+    expect(a.text).toBe('Ladies and gentlemen, welcome to Tokyo. The local time is two fifteen p.m. Thank you for flying Hanul Air.');
+    expect(arrival({ ...ctx, local: { hour: 23, minute: 58 } }).text).toContain('The local time is twelve a.m.');
+  });
+
+  it('splits every announcement into phrases that end at a pause', () => {
+    for (const a of [welcome(ctx), takeoff(), cruise(ctx), descent(ctx), landing(), arrival(ctx), breakStart(), seatbelt()]) {
+      expect(a.parts.join(' ')).toBe(a.text);
+      for (const part of a.parts) expect(part).toMatch(/[,.]$/);
+    }
+    expect(welcome(ctx).parts.slice(0, 3)).toEqual(['Ladies and gentlemen, welcome aboard Hanul Air,', 'flight four seven four,', 'to Tokyo.']);
   });
 
   it('has scenic versions that stay over the departure city', () => {
