@@ -29,12 +29,13 @@ export function shopState(type: CarrierType, you: { owned: boolean; tier: Tier; 
 /**
  * Filling a carrier (a sticker on every spot) pays miles back: this much per spot, so a big trunk
  * pays more than a little robot but never more per flight. Doubled the first time you fill that
- * kind, like a first-clear reward. On a basic member's flights (~400 mi, one sticker) that's about
- * a tenth of what the flights earned, a fifth the first time; gold and platinum members get two
- * stickers a flight, so their carriers fill (and pay) twice as fast. The starter shell's first
- * fill comes to about the price of a basic carrier.
+ * kind, like a first-clear reward. On a basic member's flights (~400 mi, one label, now and then a
+ * handling sticker too) that's under a tenth of what the flights earned, about a sixth the first
+ * time; gold and platinum members get a priority label every flight as well, so their carriers
+ * fill (and pay) faster. The starter shell's first fill comes to about the price of a basic
+ * carrier.
  */
-export const FILL_MILES_PER_SPOT = 40;
+export const FILL_MILES_PER_SPOT = 30;
 
 export function fillReward(capacity: number, firstTime: boolean): number {
   return capacity * FILL_MILES_PER_SPOT * (firstTime ? 2 : 1);

@@ -1,43 +1,50 @@
+/*
+ * Night (the base look): a dark globe like a seat-back map at night. Navy sea, slate land with
+ * lit coastlines, warm city lights, and labels in light ink with a dark halo so they read
+ * anywhere. Colors here are fixed (not the app's ink), so the map reads the same in any theme.
+ */
 .map {
   display: block;
   width: 100%;
   height: 100%;
-  background: #05080d;
+  background: #070c14;
 }
 
 .ocean {
-  fill: #0a1420;
+  fill: #0d1b2c;
 }
 
 .graticule {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.04);
+  stroke: rgba(160, 190, 230, 0.07);
   stroke-width: 0.6;
 }
 
 .land {
-  fill: #1c2735;
+  fill: #2b3e5c;
+  stroke: rgba(170, 200, 240, 0.32);
+  stroke-width: 0.6;
 }
 
 .border {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.09);
+  stroke: rgba(170, 200, 240, 0.14);
   stroke-width: 0.5;
 }
 
 .rim {
   fill: none;
-  stroke: rgba(120, 170, 255, 0.18);
-  stroke-width: 1;
+  stroke: rgba(120, 170, 255, 0.35);
+  stroke-width: 1.2;
 }
 
 .night {
-  fill: rgba(1, 4, 12, 0.24);
+  fill: rgba(1, 4, 12, 0.3);
   pointer-events: none;
 }
 
 .city {
-  fill: #6f8197;
+  fill: #8195b0;
 }
 
 .light {
@@ -51,68 +58,87 @@
 
 .route {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.35);
-  stroke-width: 1.3;
+  stroke: rgba(235, 242, 255, 0.55);
+  stroke-width: 1.4;
   stroke-dasharray: 3 4;
 }
 
 .flown {
   fill: none;
-  stroke: var(--accent);
-  stroke-width: 2;
+  stroke: #ff7a5c;
+  stroke-width: 2.4;
   stroke-linecap: round;
 }
 
 .marker {
-  fill: var(--bg);
-  stroke: var(--text-1);
+  fill: #ffffff;
+  stroke: #070c14;
   stroke-width: 1.5;
 }
 
 .label {
-  fill: var(--text-1);
+  fill: #f6f1e6;
   font-family: var(--font-code);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 500;
+  letter-spacing: 0.04em;
   text-anchor: middle;
   paint-order: stroke;
-  stroke: #05080d;
-  stroke-width: 3px;
+  stroke: #070c14;
+  stroke-width: 4px;
+  stroke-linejoin: round;
 }
 
 .plane {
-  fill: #fff;
-  stroke: #05080d;
+  fill: #ffffff;
+  stroke: #070c14;
   stroke-width: 0.8;
 }
 
-/* Classic: the blue-and-sand look of older seat-back moving maps. */
+/* Classic: the blue-and-sand look of older seat-back moving maps, in its bright daytime colors. */
 .map[data-style='classic'] {
-  background: #0d2440;
+  background: #123a66;
 }
 .map[data-style='classic'] .ocean {
-  fill: #1d4f86;
+  fill: #2a6db0;
 }
 .map[data-style='classic'] .graticule {
-  stroke: rgba(255, 255, 255, 0.08);
+  stroke: rgba(255, 255, 255, 0.12);
 }
 .map[data-style='classic'] .land {
-  fill: #c8b37e;
+  fill: #d9c58e;
+  stroke: #8a7240;
+  stroke-width: 0.6;
 }
 .map[data-style='classic'] .border {
-  stroke: rgba(70, 52, 24, 0.45);
+  stroke: rgba(90, 66, 28, 0.45);
+}
+.map[data-style='classic'] .rim {
+  stroke: rgba(255, 255, 255, 0.35);
 }
 .map[data-style='classic'] .night {
-  fill: rgba(4, 14, 40, 0.26);
+  fill: rgba(6, 18, 48, 0.28);
 }
 .map[data-style='classic'] .city {
-  fill: #5b4a28;
+  fill: #6a5428;
 }
 .map[data-style='classic'] .route {
-  stroke: rgba(255, 255, 255, 0.75);
+  stroke: rgba(255, 255, 255, 0.85);
+}
+.map[data-style='classic'] .flown {
+  stroke: #ffd23f;
+}
+.map[data-style='classic'] .marker {
+  fill: #ffd23f;
+  stroke: #10305a;
 }
 .map[data-style='classic'] .label {
-  stroke: #1d4f86;
+  fill: #ffffff;
+  stroke: #10305a;
+}
+.map[data-style='classic'] .plane {
+  fill: #ffd23f;
+  stroke: #10305a;
 }
 
 /* Paper: a printed map in the notebook. Ink coastlines, pale sea, cream land, red route. */

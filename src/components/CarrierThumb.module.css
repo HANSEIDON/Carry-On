@@ -21,8 +21,8 @@
 
 /* Not found yet: just the shape, like a shadow on the closet wall. */
 .frame[data-loaded='true'] .img[data-silhouette='true'] {
-  filter: brightness(0);
-  opacity: 0.16;
+  filter: var(--silhouette);
+  opacity: var(--silhouette-opacity);
 }
 
 /* While the picture loads: a soft pulse where the carrier will be. */

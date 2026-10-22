@@ -1,0 +1,65 @@
+.box {
+  position: relative;
+}
+
+.button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface-1);
+  color: var(--text-1);
+}
+
+.button svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.menu {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  width: 210px;
+  padding: 4px;
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-lift);
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--radius-s);
+  background: none;
+  color: var(--text-1);
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.option[aria-checked='true'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.note {
+  color: var(--text-3);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+}

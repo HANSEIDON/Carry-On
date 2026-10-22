@@ -1,8 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { markSeen } from '../domain/tips';
 
 /** In-flight map look: printed paper map (default), seat-back map colors, or a dark night globe. */
 export type MapStyle = 'paper' | 'classic' | 'dark';
+
+/** Look of the whole app: follow the device (default), or always light paper / always night. */
+export type Theme = 'system' | 'light' | 'dark';
 
 /** Per-device preferences (kept in localStorage). */
 interface Settings {
@@ -15,12 +19,24 @@ interface Settings {
   /** Experimental binaural focus tones under the cabin noise (headphones only). Off by default. */
   focusTones: boolean;
   mapStyle: MapStyle;
+  theme: Theme;
+  /** The first-run guide has been seen (or skipped). */
+  guideSeen: boolean;
+  /** The walk-through of the booking screen, the first time there. */
+  bookingGuideSeen: boolean;
+  /** When the last tip was shown, and which tips have been, oldest first (src/domain/tips.ts). */
+  tipShownAt: number;
+  tipsSeen: string[];
   setVolume: (v: number) => void;
   setAnnouncements: (on: boolean) => void;
   setChimes: (on: boolean) => void;
   setFocusMode: (on: boolean) => void;
   setFocusTones: (on: boolean) => void;
   setMapStyle: (style: MapStyle) => void;
+  setTheme: (theme: Theme) => void;
+  finishGuide: () => void;
+  finishBookingGuide: () => void;
+  tipShown: (id: string) => void;
 }
 
 export const useSettings = create<Settings>()(
@@ -32,12 +48,22 @@ export const useSettings = create<Settings>()(
       focusMode: false,
       focusTones: false,
       mapStyle: 'paper',
+      theme: 'system',
+      guideSeen: false,
+      bookingGuideSeen: false,
+      tipShownAt: 0,
+      tipsSeen: [],
       setVolume: (volume) => set({ volume }),
       setAnnouncements: (announcements) => set({ announcements }),
       setChimes: (chimes) => set({ chimes }),
       setFocusMode: (focusMode) => set({ focusMode }),
       setFocusTones: (focusTones) => set({ focusTones }),
       setMapStyle: (mapStyle) => set({ mapStyle }),
+      setTheme: (theme) => set({ theme }),
+      // Tips start the day after the guide, not on the first booking.
+      finishGuide: () => set({ guideSeen: true, tipShownAt: Date.now() }),
+      finishBookingGuide: () => set({ bookingGuideSeen: true }),
+      tipShown: (id) => set((s) => ({ tipShownAt: Date.now(), tipsSeen: markSeen(s.tipsSeen, id) })),
     }),
     {
       name: 'carry-on-settings',

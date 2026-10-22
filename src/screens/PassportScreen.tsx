@@ -11,6 +11,7 @@ import {
 } from 'react';
 import { passportSound } from '../audio/passportSound';
 import { PassportEditor } from '../components/PassportEditor';
+import { ThemeMenu } from '../components/ThemeMenu';
 import { Cover, CoverInside, DataPage, LogPage, VisaPage } from '../components/PassportPages';
 import { countryByCode, COUNTRIES } from '../data/countries';
 import { listFlights, type Flight, type Profile } from '../db/db';
@@ -361,10 +362,14 @@ export function PassportScreen() {
           </h1>
           <p className={styles.sub}>{formatDuration(log.minutes)} of focus, flown and stamped</p>
         </div>
-        {at > 0 && (
+        {at > 0 ? (
           <button className={styles.close} onClick={() => go(false, true)} disabled={!!turn}>
             Close
           </button>
+        ) : (
+          <div className={styles.corner}>
+            <ThemeMenu />
+          </div>
         )}
       </header>
 
@@ -416,8 +421,13 @@ export function PassportScreen() {
               </div>
             </div>
           )}
-          {turned > 0 && turn?.kind !== 'close' && <div className={styles.spine} aria-hidden="true" />}
-          {open && <div className={styles.light} aria-hidden="true" />}
+          {/* The gutter and the light on the spread: only once both pages lie open (never over empty space). */}
+          {turned > 0 && turn?.kind !== 'close' && (
+            <>
+              <div className={styles.spine} aria-hidden="true" />
+              <div className={styles.light} aria-hidden="true" />
+            </>
+          )}
         </div>
       </div>
 

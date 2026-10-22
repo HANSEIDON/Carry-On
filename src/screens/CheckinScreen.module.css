@@ -30,7 +30,7 @@
 .chip[data-active='true'] {
   border-color: var(--text-1);
   background: var(--text-1);
-  color: var(--on-accent);
+  color: var(--on-ink);
 }
 
 .seatHead {
@@ -39,13 +39,22 @@
   align-items: baseline;
 }
 
-.link {
-  padding: 0;
-  border: 0;
-  border-bottom: 1px solid currentColor;
-  background: none;
+/* Let the airline pick: a dashed pill, like Surprise me on the booking screen. */
+.assign {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px dashed var(--accent);
+  border-radius: 999px;
+  background: var(--accent-soft);
   color: var(--accent);
-  font-size: 13px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.assign:active {
+  transform: scale(0.97);
 }
 
 .hint {

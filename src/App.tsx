@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Guide } from './components/Guide';
 import { TabBar } from './components/TabBar';
 import { getActiveFlight, loadOrCreateProfile } from './db/db';
 import { ArrivalScreen } from './screens/ArrivalScreen';
@@ -11,6 +12,7 @@ import { FlyScreen } from './screens/FlyScreen';
 import { LuggageScreen } from './screens/LuggageScreen';
 import { PassportScreen } from './screens/PassportScreen';
 import { useApp, type Screen } from './store/appStore';
+import { useSettings } from './store/settings';
 import { useTier } from './store/useTier';
 import styles from './App.module.css';
 
@@ -23,6 +25,7 @@ export function App() {
   const setFlight = useApp((s) => s.setFlight);
   const go = useApp((s) => s.go);
   const tier = useTier();
+  const guideSeen = useSettings((s) => s.guideSeen);
 
   useEffect(() => {
     (async () => {
@@ -58,6 +61,8 @@ export function App() {
         {screen === 'passport' && <PassportScreen />}
       </main>
       {TAB_SCREENS.includes(screen) && <TabBar />}
+      {/* First time here: a short guide over the home screen. */}
+      {!guideSeen && screen === 'fly' && <Guide />}
     </div>
   );
 }

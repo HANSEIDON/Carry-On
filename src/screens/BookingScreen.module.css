@@ -81,10 +81,28 @@
   font-size: 12.5px;
 }
 
+/* A random flight of this length, from anywhere: dashed, like a ticket still to be filled in. */
+.surprise {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px dashed var(--accent);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.surprise:active {
+  transform: scale(0.97);
+}
+
 .chip[data-active='true'] {
   border-color: var(--text-1);
   background: var(--text-1);
-  color: var(--on-accent);
+  color: var(--on-ink);
 }
 
 .search {

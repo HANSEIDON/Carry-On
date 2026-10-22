@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Icon } from '../components/Icon';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SeatLegend, SeatMapView } from '../components/SeatMapView';
 import { StageBar } from '../components/StageBar';
@@ -77,7 +78,8 @@ export function CheckinScreen() {
       <div className={styles.block}>
         <div className={styles.seatHead}>
           <p className="label">Choose your seat</p>
-          <button className={styles.link} onClick={assign}>
+          <button className={styles.assign} onClick={assign}>
+            <Icon name="shuffle" size={14} />
             Assign for me
           </button>
         </div>

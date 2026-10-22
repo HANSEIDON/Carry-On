@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { cityByCode } from '../data/cities';
 import { planRoute, planScenic } from './flightPlan';
-import { earnedMiles, formatClock, progress, remainingMs, stickersForLanding } from './landing';
+import { earnedMiles, formatClock, HANDLING_CHANCE, progress, remainingMs, stickersForLanding } from './landing';
 import { autoAssign, buildSeatMap, cabinUnlocked, canPick } from './seatmap';
 
 const ICN = cityByCode('ICN')!;
@@ -83,6 +83,19 @@ describe('landing', () => {
     expect(stickersForLanding('economy', 'basic')).toEqual(['bag_tag']);
     expect(stickersForLanding('business', 'silver')).toEqual(['bag_tag', 'priority']);
     expect(stickersForLanding('economy', 'gold')).toEqual(['bag_tag', 'priority']);
+  });
+
+  it('now and then adds a handling sticker, fixed per flight', () => {
+    const extras = Array.from({ length: 400 }, (_, i) => stickersForLanding('economy', 'basic', { id: `f${i}`, minutes: 400 }));
+    expect(extras[7]).toEqual(stickersForLanding('economy', 'basic', { id: 'f7', minutes: 400 }));
+    const share = extras.filter((k) => k.length > 1).length / extras.length;
+    expect(share).toBeGreaterThan(HANDLING_CHANCE - 0.08);
+    expect(share).toBeLessThan(HANDLING_CHANCE + 0.08);
+    expect(new Set(extras.flatMap((k) => k.slice(1)))).toEqual(new Set(['fragile', 'security', 'heavy', 'transfer']));
+    // Short hops never get heavy or transfer.
+    const short = Array.from({ length: 200 }, (_, i) => stickersForLanding('economy', 'basic', { id: `s${i}`, minutes: 45 })).flat();
+    expect(short).not.toContain('heavy');
+    expect(short).not.toContain('transfer');
   });
 });
 

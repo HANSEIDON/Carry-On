@@ -4,6 +4,7 @@ import {
   Color,
   DirectionalLight,
   DoubleSide,
+  Group,
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
@@ -22,7 +23,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { CARRIERS, carrierModelUrl, STICKER_SIDES, STICKER_SIZE, type StickerSlot } from '../data/carriers';
 import { hashString, seededRandom } from '../domain/random';
+import type { StickerArt } from '../domain/stickerArt';
 import { fitModel, LIGHTS, PANELS, VIEW } from './Carrier3D';
+import { stickerFonts } from './stickerArtwork';
+import { stickerDecals } from './stickerDecals';
 
 /**
  * Dev-only: bakes what each carrier needs besides its model, from the model itself.
@@ -90,7 +94,7 @@ function dispose(model: Object3D) {
 // --- The card picture --------------------------------------------------------------------------
 
 /** Crops the rendered picture to the carrier (by its opaque pixels), square, and scales it down. */
-function crop(source: HTMLCanvasElement): HTMLCanvasElement {
+function crop(source: HTMLCanvasElement, size = OUT): HTMLCanvasElement {
   const read = document.createElement('canvas');
   read.width = source.width;
   read.height = source.height;
@@ -113,17 +117,17 @@ function crop(source: HTMLCanvasElement): HTMLCanvasElement {
   }
   const side = Math.max(x1 - x0, y1 - y0) * (1 + MARGIN * 2);
   const out = document.createElement('canvas');
-  out.width = OUT;
-  out.height = OUT;
+  out.width = size;
+  out.height = size;
   const octx = out.getContext('2d')!;
   octx.imageSmoothingQuality = 'high';
-  octx.drawImage(read, (x0 + x1) / 2 - side / 2, (y0 + y1) / 2 - side / 2, side, side, 0, 0, OUT, OUT);
+  octx.drawImage(read, (x0 + x1) / 2 - side / 2, (y0 + y1) / 2 - side / 2, side, side, 0, 0, size, size);
   return out;
 }
 
-function picture(model: Object3D): HTMLCanvasElement {
+function picture(model: Object3D, size = OUT): HTMLCanvasElement {
   const { renderer, studio } = stage();
-  renderer.setSize(RENDER, RENDER, false);
+  renderer.setSize(Math.max(RENDER, size * 2), Math.max(RENDER, size * 2), false);
   studio.add(model);
   // The 3D view's line of sight, pulled back until the whole carrier fits.
   const sphere = new Box3().setFromObject(model, true).getBoundingSphere(new Sphere());
@@ -133,7 +137,20 @@ function picture(model: Object3D): HTMLCanvasElement {
   camera.lookAt(sphere.center);
   renderer.render(studio, camera);
   studio.remove(model);
-  return crop(renderer.domElement);
+  return crop(renderer.domElement, size);
+}
+
+/** Dev helper: a carrier's picture with stickers on (to check them without a live 3D view). */
+export async function previewStickers(id: string, stickers: StickerArt[], turn = 0, size = OUT): Promise<HTMLCanvasElement> {
+  await stickerFonts();
+  const model = await load(id);
+  const decals = stickerDecals(model, CARRIERS.find((c) => c.id === id)?.slots ?? [], stickers);
+  const group = new Group();
+  group.add(model, ...decals);
+  group.rotation.y = turn;
+  const out = picture(group, size);
+  dispose(group);
+  return out;
 }
 
 /** Dev helper: the card picture for a carrier as it would look with another `orient`. */

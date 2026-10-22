@@ -51,8 +51,11 @@ export const STICKER_SIDES = [
   { name: 'back', d: [0, 0, -1], u: [-1, 0, 0], v: [0, 1, 0] },
 ] as const;
 
-/** A bag tag on a carrier whose longest side is 1 (a priority label is smaller). */
-export const STICKER_SIZE = { w: 0.19, h: 0.19 * (224 / 512) };
+/**
+ * A sticker spot on a carrier whose longest side is 1: a travel label fills it (2:1); handling
+ * stickers are a little smaller (stickerArtwork.ts).
+ */
+export const STICKER_SIZE = { w: 0.14, h: 0.07 };
 
 /** Price by membership tier (draft balance: a two-hour flight earns about 750 miles). */
 export const TIER_PRICE: Record<Tier, number> = {

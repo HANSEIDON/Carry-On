@@ -1,0 +1,80 @@
+.coach {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+
+/* The lit-up control: everything around it dims (one huge shadow). */
+.hole {
+  position: fixed;
+  border-radius: var(--radius-m);
+  box-shadow: 0 0 0 200vmax color-mix(in srgb, #0d0b08 62%, transparent);
+  transition:
+    top 0.25s ease,
+    left 0.25s ease,
+    width 0.25s ease,
+    height 0.25s ease;
+  pointer-events: none;
+}
+
+.note {
+  position: fixed;
+  right: 16px;
+  left: 16px;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 14px 16px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-lift);
+  animation: rise 0.25s ease-out;
+}
+
+.text {
+  color: var(--text-1);
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.count {
+  flex: 1;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.skip {
+  padding: 6px 8px;
+  border: 0;
+  background: none;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.next {
+  min-width: 84px;
+  height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-s);
+  background: var(--text-1);
+  color: var(--on-ink);
+  font-family: var(--font-display);
+  font-size: 17px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}

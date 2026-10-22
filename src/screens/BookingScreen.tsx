@@ -1,12 +1,17 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Coach, type CoachStep } from '../components/Coach';
 import { Icon } from '../components/Icon';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { TicketButton } from '../components/TicketButton';
+import { TipCard } from '../components/TipCard';
 import { CITIES, cityByCode } from '../data/cities';
-import { routesFrom, routesNearDuration, SCENIC_MAX_MINUTES, scenicMiles } from '../domain/booking';
+import { listFlights } from '../db/db';
+import { routesFrom, routesNearDuration, SCENIC_MAX_MINUTES, scenicMiles, surpriseRoute } from '../domain/booking';
 import { planRoute, planScenic } from '../domain/flightPlan';
 import { formatDuration } from '../domain/geo';
+import { nextTip } from '../domain/tips';
 import type { Route } from '../domain/types';
+import { useSettings } from '../store/settings';
 import { useApp } from '../store/appStore';
 import styles from './BookingScreen.module.css';
 
@@ -27,6 +32,43 @@ export function BookingScreen() {
   const [target, setTarget] = useState(120);
   const [query, setQuery] = useState('');
   const [pick, setPick] = useState<Pick | null>(null);
+  /** Countries you've landed in (Surprise me leans toward the others). */
+  const [visited, setVisited] = useState<Set<string>>(new Set());
+
+  // The first time here: a short walk-through of the controls (instead of a tip).
+  const firstVisit = useSettings((s) => !s.bookingGuideSeen);
+  const finishBookingGuide = useSettings((s) => s.finishBookingGuide);
+  const originRef = useRef<HTMLLabelElement>(null);
+  const chipsRef = useRef<HTMLDivElement>(null);
+  const surpriseRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const coachSteps = useMemo<CoachStep[]>(
+    () => [
+      { target: () => originRef.current, text: 'You leave from where your last flight landed. Tap here to fly from any airport instead.' },
+      { target: () => chipsRef.current, text: 'Pick how long you want to focus. The cities below are about that far away.' },
+      { target: () => surpriseRef.current, text: 'Or let it surprise you: a flight your length, from anywhere in the world.' },
+      { target: () => listRef.current, text: 'Tap a city, then Check in to choose your seat and board.' },
+    ],
+    [],
+  );
+
+  // Now and then, a tip (rarely: see src/domain/tips.ts).
+  // Not on the first visit, where the walk-through covers it.
+  const [tip, setTip] = useState(() => {
+    const st = useSettings.getState();
+    if (!st.bookingGuideSeen) return null;
+    return nextTip({ lastShownAt: st.tipShownAt, seen: st.tipsSeen }, Date.now(), Math.random());
+  });
+  useEffect(() => {
+    if (tip) useSettings.getState().tipShown(tip.id);
+    // Counted once, when it first shows.
+  }, []);
+
+  useEffect(() => {
+    void listFlights().then((flights) =>
+      setVisited(new Set(flights.filter((f) => f.status === 'landed').map((f) => cityByCode(f.toCode)?.countryCode ?? ''))),
+    );
+  }, []);
 
   const origin = cityByCode(originCode)!;
   const showScenic = mode === 'time' && target <= SCENIC_MAX_MINUTES;
@@ -49,6 +91,14 @@ export function BookingScreen() {
       ? pick.kind === 'scenic' && pick.minutes === p.minutes
       : pick.kind === 'route' && pick.route.to.code === p.route.to.code);
 
+  /** A flight of the chosen length from anywhere: the departure moves there too. */
+  const surprise = () => {
+    const route = surpriseRoute(CITIES, target, Math.random, visited);
+    if (!route) return;
+    setOriginCode(route.from.code);
+    setPick({ kind: 'route', route });
+  };
+
   const checkIn = () => {
     if (!pick) return;
     const plan = pick.kind === 'route' ? planRoute(origin, pick.route.to) : planScenic(origin, pick.minutes);
@@ -59,8 +109,9 @@ export function BookingScreen() {
   return (
     <section className={styles.screen}>
       <ScreenHeader title="Where to?" onBack={() => go('fly')} />
+      {tip && <TipCard tip={tip} onClose={() => setTip(null)} />}
 
-      <label className={styles.origin}>
+      <label className={styles.origin} ref={originRef}>
         <span className="label">Departing from</span>
         <span className={styles.originValue}>
           <span className={styles.originCity}>{origin.city}</span>
@@ -101,7 +152,7 @@ export function BookingScreen() {
       </div>
 
       {mode === 'time' ? (
-        <div className={styles.chips}>
+        <div className={styles.chips} ref={chipsRef}>
           {TIME_PRESETS.map((m) => (
             <button
               key={m}
@@ -115,6 +166,10 @@ export function BookingScreen() {
               {formatDuration(m)}
             </button>
           ))}
+          <button className={styles.surprise} onClick={surprise} ref={surpriseRef}>
+            <Icon name="shuffle" size={15} />
+            Surprise me
+          </button>
         </div>
       ) : (
         <label className={styles.search}>
@@ -123,7 +178,7 @@ export function BookingScreen() {
         </label>
       )}
 
-      <ul className={styles.list}>
+      <ul className={styles.list} ref={listRef}>
         {showScenic && (
           <>
             <li className={`label ${styles.group}`}>Scenic flight</li>
@@ -162,6 +217,8 @@ export function BookingScreen() {
           </li>
         )}
       </ul>
+
+      {firstVisit && <Coach steps={coachSteps} onDone={finishBookingGuide} />}
 
       {pick && (
         <footer className={styles.footer}>

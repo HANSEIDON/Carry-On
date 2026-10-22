@@ -15,6 +15,11 @@
   --accent: #b9392a;
   --accent-soft: rgba(185, 57, 42, 0.09);
   --on-accent: #fffaf2;
+  /* Type on an ink-filled button or chip (the ink is --text-1). */
+  --on-ink: #fffaf2;
+  /* How a carrier you haven't found yet is drawn: its shape in shadow. */
+  --silhouette: brightness(0);
+  --silhouette-opacity: 0.16;
   --navy: #1f3a5f;
   --danger: #a8281c;
 
@@ -53,6 +58,43 @@
   color-scheme: light;
 }
 
+/*
+ * Dark: the same notebook at night. Warm near-black paper, light ink, a brighter stamp red.
+ * Things that are objects (the passport, boarding pass, bag tags, the paper map) keep their own
+ * paper colors, like real paper on a dark desk.
+ */
+:root[data-theme='dark'] {
+  --bg: #16130f;
+  --surface-1: #211d18;
+  --surface-2: #1b1814;
+  --line: rgba(240, 228, 206, 0.12);
+  --line-strong: rgba(240, 228, 206, 0.26);
+  --text-1: #eee6d6;
+  --text-2: #b9af9c;
+  --text-3: #857c6c;
+
+  --accent: #e35d48;
+  --accent-soft: rgba(227, 93, 72, 0.14);
+  --on-accent: #fffaf2;
+  --on-ink: #16130f;
+  --navy: #8fb0d8;
+  --danger: #ef6a58;
+
+  --tier-silver: #aab4c0;
+  --tier-gold: #d6a84f;
+  --tier-platinum: #eee6d6;
+
+  --silhouette: brightness(0) invert(1);
+  --silhouette-opacity: 0.13;
+
+  --shadow-paper: 0 0 0 1px rgba(240, 228, 206, 0.06), 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 12px 28px -16px rgba(0, 0, 0, 0.7);
+  --shadow-lift: 0 0 0 1px rgba(240, 228, 206, 0.07), 0 2px 4px rgba(0, 0, 0, 0.45),
+    0 22px 40px -18px rgba(0, 0, 0, 0.8);
+
+  color-scheme: dark;
+}
+
 /* Membership tier tints the accent, like a different ink. */
 :root[data-tier='silver'] {
   --accent: var(--tier-silver);
@@ -65,6 +107,17 @@
 :root[data-tier='platinum'] {
   --accent: var(--tier-platinum);
   --accent-soft: rgba(31, 27, 22, 0.08);
+}
+:root[data-theme='dark'][data-tier='silver'] {
+  --accent-soft: rgba(170, 180, 192, 0.14);
+}
+:root[data-theme='dark'][data-tier='gold'] {
+  --accent-soft: rgba(214, 168, 79, 0.14);
+}
+/* Platinum's ink is the text color itself: in the dark that's light, so type on it turns dark. */
+:root[data-theme='dark'][data-tier='platinum'] {
+  --accent-soft: rgba(238, 230, 214, 0.1);
+  --on-accent: #16130f;
 }
 
 *,

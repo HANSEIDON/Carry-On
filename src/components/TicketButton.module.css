@@ -8,7 +8,7 @@
   border: 0;
   border-radius: 8px;
   background: var(--text-1);
-  color: var(--on-accent);
+  color: var(--on-ink);
   text-align: left;
   box-shadow: 0 14px 26px -16px rgba(30, 20, 10, 0.6);
   /* Notches bitten out where the perforation meets the edges. */
@@ -46,7 +46,7 @@
 }
 
 .sub {
-  color: rgba(255, 250, 242, 0.6);
+  color: color-mix(in srgb, var(--on-ink) 60%, transparent);
   font-family: var(--font-mono);
   font-size: 10.5px;
   letter-spacing: 0.06em;
@@ -57,5 +57,5 @@
   display: grid;
   place-items: center;
   width: var(--stub);
-  border-left: 1.5px dashed rgba(255, 250, 242, 0.35);
+  border-left: 1.5px dashed color-mix(in srgb, var(--on-ink) 35%, transparent);
 }

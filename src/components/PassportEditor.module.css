@@ -101,7 +101,8 @@
   padding: 0 12px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
-  background: rgba(255, 252, 246, 0.8);
+  background: var(--surface-1);
+  color: var(--text-1);
   font-family: var(--font-mono);
   font-size: 15px;
 }

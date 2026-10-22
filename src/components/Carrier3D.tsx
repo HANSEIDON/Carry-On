@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import { Box3, Euler, Group, Vector3, type Object3D } from 'three';
 import { carrierModelUrl, carrierType } from '../data/carriers';
 import type { StickerArt } from '../domain/stickerArt';
+import { stickerFonts } from './stickerArtwork';
 import { stickerDecals } from './stickerDecals';
 import styles from './Carrier3D.module.css';
 
@@ -38,17 +39,11 @@ export function fitModel(scene: Object3D, orient?: [number, number, number]): Ob
   return placed;
 }
 
-/** The fonts printed on stickers, loaded before any tag is drawn. */
+/** The fonts printed on stickers, loaded before any sticker is drawn. */
 function useStickerFonts(): boolean {
   const [ready, setReady] = useState(false);
   useEffect(() => {
-    Promise.all([
-      document.fonts.load('600 40px "Barlow Condensed"'),
-      document.fonts.load('500 20px "IBM Plex Mono"'),
-      document.fonts.load('600 20px "IBM Plex Mono"'),
-    ])
-      .catch(() => undefined)
-      .then(() => setReady(true));
+    void stickerFonts().then(() => setReady(true));
   }, []);
   return ready;
 }

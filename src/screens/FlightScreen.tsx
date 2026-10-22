@@ -166,8 +166,9 @@ export function FlightScreen() {
     setNeedsTap(false);
   };
 
+  const [ending, setEnding] = useState(false);
+
   const endEarly = async () => {
-    if (!confirm('End this flight now? You will divert and get no sticker or miles.')) return;
     leaveCabin();
     await divertFlight(flight.id);
     setFlight(null);
@@ -304,9 +305,25 @@ export function FlightScreen() {
         </div>
       )}
 
-      <button className={styles.end} onClick={endEarly}>
-        End flight early
-      </button>
+      {/* Ending early is a real choice, asked right here (two steps, so it's never by accident). */}
+      {ending ? (
+        <div className={styles.divert} role="alertdialog" aria-label="End this flight early?">
+          <p className={styles.divertTitle}>Divert this flight?</p>
+          <p className={styles.divertNote}>The flight ends here. No miles, no sticker.</p>
+          <div className={styles.divertActions}>
+            <button className={styles.keep} onClick={() => setEnding(false)}>
+              Keep flying
+            </button>
+            <button className={styles.divertGo} onClick={endEarly}>
+              Divert
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button className={styles.end} onClick={() => setEnding(true)}>
+          End flight early
+        </button>
+      )}
     </section>
   );
 }

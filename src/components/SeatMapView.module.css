@@ -1,16 +1,69 @@
-/* The cabin drawn like a printed seat plan: ink outline of the fuselage on paper. */
+/*
+ * The cabin drawn like a printed seat plan: the aircraft from above in ink on paper. A real nose
+ * with its windscreen, the cabin walls hugging the seats, hatched wing roots beside the rows over
+ * the wing, and a rounded tail end.
+ */
+.plane {
+  --wall: 1.5px;
+  width: fit-content;
+  min-width: 200px;
+  margin: 0 auto;
+  filter: drop-shadow(0 10px 18px rgba(30, 20, 10, 0.12));
+}
+
+.skin {
+  fill: var(--surface-1);
+  stroke: var(--text-1);
+  stroke-width: var(--wall);
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* The nose, full width of the cabin; the cabin itself starts inside its straight part. */
+/* No width of its own (an SVG would claim 300px): it takes the cabin's, which hugs the seats. */
+.nose {
+  display: block;
+  width: 0;
+  min-width: 100%;
+  overflow: visible;
+}
+
+.seam {
+  fill: none;
+  stroke: var(--text-3);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Cockpit windows: dark panes on the skin (in the dark theme too, with a fine light rim). */
+.windows {
+  fill: var(--text-1);
+  opacity: 0.85;
+}
+
+:global(:root[data-theme='dark']) .windows {
+  fill: #0b0907;
+  stroke: var(--text-2);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 1;
+}
+
 .fuselage {
-  --aisle: 18px;
+  --aisle: 20px;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 18px;
-  margin: 0 14px;
-  padding: 58px 8px 28px;
-  border: 1.5px solid var(--text-1);
-  border-radius: 140px 140px 28px 28px;
+  /* Starts inside the nose where its sides run straight (y 78 of 104 = 26% of the width up). */
+  margin-top: -26%;
+  padding: 6px var(--side) 28px;
+  border: var(--wall) solid var(--text-1);
+  border-top: 0;
+  border-radius: 0 0 28px 28px;
   background: var(--surface-1);
-  box-shadow: var(--shadow-paper);
 }
 
 .cabin {
@@ -54,10 +107,10 @@
   opacity: 0.6;
 }
 .row[data-wing='true']::before {
-  left: -23px;
+  left: calc(-1 * var(--side) - 15px);
 }
 .row[data-wing='true']::after {
-  right: -23px;
+  right: calc(-1 * var(--side) - 15px);
 }
 
 /* Exit rows: the row number turns red. */

@@ -13,6 +13,9 @@ import '@fontsource/noto-serif-jp/600.css';
 import './styles/global.css';
 import { App } from './App';
 import { BAKE_CARRIERS } from './dev';
+import { startTheme } from './theme';
+
+startTheme();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

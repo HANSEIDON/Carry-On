@@ -46,6 +46,24 @@ export function routesNearDuration(
     );
 }
 
+/**
+ * "Surprise me": a flight of about `targetMinutes` from anywhere in the world (not just where you
+ * are), so even short sessions reach new places. Three times in four it picks a country you
+ * haven't landed in yet, while there are any; otherwise any of them.
+ */
+export function surpriseRoute(
+  cities: readonly City[],
+  targetMinutes: number,
+  rand: () => number,
+  visited: ReadonlySet<string> = new Set(),
+): Route | null {
+  const all = cities.flatMap((origin) => routesNearDuration(origin, cities, targetMinutes));
+  if (all.length === 0) return null;
+  const fresh = all.filter((r) => !visited.has(r.to.countryCode));
+  const pool = fresh.length > 0 && rand() < 0.75 ? fresh : all;
+  return pool[Math.floor(rand() * pool.length)];
+}
+
 export function scenicMiles(minutes: number): number {
   return minutes * SCENIC_MILES_PER_MINUTE;
 }

@@ -339,6 +339,14 @@
   font-size: 11.5px;
 }
 
+/* The appearance choice, in the same corner while the passport is shut. */
+.corner {
+  position: absolute;
+  top: -6px;
+  right: 0;
+  z-index: 5;
+}
+
 .close:disabled {
   opacity: 0.4;
 }

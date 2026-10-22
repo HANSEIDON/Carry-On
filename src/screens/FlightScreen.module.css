@@ -29,7 +29,7 @@
   padding: 4px 10px;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
-  background: rgba(255, 252, 246, 0.9);
+  background: color-mix(in srgb, var(--surface-1) 90%, transparent);
   color: var(--text-1);
   font-family: var(--font-mono);
   font-size: 11px;
@@ -275,14 +275,70 @@
   transform: translateX(14px);
 }
 
+/* Ending early: a quiet outlined button at the foot, never the loudest thing on the screen. */
 .end {
-  align-self: center;
+  align-self: stretch;
+  height: 46px;
   margin-top: auto;
-  padding: 10px 4px;
-  border: 0;
-  background: none;
+  border: 1px solid color-mix(in srgb, var(--danger) 45%, transparent);
+  border-radius: var(--radius-s);
+  background: transparent;
   color: var(--danger);
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+.end:active {
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+/* The question, in place of the button. */
+.divert {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: auto;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--danger) 45%, transparent);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-paper);
+}
+
+.divertTitle {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.divertNote {
+  color: var(--text-2);
   font-size: 13px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+}
+
+.divertActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.keep,
+.divertGo {
+  height: 44px;
+  border-radius: var(--radius-s);
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+.keep {
+  border: 1px solid var(--text-1);
+  background: var(--text-1);
+  color: var(--bg);
+}
+
+.divertGo {
+  border: 1px solid var(--danger);
+  background: transparent;
+  color: var(--danger);
 }

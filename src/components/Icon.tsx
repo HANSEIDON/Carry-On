@@ -9,6 +9,9 @@ const PATHS = {
   back: 'M15 5l-7 7 7 7',
   search: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4',
   chevron: 'M6 9l6 6 6-6',
+  shuffle: 'M3 7h3.5c2.2 0 3.4 1 4.6 3l1.8 4c1.2 2 2.4 3 4.6 3H21M18 14l3 3-3 3M3 17h3.5c1.2 0 2.1-.3 2.9-.9M21 7h-3.5c-1.2 0-2.1.3-2.9.9M18 4l3 3-3 3',
+  close: 'M6 6l12 12M18 6L6 18',
+  bulb: 'M9.5 18h5M10.5 21h3M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1V16h5v-.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3z',
 } as const;
 
 export type IconName = keyof typeof PATHS;

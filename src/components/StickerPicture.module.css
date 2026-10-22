@@ -1,0 +1,9 @@
+.img {
+  display: block;
+  height: auto;
+  filter: drop-shadow(0 3px 3px rgba(30, 20, 10, 0.25));
+}
+
+.wait {
+  display: block;
+}

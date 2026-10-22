@@ -221,7 +221,7 @@ export async function landFlight(flightId: string): Promise<LandingResult> {
     let bonus = 0;
     const stickers: Sticker[] = [];
     const filled: FilledCarrier[] = [];
-    for (const kind of stickersForLanding(flight.cabin, tier)) {
+    for (const kind of stickersForLanding(flight.cabin, tier, { id: flight.id, minutes: flight.plannedMinutes })) {
       stickers.push({ id: crypto.randomUUID(), carrierId: carrier.id, flightId: flight.id, kind, code: flight.toCode, appliedAt: now });
       on++;
       const capacity = carrierType(carrier.modelId).capacity;

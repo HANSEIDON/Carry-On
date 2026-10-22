@@ -11,6 +11,9 @@ export interface StickerArt {
   code: string;
   fromCode: string;
   city: string;
+  /** The destination's country (ISO alpha-2) and name: the travel label is designed per country. */
+  countryCode: string;
+  country: string;
   flightNumber: string;
   airlineName: string;
   airlineColor: string;
@@ -25,6 +28,8 @@ export function stickerArt(sticker: Sticker, flight: Flight | undefined): Sticke
     code: sticker.code,
     fromCode: flight?.fromCode ?? sticker.code,
     city: cityByCode(sticker.code)?.city ?? sticker.code,
+    countryCode: cityByCode(sticker.code)?.countryCode ?? '',
+    country: cityByCode(sticker.code)?.country ?? '',
     flightNumber: flight?.flightNumber ?? '',
     airlineName: airline.name,
     airlineColor: airline.color,

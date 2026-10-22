@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { announce } from '../audio/announcer';
-import { BagTag } from '../components/BagTag';
 import { StageBar } from '../components/StageBar';
+import { StickerPicture } from '../components/StickerPicture';
 import { TicketButton } from '../components/TicketButton';
 import { airlineByCode } from '../data/airlines';
 import { carrierType } from '../data/carriers';
 import { cityByCode } from '../data/cities';
 import { arrival } from '../domain/announcements';
+import { stickerArt } from '../domain/stickerArt';
 import { formatDuration } from '../domain/geo';
 import { localHourMinute, localTime } from '../domain/time';
 import { useApp } from '../store/appStore';
@@ -79,14 +80,8 @@ export function ArrivalScreen() {
         <div className={styles.stack}>
           {stickers.map((s, i) => (
             <div key={s.id} className={styles.sticker} style={{ animationDelay: `${0.9 + i * 0.35}s` }}>
-              <BagTag
-                kind={s.kind}
-                code={s.code}
-                fromCode={flight.fromCode}
-                flightNumber={flight.flightNumber}
-                airline={airline}
-                date={new Date(s.appliedAt)}
-                id={s.id}
+              <StickerPicture
+                art={stickerArt(s, flight)}
               />
             </div>
           ))}
