@@ -16,7 +16,7 @@ import { localHourMinute, localTime } from '../domain/time';
 import { StageBar } from '../components/StageBar';
 import { FlightMap } from '../map/FlightMap';
 import { useApp } from '../store/appStore';
-import { useSettings, type MapStyle } from '../store/settings';
+import { ANNOUNCEMENT_LEVEL_DEFAULT, useSettings, type MapStyle } from '../store/settings';
 import styles from './FlightScreen.module.css';
 
 const PHASE_LABEL: Record<FlightPhase, string> = { climb: 'Climbing', cruise: 'Cruising', descent: 'Descending' };
@@ -281,6 +281,31 @@ export function FlightScreen() {
               if (!on) silenceAnnouncements();
             }}
           />
+          {settings.announcements && (
+            <div className={styles.level}>
+              <label className={styles.levelRow}>
+                <span>Announcement volume</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  list="announcement-default"
+                  value={settings.announcementLevel}
+                  onChange={(e) => settings.setAnnouncementLevel(Number(e.target.value))}
+                />
+              </label>
+              {/* The default, marked on the track, and one tap back to it. */}
+              <datalist id="announcement-default">
+                <option value={ANNOUNCEMENT_LEVEL_DEFAULT} />
+              </datalist>
+              {Math.abs(settings.announcementLevel - ANNOUNCEMENT_LEVEL_DEFAULT) > 0.01 && (
+                <button className={styles.levelReset} onClick={() => settings.setAnnouncementLevel(ANNOUNCEMENT_LEVEL_DEFAULT)}>
+                  Default
+                </button>
+              )}
+            </div>
+          )}
           <Setting
             label="Seatbelt chimes"
             note="Now and then during cruise, like a real flight"

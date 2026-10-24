@@ -29,10 +29,16 @@ import type { CabinClass, SeatZone } from '../domain/seatmap';
  */
 
 /**
- * Announcements play at a fixed share of the sound level: one volume control moves both, and the
- * voice always sits a little under the cabin, in the background.
+ * Announcements play at a share of the sound level: the volume control moves both, and the voice
+ * sits a little under the cabin, in the background. This is the share at the default setting
+ * (chosen by ear); the announcement level in sound settings scales it from none to twice that.
  */
 export const ANNOUNCEMENT_SHARE = 0.35;
+
+/** The announcement level setting (0..1, default 0.5) as a share of the sound level. */
+export function announcementShare(level: number): number {
+  return ANNOUNCEMENT_SHARE * 2 * Math.min(1, Math.max(0, level));
+}
 
 interface Zone {
   /** Overall loudness of this part of the cabin. */

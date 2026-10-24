@@ -1,7 +1,7 @@
 import type { Announcement, Speaker } from '../domain/announcements';
-import { clipKey, voiceFor } from '../domain/voiceClips';
+import { clipKey, VOICE_GAIN_DB, voiceFor } from '../domain/voiceClips';
 import { useSettings } from '../store/settings';
-import { ANNOUNCEMENT_SHARE, cabinAudio } from './cabinAudio';
+import { announcementShare, cabinAudio } from './cabinAudio';
 import { keyLine, paChain, PA_PRESETS } from './pa';
 
 /**
@@ -14,6 +14,12 @@ import { keyLine, paChain, PA_PRESETS } from './pa';
  */
 
 const PA = PA_PRESETS.cabin;
+
+/**
+ * The device's own voice (used while a phrase has no clip yet) is set this much above the clip
+ * share: clips come out of the PA chain with makeup gain, a device voice comes out bare.
+ */
+const DEVICE_VOICE_BOOST = 2.6;
 
 /** Pause between phrases: short at a comma, longer between sentences; the captain takes a little longer. */
 const COMMA_GAP = 0.14;
@@ -104,8 +110,11 @@ async function loadClips(a: Announcement): Promise<AudioBuffer[] | null> {
 
 function playClips(a: Announcement, clips: AudioBuffer[]): Promise<void> {
   const { ctx, out } = cabinAudio.output()!;
-  // On the PA bus, which follows the volume setting: the voice stays at a fixed share of the cabin.
-  const level = new GainNode(ctx, { gain: ANNOUNCEMENT_SHARE });
+  // On the PA bus, which follows the volume setting: the voice sits at the chosen share of the
+  // cabin, each voice evened out so the captain and the crew sound equally loud.
+  const voice = voiceFor(a.speaker, flightNumber);
+  const share = announcementShare(useSettings.getState().announcementLevel);
+  const level = new GainNode(ctx, { gain: share * 10 ** ((VOICE_GAIN_DB[voice] ?? 0) / 20) });
   level.connect(out);
   const pa = paChain(ctx, PA);
   pa.out.connect(level);
@@ -201,7 +210,9 @@ function speak(a: Announcement): Promise<void> {
     // A weightier captain, an unhurried crew member.
     utter.pitch = a.speaker === 'captain' ? 0.88 : 0.98;
     utter.rate = 0.97;
-    utter.volume = Math.min(1, useSettings.getState().volume * ANNOUNCEMENT_SHARE);
+    // The device voice skips the PA chain (and its makeup gain): turned up to sit where the clips do.
+    const s = useSettings.getState();
+    utter.volume = Math.min(1, s.volume * announcementShare(s.announcementLevel) * DEVICE_VOICE_BOOST);
     utter.onend = () => resolve();
     utter.onerror = () => resolve();
     setTimeout(() => (gen === generation ? speechSynthesis.speak(utter) : resolve()), CHIME_GAP[a.chime] * 1000);

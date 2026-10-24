@@ -5,14 +5,19 @@ import { markSeen } from '../domain/tips';
 /** In-flight map look: printed paper map (default), seat-back map colors, or a dark night globe. */
 export type MapStyle = 'paper' | 'classic' | 'dark';
 
+/** The announcement level out of the box: the share chosen by ear (ANNOUNCEMENT_SHARE). */
+export const ANNOUNCEMENT_LEVEL_DEFAULT = 0.5;
+
 /** Look of the whole app: follow the device (default), or always light paper / always night. */
 export type Theme = 'system' | 'light' | 'dark';
 
 /** Per-device preferences (kept in localStorage). */
 interface Settings {
-  /** Sound level. Announcements follow it at a fixed share (ANNOUNCEMENT_SHARE in cabinAudio). */
+  /** Sound level. Announcements follow it at a share of it (announcementShare in cabinAudio). */
   volume: number;
   announcements: boolean;
+  /** How loud announcements are against the cabin: 0..1, 0.5 the default (a little under the cabin). */
+  announcementLevel: number;
   chimes: boolean;
   /** Focus mode: the low cabin rumble turned down further, for long sessions. Off by default. */
   focusMode: boolean;
@@ -29,6 +34,7 @@ interface Settings {
   tipsSeen: string[];
   setVolume: (v: number) => void;
   setAnnouncements: (on: boolean) => void;
+  setAnnouncementLevel: (level: number) => void;
   setChimes: (on: boolean) => void;
   setFocusMode: (on: boolean) => void;
   setFocusTones: (on: boolean) => void;
@@ -44,6 +50,7 @@ export const useSettings = create<Settings>()(
     (set) => ({
       volume: 0.45,
       announcements: true,
+      announcementLevel: ANNOUNCEMENT_LEVEL_DEFAULT,
       chimes: true,
       focusMode: false,
       focusTones: false,
@@ -55,6 +62,7 @@ export const useSettings = create<Settings>()(
       tipsSeen: [],
       setVolume: (volume) => set({ volume }),
       setAnnouncements: (announcements) => set({ announcements }),
+      setAnnouncementLevel: (announcementLevel) => set({ announcementLevel }),
       setChimes: (chimes) => set({ chimes }),
       setFocusMode: (focusMode) => set({ focusMode }),
       setFocusTones: (focusTones) => set({ focusTones }),

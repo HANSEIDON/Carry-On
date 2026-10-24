@@ -342,3 +342,37 @@
   background: transparent;
   color: var(--danger);
 }
+
+/* How loud announcements sit against the cabin: a slider under their switch, the default marked. */
+.level {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 12px 10px;
+}
+
+.levelRow {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.levelRow input {
+  width: 100%;
+  accent-color: var(--text-1);
+}
+
+.levelReset {
+  flex: none;
+  align-self: flex-end;
+  padding: 3px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
