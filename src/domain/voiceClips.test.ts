@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { airlineFor } from '../data/airlines';
 import { CITIES } from '../data/cities';
@@ -62,5 +63,18 @@ describe('voice clips', () => {
     expect(voiceFor('crew', 'HL 474')).toBe(VOICES.crew[0]);
     const used = new Set(Array.from({ length: 50 }, (_, n) => voiceFor('captain', `HL ${100 + n}`)));
     expect(used.size).toBe(VOICES.captain.length);
+  });
+});
+
+describe('the clip files', () => {
+  it('are all there: every phrase, in every voice that says it, and listed in clips.json', () => {
+    for (const [speaker, voices] of Object.entries(VOICES)) {
+      const keys = new Set(parts.filter((p) => p.speaker === speaker).map((p) => clipKey(p.text)));
+      for (const voice of voices) {
+        const listed = new Set(JSON.parse(readFileSync(`public/audio/voice/${voice}/clips.json`, 'utf8')) as string[]);
+        const missing = [...keys].filter((k) => !listed.has(k) || !existsSync(`public/audio/voice/${voice}/${k}.mp3`));
+        expect(missing, voice).toEqual([]);
+      }
+    }
   });
 });

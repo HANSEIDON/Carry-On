@@ -22,11 +22,12 @@ export const VOICES: Record<Speaker, readonly string[]> = {
  * How much to turn each voice up (dB) so all of them sound equally loud through the cabin PA. The
  * clips are made at the same loudness, but the PA's small speakers cut the lows, where a man's
  * voice carries more of its weight: measured through the PA chain with ear weighting (BS.1770
- * K-weighting), the captains came out 1.4 and 1.9 dB under the crew.
+ * K-weighting, an even sample of 40 clips each from the full set), the captains came out 1.2 and
+ * 1.4 dB under the crew.
  */
 export const VOICE_GAIN_DB: Record<string, number> = {
-  'cb-default': 1.4,
-  'cb-george': 1.9,
+  'cb-default': 1.2,
+  'cb-george': 1.4,
   'alice-112': 0,
 };
 
