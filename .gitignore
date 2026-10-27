@@ -28,3 +28,4 @@ __pycache__/
 CLAUDE.md
 .claude/
 scripts/capture-*.cjs
+scripts/make-png-icon.mjs

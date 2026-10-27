@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="assets/app-icon.svg" width="96" height="96" alt="Carry On App Icon" />
+  <img src="assets/app-icon.png" width="100" height="100" alt="Carry On App Icon" />
 
   # Carry On
   
@@ -10,22 +10,19 @@
   <br />
 
   <!-- Release / Download Badges -->
-  <a href="https://github.com/HANSEIDON/Carry-On/releases/latest">
-    <img src="https://img.shields.io/badge/Download_for_Windows-v0.1.0_EXE-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Download for Windows (.exe)" />
-  </a>
-  <a href="#-platform--release-status">
-    <img src="https://img.shields.io/badge/Android_&_iOS-In_Roadmap-10b981?style=for-the-badge&logo=googleplay&logoColor=white" alt="Mobile Roadmap" />
-  </a>
+  <img src="https://img.shields.io/badge/Windows_Desktop-100%25_Offline_Local-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows Desktop Offline" />
+  &nbsp;
+  <img src="https://img.shields.io/badge/Acoustics-ITU--R_BS.1770--4-f59e0b?style=for-the-badge&logo=soundcharts&logoColor=white" alt="ITU-R BS.1770 Audio Standard" />
+  &nbsp;
+  <img src="https://img.shields.io/badge/Mobile-Roadmap-10b981?style=for-the-badge&logo=googleplay&logoColor=white" alt="Mobile Roadmap" />
 
   <br /><br />
 
-  <!-- Hero 3-Phone Showcase -->
+  <!-- Hero 3-Phone Showcase (Fixed Pixel Width for Guaranteed Clean Alignment on GitHub) -->
   <p align="center">
-    <img src="assets/mobile-01-home.png" width="31%" alt="Home Ready for Flight" />
-    &nbsp;
-    <img src="assets/mobile-03-seatmap.png" width="31%" alt="Flight Seat Map" />
-    &nbsp;
-    <img src="assets/mobile-04-boarding.png" width="31%" alt="Boarding Pass" />
+    <img src="assets/mobile-01-home.png" width="220" alt="Home Ready for Flight" />
+    <img src="assets/mobile-03-seatmap.png" width="220" alt="Flight Seat Map" />
+    <img src="assets/mobile-04-boarding.png" width="220" alt="Boarding Pass" />
   </p>
 
 </div>
@@ -44,9 +41,9 @@ Instead of staring at a ticking clock, you book a flight based on authentic flig
 
 ## 🪟 Platform & Release Status
 
-| Platform | Status | Distribution |
+| Platform | Status | Distribution & Storage |
 |:---|:---:|:---|
-| **Windows Desktop** | **Available** | **[Download Latest .exe (v0.1.0)](https://github.com/HANSEIDON/Carry-On/releases/latest)** |
+| **Windows Desktop** | **Local / Packageable** | 100% Offline Standalone (.exe) · Local IndexedDB Storage |
 | **Android** | *In Development* | Planned via Capacitor / APK & Play Store |
 | **iOS** | *In Roadmap* | Planned via Capacitor / TestFlight |
 | **Web (Local)** | **Available** | Run locally via `npm run dev` or `dev.bat` |
@@ -59,7 +56,7 @@ Instead of staring at a ticking clock, you book a flight based on authentic flig
 Your journey starts from where your last flight landed. A pristine 3D suitcase stands ready for departure, displaying your departure city, local time, membership tier, and current mileage balance.
 
 <div align="center">
-  <img src="assets/mobile-01-home.png" width="45%" alt="Home Screen Ready for Flight" />
+  <img src="assets/mobile-01-home.png" width="260" alt="Home Screen Ready for Flight" />
 </div>
 
 <br />
@@ -68,7 +65,7 @@ Your journey starts from where your last flight landed. A pristine 3D suitcase s
 Choose how long you want to focus (25m to 12h) to see matching global destinations, or search for any city with authentic great-circle flight times. Scenic flights are available for shorter 30–45m sessions.
 
 <div align="center">
-  <img src="assets/mobile-02-booking.png" width="45%" alt="Booking Screen" />
+  <img src="assets/mobile-02-booking.png" width="260" alt="Booking Screen" />
 </div>
 
 <br />
@@ -77,7 +74,7 @@ Choose how long you want to focus (25m to 12h) to see matching global destinatio
 Select your seat directly on the aircraft cabin layout—First, Business, or Economy. Choose between window and aisle positions, with seat locations dynamically tuning the in-flight soundscape.
 
 <div align="center">
-  <img src="assets/mobile-03-seatmap.png" width="45%" alt="Seat Map Check-in Screen" />
+  <img src="assets/mobile-03-seatmap.png" width="260" alt="Seat Map Check-in Screen" />
 </div>
 
 <br />
@@ -86,7 +83,7 @@ Select your seat directly on the aircraft cabin layout—First, Business, or Eco
 A realistically typeset airline ticket featuring departure/arrival IATA codes, passenger name, seat assignment, gate, and barcode. Dragging and tearing the perforated stub triggers the takeoff sequence.
 
 <div align="center">
-  <img src="assets/mobile-04-boarding.png" width="45%" alt="Boarding Pass Screen" />
+  <img src="assets/mobile-04-boarding.png" width="260" alt="Boarding Pass Screen" />
 </div>
 
 <br />
@@ -95,7 +92,7 @@ A realistically typeset airline ticket featuring departure/arrival IATA codes, p
 Your personal flight log formatted as an international standard passport (ICAO 9303 TD3 MRZ). Every completed flight stamps your visa pages with country-accurate date formats and custom ink colors.
 
 <div align="center">
-  <img src="assets/mobile-05-passport.png" width="55%" alt="Passport Visa Pages" />
+  <img src="assets/mobile-05-passport.png" width="360" alt="Passport Visa Pages" />
 </div>
 
 <br />
@@ -104,7 +101,7 @@ Your personal flight log formatted as an international standard passport (ICAO 9
 Inspect your collection of travel cases on the luggage shelf in real-time 3D. Rotate suitcases, view all earned destination stickers, and switch your active travel bag.
 
 <div align="center">
-  <img src="assets/mobile-06-luggage.png" width="45%" alt="Luggage Room with Destination Stickers" />
+  <img src="assets/mobile-06-luggage.png" width="260" alt="Luggage Room with Destination Stickers" />
 </div>
 
 <br />
@@ -113,7 +110,7 @@ Inspect your collection of travel cases on the luggage shelf in real-time 3D. Ro
 A dictionary catalog of over 30 distinct luggage models across membership tiers. Spend accumulated flight miles in the Duty Free boutique to collect new carrier designs.
 
 <div align="center">
-  <img src="assets/mobile-07-dutyfree.png" width="45%" alt="Duty Free Carrier Boutique" />
+  <img src="assets/mobile-07-dutyfree.png" width="260" alt="Duty Free Carrier Boutique" />
 </div>
 
 ---
@@ -123,14 +120,14 @@ A dictionary catalog of over 30 distinct luggage models across membership tiers.
 Extended exposure to commercial aircraft rumble induces subtle cognitive strain and fatigue. Carry On incorporates environmental psychoacoustics based on clinical research by Persson Waye et al.
 
 <div align="center">
-  <img src="assets/persson-waye-cortisol.svg" width="85%" alt="Persson Waye Cortisol Research Graph" />
+  <img src="assets/persson-waye-cortisol.svg" width="640" alt="Persson Waye Cortisol Research Graph" />
 </div>
 
 * **Elevated Cortisol Levels**: Research demonstrates that 40 dBA low-frequency ventilation noise inhibits natural circadian cortisol reduction in noise-sensitive individuals, keeping stress elevated during cognitive work (*Persson Waye et al., Life Sciences, 2002*).
 * **Demanding Task Performance**: Heavy low-frequency hum significantly degrades performance quality and accuracy in complex focus tasks (*Persson Waye et al., Journal of Sound and Vibration, 1997*).
 
 <div align="center">
-  <img src="assets/cabin-focus-filter.svg" width="85%" alt="Focus Mode Frequency Response Filter" />
+  <img src="assets/cabin-focus-filter.svg" width="640" alt="Focus Mode Frequency Response Filter" />
 </div>
 
 * **Carry On Focus Mode**: Applies a gentle **-7.0 dB low-shelf filter** below 160 Hz to strip away exhausting sub-bass rumble while keeping 100% of the speech-masking airflow (> 320 Hz) intact.
