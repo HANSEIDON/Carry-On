@@ -19,8 +19,14 @@
 
   <br /><br />
 
-  <!-- Main Hero: Real App Home Screen -->
-  <img src="assets/real-app-home.png" width="100%" alt="Carry On Home Screen" />
+  <!-- Hero 3-Phone Showcase -->
+  <p align="center">
+    <img src="assets/mobile-01-home.png" width="31%" alt="Home with Stickers" />
+    &nbsp;
+    <img src="assets/mobile-03-seatmap.png" width="31%" alt="Flight Seat Map" />
+    &nbsp;
+    <img src="assets/mobile-04-boarding.png" width="31%" alt="Boarding Pass" />
+  </p>
 
 </div>
 
@@ -47,42 +53,58 @@ Instead of staring at a ticking clock, you book a flight based on authentic flig
 
 ---
 
-## 📸 App Experience & Real Screenshots
+## 📱 Flight Journey Showcase
 
-### 1. Home & 3D Suitcase (`Fly`)
+### 1. Home & 3D Suitcase with Stickers (`Fly`)
 Your journey starts from where your last flight landed. The turning 3D suitcase displays your collected destination stickers, tier progress, and current mileage balance.
 
 <div align="center">
-  <img src="assets/real-app-home.png" width="95%" alt="Carry On Home Screen" />
+  <img src="assets/mobile-01-home.png" width="45%" alt="Home Screen with Stickers" />
 </div>
 
 <br />
 
-### 2. Destination & Duration Booking (`Booking`)
+### 2. Great-Circle Flight Booking (`Booking`)
 Choose how long you want to focus (25m to 12h) to see matching global destinations, or search for any city with authentic great-circle flight times. Scenic flights are available for shorter 30–45m sessions.
 
 <div align="center">
-  <img src="assets/real-app-booking.png" width="95%" alt="Carry On Booking Screen" />
+  <img src="assets/mobile-02-booking.png" width="45%" alt="Booking Screen" />
 </div>
 
 <br />
 
-### 3. ICAO 9303 Digital Passport (`Passport`)
-Your personal flight record formatted as an international standard passport, complete with official 2×44 Machine Readable Zones (MRZ), immigration entry/exit stamps, and total distance traveled.
+### 3. Authentic Airplane Seat Map (`Check-in`)
+Select your seat directly on the aircraft cabin layout—First, Business, or Economy. Choose between window and aisle positions, with seat locations dynamically tuning the in-flight soundscape.
 
 <div align="center">
-  <img src="assets/real-app-passport.png" width="95%" alt="Carry On Passport Screen" />
+  <img src="assets/mobile-03-seatmap.png" width="45%" alt="Seat Map Check-in Screen" />
 </div>
 
 <br />
 
-### 4. 3D Luggage Room & Duty Free (`Luggage & Shop`)
-Inspect your suitcase collection in 3D, organize destination stickers, and spend accumulated miles in the Duty Free shop on over 30 distinct carrier models.
+### 4. Boarding Pass with Tearable Stub (`Boarding`)
+A realistically typeset airline ticket featuring departure/arrival IATA codes, passenger name, seat assignment, gate, and barcode. Dragging and tearing the perforated stub triggers the takeoff sequence.
 
 <div align="center">
-  <img src="assets/real-app-luggage.png" width="48%" alt="Luggage Screen" />
-  &nbsp;
-  <img src="assets/real-app-dutyfree.png" width="48%" alt="Duty Free Screen" />
+  <img src="assets/mobile-04-boarding.png" width="45%" alt="Boarding Pass Screen" />
+</div>
+
+<br />
+
+### 5. Digital Passport & Visa Stamps (`Passport`)
+Your personal flight log formatted as an international standard passport (ICAO 9303 TD3 MRZ). Every completed flight stamps your visa pages with country-accurate date formats and custom ink colors.
+
+<div align="center">
+  <img src="assets/mobile-05-passport.png" width="55%" alt="Passport Visa Pages" />
+</div>
+
+<br />
+
+### 6. Carrier Catalog & Duty Free Shop (`Duty Free`)
+A dictionary catalog of over 30 distinct luggage models. Spend accumulated flight miles in the Duty Free shop to collect new carrier types and unlock tier rewards.
+
+<div align="center">
+  <img src="assets/mobile-06-carrier-shop.png" width="45%" alt="Duty Free Carrier Dictionary" />
 </div>
 
 ---

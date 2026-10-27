@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Guide } from './components/Guide';
 import { TabBar } from './components/TabBar';
 import { getActiveFlight, loadOrCreateProfile } from './db/db';
+import { DEV_SCREEN, makeDevDraft, SEED_MOCK, seedMockData } from './dev';
 import { ArrivalScreen } from './screens/ArrivalScreen';
 import { BoardingScreen } from './screens/BoardingScreen';
 import { BookingScreen } from './screens/BookingScreen';
@@ -29,10 +30,18 @@ export function App() {
 
   useEffect(() => {
     (async () => {
+      if (SEED_MOCK) {
+        await seedMockData();
+      }
       const p = await loadOrCreateProfile();
       // A flight still in the air resumes where it left off.
       const active = await getActiveFlight();
-      if (active) {
+      if (DEV_SCREEN) {
+        if (DEV_SCREEN === 'checkin' || DEV_SCREEN === 'boarding') {
+          useApp.getState().setDraft(makeDevDraft());
+        }
+        go(DEV_SCREEN);
+      } else if (active) {
         setFlight(active);
         go('flight');
       }
