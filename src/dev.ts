@@ -89,16 +89,16 @@ export async function seedMockData(): Promise<void> {
   for (const f of landedFlights) await db.flights.put(f);
 
   const stickers: Sticker[] = [
-    { id: 's1', carrierId, flightId: 'f1', kind: 'bag_tag', code: 'HND', appliedAt: now - 10 * 86400000 },
-    { id: 's2', carrierId, flightId: 'f1', kind: 'priority', code: 'HND', appliedAt: now - 10 * 86400000 },
-    { id: 's3', carrierId, flightId: 'f2', kind: 'bag_tag', code: 'CDG', appliedAt: now - 8 * 86400000 },
-    { id: 's4', carrierId, flightId: 'f2', kind: 'fragile', code: 'CDG', appliedAt: now - 8 * 86400000 },
-    { id: 's5', carrierId, flightId: 'f3', kind: 'bag_tag', code: 'JFK', appliedAt: now - 6 * 86400000 },
-    { id: 's6', carrierId, flightId: 'f3', kind: 'security', code: 'JFK', appliedAt: now - 6 * 86400000 },
-    { id: 's7', carrierId, flightId: 'f4', kind: 'bag_tag', code: 'LHR', appliedAt: now - 4 * 86400000 },
-    { id: 's8', carrierId, flightId: 'f5', kind: 'bag_tag', code: 'SIN', appliedAt: now - 2 * 86400000 },
-    { id: 's9', carrierId, flightId: 'f5', kind: 'heavy', code: 'SIN', appliedAt: now - 2 * 86400000 },
-    { id: 's10', carrierId, flightId: 'f6', kind: 'bag_tag', code: 'ICN', appliedAt: now - 86400000 },
+    { id: 's1', carrierId: 'dev-carrier-2', flightId: 'f1', kind: 'bag_tag', code: 'HND', appliedAt: now - 10 * 86400000 },
+    { id: 's2', carrierId: 'dev-carrier-2', flightId: 'f1', kind: 'priority', code: 'HND', appliedAt: now - 10 * 86400000 },
+    { id: 's3', carrierId: 'dev-carrier-2', flightId: 'f2', kind: 'bag_tag', code: 'CDG', appliedAt: now - 8 * 86400000 },
+    { id: 's4', carrierId: 'dev-carrier-2', flightId: 'f2', kind: 'fragile', code: 'CDG', appliedAt: now - 8 * 86400000 },
+    { id: 's5', carrierId: 'dev-carrier-2', flightId: 'f3', kind: 'bag_tag', code: 'JFK', appliedAt: now - 6 * 86400000 },
+    { id: 's6', carrierId: 'dev-carrier-2', flightId: 'f3', kind: 'security', code: 'JFK', appliedAt: now - 6 * 86400000 },
+    { id: 's7', carrierId: 'dev-carrier-2', flightId: 'f4', kind: 'bag_tag', code: 'LHR', appliedAt: now - 4 * 86400000 },
+    { id: 's8', carrierId: 'dev-carrier-2', flightId: 'f5', kind: 'bag_tag', code: 'SIN', appliedAt: now - 2 * 86400000 },
+    { id: 's9', carrierId: 'dev-carrier-2', flightId: 'f5', kind: 'heavy', code: 'SIN', appliedAt: now - 2 * 86400000 },
+    { id: 's10', carrierId: 'dev-carrier-2', flightId: 'f6', kind: 'bag_tag', code: 'ICN', appliedAt: now - 86400000 },
   ];
   for (const s of stickers) await db.stickers.put(s);
 }

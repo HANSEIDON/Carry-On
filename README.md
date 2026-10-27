@@ -55,11 +55,11 @@ Instead of staring at a ticking clock, you book a flight based on authentic flig
 
 ## 📱 Flight Journey Showcase
 
-### 1. Home & 3D Suitcase with Stickers (`Fly`)
-Your journey starts from where your last flight landed. The turning 3D suitcase displays your collected destination stickers, tier progress, and current mileage balance.
+### 1. Home & 3D Interactive Suitcase (`Fly`)
+Your journey starts from where your last flight landed. A pristine 3D suitcase stands ready for departure, displaying your departure city, local time, membership tier, and current mileage balance.
 
 <div align="center">
-  <img src="assets/mobile-01-home.png" width="45%" alt="Home Screen with Stickers" />
+  <img src="assets/mobile-01-home.png" width="45%" alt="Home Screen Ready for Flight" />
 </div>
 
 <br />
@@ -100,11 +100,11 @@ Your personal flight log formatted as an international standard passport (ICAO 9
 
 <br />
 
-### 6. Luggage Room & Suitcase Collection (`Luggage`)
+### 6. Luggage Room & Sticker Collection (`Luggage`)
 Inspect your collection of travel cases on the luggage shelf in real-time 3D. Rotate suitcases, view all earned destination stickers, and switch your active travel bag.
 
 <div align="center">
-  <img src="assets/mobile-06-luggage.png" width="45%" alt="Luggage Room 3D Suitcase Shelf" />
+  <img src="assets/mobile-06-luggage.png" width="45%" alt="Luggage Room with Destination Stickers" />
 </div>
 
 <br />
