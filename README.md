@@ -13,14 +13,14 @@
   <a href="https://github.com/HANSEIDON/Carry-On/releases/latest">
     <img src="https://img.shields.io/badge/Download_for_Windows-v0.1.0_EXE-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Download for Windows (.exe)" />
   </a>
-  <a href="#platform-status">
+  <a href="#-platform--release-status">
     <img src="https://img.shields.io/badge/Android_&_iOS-In_Roadmap-10b981?style=for-the-badge&logo=googleplay&logoColor=white" alt="Mobile Roadmap" />
   </a>
 
   <br /><br />
 
-  <!-- Main Hero UI Showcase -->
-  <img src="assets/ui-showcase-hero.svg" width="100%" alt="Carry On Desktop App Showcase" />
+  <!-- Main Hero: Real App Home Screen -->
+  <img src="assets/real-app-home.png" width="100%" alt="Carry On Home Screen" />
 
 </div>
 
@@ -30,15 +30,15 @@
 
 ## 🛫 Overview
 
-**Carry On** replaces tedious countdown timers with the romantic immersion of commercial aviation.
+**Carry On** replaces tedious countdown timers with the calming immersion of commercial aviation.
 
-Instead of watching a generic timer tick down, you book a flight based on authentic flight times, select your cabin seat, and tear off the perforated boarding pass stub to start working. During cruise, you focus surrounded by real-time synthesized cabin noise modeled after actual Boeing and Airbus flight recordings. Once you land, you earn miles, collect custom destination stickers on a 3D suitcase, and receive stamped visas in your passport.
+Instead of staring at a ticking clock, you book a flight based on authentic flight times, select your seat, and tear off the boarding pass stub to start focusing. During cruise, you focus within an acoustic cabin soundscape modeled from real in-flight recordings (A320, B737, B777). Once you land, you earn miles, collect destination stickers on a 3D suitcase, and receive stamped visas in your passport.
 
 ---
 
 ## 🪟 Platform & Release Status
 
-| Platform | Status | Download / Distribution |
+| Platform | Status | Distribution |
 |:---|:---:|:---|
 | **Windows Desktop** | **Available** | **[Download Latest .exe (v0.1.0)](https://github.com/HANSEIDON/Carry-On/releases/latest)** |
 | **Android** | *In Development* | Planned via Capacitor / APK & Play Store |
@@ -47,26 +47,43 @@ Instead of watching a generic timer tick down, you book a flight based on authen
 
 ---
 
-## ✈️ Visual Journey & Key Features
+## 📸 App Experience & Real Screenshots
 
-### 1. Boarding Pass & Great-Circle Timer
-* **Great-Circle Equations**: Flight durations reflect real-world routes (e.g., Seoul to Tokyo in 2h, Paris in 12h) or short 30–45m circular "Scenic Flights".
-* **Tearable Stub Interaction**: Drag and tear the perforated ticket stub with realistic haptic and sound effects to begin your focus block.
+### 1. Home & 3D Suitcase (`Fly`)
+Your journey starts from where your last flight landed. The turning 3D suitcase displays your collected destination stickers, tier progress, and current mileage balance.
 
-### 2. Live In-Flight Soundscape & Focus Mode
-* **Real-Time Sound Synthesis (`AudioWorklet`)**: Zero audio loop seams. Dynamically generates cabin airflow body and vent air.
-* **Aircraft Timbres**: Real in-flight acoustic impulse responses measured from **Airbus A320**, **Boeing 737**, and **Boeing 777-300ER**.
-* **Aerodynamic Seat Zones**: Choose Front (bright, quiet), Wings (engine hum), or Rear (deep acoustic rumble).
-* **In-Flight PA Announcements**: Captain and crew announcements automatically balanced with **ITU-R BS.1770** loudness standards.
+<div align="center">
+  <img src="assets/real-app-home.png" width="95%" alt="Carry On Home Screen" />
+</div>
 
-### 3. 3D Luggage & Collectible Decals
-* **Interactive 3D Suitcases**: Explore and customize 30 distinctive luggage models rendered in Three.js.
-* **Travel Stickers**: Every completed flight rewards an authentic graphic sticker applied as a decal to your luggage.
-* **Duty Free Shop**: Spend accumulated flight miles to unlock premium luggage cases and collectibles.
+<br />
 
-### 4. ICAO 9303 Digital Passport
-* **International Standards**: Features official TD3 machine-readable zones (MRZ 2×44) and passport holder credentials.
-* **Customs Entry Stamps**: Visas stamped upon arrival with country-accurate date notations, ink colors, and immigration borders.
+### 2. Destination & Duration Booking (`Booking`)
+Choose how long you want to focus (25m to 12h) to see matching global destinations, or search for any city with authentic great-circle flight times. Scenic flights are available for shorter 30–45m sessions.
+
+<div align="center">
+  <img src="assets/real-app-booking.png" width="95%" alt="Carry On Booking Screen" />
+</div>
+
+<br />
+
+### 3. ICAO 9303 Digital Passport (`Passport`)
+Your personal flight record formatted as an international standard passport, complete with official 2×44 Machine Readable Zones (MRZ), immigration entry/exit stamps, and total distance traveled.
+
+<div align="center">
+  <img src="assets/real-app-passport.png" width="95%" alt="Carry On Passport Screen" />
+</div>
+
+<br />
+
+### 4. 3D Luggage Room & Duty Free (`Luggage & Shop`)
+Inspect your suitcase collection in 3D, organize destination stickers, and spend accumulated miles in the Duty Free shop on over 30 distinct carrier models.
+
+<div align="center">
+  <img src="assets/real-app-luggage.png" width="48%" alt="Luggage Screen" />
+  &nbsp;
+  <img src="assets/real-app-dutyfree.png" width="48%" alt="Duty Free Screen" />
+</div>
 
 ---
 
