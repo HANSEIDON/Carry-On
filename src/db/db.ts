@@ -2,6 +2,7 @@ import Dexie, { type EntityTable } from 'dexie';
 import { carrierType, STARTER_CARRIER_ID } from '../data/carriers';
 import { DEFAULT_HOME_CODE } from '../data/cities';
 import { fillReward, shopState } from '../domain/carrierShop';
+import { newId } from '../domain/id';
 import { stickerArt, type StickerArt } from '../domain/stickerArt';
 import type { FlightPlan } from '../domain/flightPlan';
 import { earnedMiles, stickersForLanding, type StickerKind } from '../domain/landing';
@@ -121,7 +122,7 @@ export async function loadOrCreateProfile(): Promise<Profile> {
     if (existing) return existing;
 
     const now = Date.now();
-    const carrier: Carrier = { ...STARTER_CARRIER, id: crypto.randomUUID(), acquiredAt: now };
+    const carrier: Carrier = { ...STARTER_CARRIER, id: newId(), acquiredAt: now };
     const profile: Profile = {
       id: 'me',
       name: 'Traveler',
@@ -158,7 +159,7 @@ export async function startFlight(
   purpose: TripPurpose,
 ): Promise<Flight> {
   const flight: Flight = {
-    id: crypto.randomUUID(),
+    id: newId(),
     fromCode: plan.fromCode,
     toCode: plan.toCode,
     scenic: plan.scenic,
@@ -222,7 +223,7 @@ export async function landFlight(flightId: string): Promise<LandingResult> {
     const stickers: Sticker[] = [];
     const filled: FilledCarrier[] = [];
     for (const kind of stickersForLanding(flight.cabin, tier, { id: flight.id, minutes: flight.plannedMinutes })) {
-      stickers.push({ id: crypto.randomUUID(), carrierId: carrier.id, flightId: flight.id, kind, code: flight.toCode, appliedAt: now });
+      stickers.push({ id: newId(), carrierId: carrier.id, flightId: flight.id, kind, code: flight.toCode, appliedAt: now });
       on++;
       const capacity = carrierType(carrier.modelId).capacity;
       if (capacity > 0 && on >= capacity) {
@@ -230,7 +231,7 @@ export async function landFlight(flightId: string): Promise<LandingResult> {
         const first = !kin.some((c) => c.filledAt);
         const done: Carrier = { ...carrier, filledAt: now };
         const fresh: Carrier = {
-          id: crypto.randomUUID(),
+          id: newId(),
           modelId: carrier.modelId,
           color: carrier.color,
           capacity,
@@ -298,7 +299,7 @@ export async function buyCarrier(typeId: string, tier: Tier): Promise<{ profile:
     const state = shopState(type, { owned: false, tier, miles: profile.miles });
     if (state.kind !== 'buyable') throw new Error(`cannot buy: ${state.kind}`);
     const carrier: Carrier = {
-      id: crypto.randomUUID(),
+      id: newId(),
       modelId: typeId,
       color: '',
       capacity: type.capacity,

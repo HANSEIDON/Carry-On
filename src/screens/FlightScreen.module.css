@@ -376,3 +376,8 @@
   font-family: var(--font-mono);
   font-size: 11px;
 }
+
+.levelHint {
+  color: var(--text-3);
+  font-size: 11px;
+}

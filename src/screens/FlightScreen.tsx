@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { announce, setAnnouncementFlight, silenceAnnouncements } from '../audio/announcer';
+import { announce, previewAnnouncement, setAnnouncementFlight, silenceAnnouncements } from '../audio/announcer';
 import { cabinAudio } from '../audio/cabinAudio';
 import { airlineByCode } from '../data/airlines';
 import { cityByCode } from '../data/cities';
@@ -293,14 +293,24 @@ export function FlightScreen() {
                   list="announcement-default"
                   value={settings.announcementLevel}
                   onChange={(e) => settings.setAnnouncementLevel(Number(e.target.value))}
+                  // Let go, and hear a line at the new level.
+                  onPointerUp={previewAnnouncement}
+                  onKeyUp={previewAnnouncement}
                 />
+                {needsTap && <span className={styles.levelHint}>Turn on cabin sound to hear it</span>}
               </label>
               {/* The default, marked on the track, and one tap back to it. */}
               <datalist id="announcement-default">
                 <option value={ANNOUNCEMENT_LEVEL_DEFAULT} />
               </datalist>
               {Math.abs(settings.announcementLevel - ANNOUNCEMENT_LEVEL_DEFAULT) > 0.01 && (
-                <button className={styles.levelReset} onClick={() => settings.setAnnouncementLevel(ANNOUNCEMENT_LEVEL_DEFAULT)}>
+                <button
+                  className={styles.levelReset}
+                  onClick={() => {
+                    settings.setAnnouncementLevel(ANNOUNCEMENT_LEVEL_DEFAULT);
+                    previewAnnouncement();
+                  }}
+                >
                   Default
                 </button>
               )}

@@ -1,14 +1,14 @@
-# Carry On — Corpus Map & Codebase Index
+﻿# Carry On — Corpus Map & Codebase Index
 
-> **AI Agent Quick Directive**:
+> **Developer Quick Directive**:
 > This document is the single source of truth for repository structure, module responsibilities, symbol exports, and domain logic.
-> **Before reading multiple source files, consult this map** to identify the exact 1–2 target files needed. Do NOT read entire directories into context.
+> **Before reading multiple source files, consult this map** to identify the exact 1–2 target files needed. 
 
 ---
 
 ## 1. Quick Intent Router (기능별 직행 색인)
 
-AI 에이전트가 특정 작업 요청을 받았을 때 바로 찾아갈 파일 매핑입니다.
+기능 구현 및 유지보수 시 바로 찾아갈 핵심 모듈 매핑입니다.
 
 | 작업 목적 (Task Intent) | 핵심 파일 (Primary Files) | 연관 컴포넌트/스타일 | 테스트 파일 |
 |---|---|---|---|
@@ -115,6 +115,7 @@ flowchart LR
 | `src/domain/sun.ts` | 저정밀 태양 천문력 기반 태양 직하점(subsolar point) 계산 및 주야간 경계(isNight) 판별 | `subsolarPoint()`, `centralAngle()`, `isNight()` | `src/domain/sky.test.ts` |
 | `src/domain/tier.ts` | 누적 마일에 따른 회원 등급(Basic, Silver, Gold, Platinum) 및 다음 등급 잔여 마일 계산 | `tierFor()`, `nextTier()`, `tierLabel()`, `TIER_THRESHOLDS`, `TIER_MILE_BONUS` | `src/domain/tier.test.ts` |
 | `src/domain/random.ts` | 문자열 결정론적 시드 해시(djb2) 및 시드 의사난수 생성기(LCG) | `hashString()`, `seededRandom()` | `src/domain/flight.test.ts` |
+| `src/domain/id.ts` | DB 레코드용 무작위 ID(UUID v4). `crypto.randomUUID`는 https·localhost에서만 있어서, 폰에서 개발 서버의 http 네트워크 주소로 열면 없음 → `crypto.getRandomValues`로 만듦(없으면 첫 실행에 프로필을 못 만들어 빈 화면) | `newId()` | `src/db/db.ts`, `src/domain/id.test.ts` |
 | `src/domain/carrierShop.ts` | 면세점 판단: 보유 / 아직 안 만들어짐 / 등급 부족 / 마일 부족 / 구매 가능, 등급 비교, 진열 순서(등급 → 가격 → 번호). 채우기 보상: 스티커 자리당 30마일, 그 종류를 처음 채우면 2배 | `shopState()`, `tierAllows()`, `shopOrder()`, `fillReward()`, `FILL_MILES_PER_SPOT` | `src/domain/carrierShop.test.ts` |
 | `src/domain/stickerArt.ts` | 스티커에 인쇄될 내용: 스티커 + 출처 비행 → 도착 공항·출발 공항·도시명·편명·항공사 이름/색·붙인 시각 (비행 기록이 없어도 그려짐) | `StickerArt`, `stickerArt()` | `src/db/db.ts`, `src/components/stickerDecals.ts`, `src/domain/stickerArt.test.ts` |
 | `src/domain/passport.ts` | 여권 규칙. 소지자(이름·국적 기본값=홈 도시 국가·여권번호=프로필 생성시각 해시 `CO`+7자리·발급/만료 10년), ICAO 9303 MRZ(TD3 2×44, 검증 숫자 7-3-1), 탑승권 승객명(`HAN/SEIDON`), 착륙한 비행 → 도장(국경 넘으면 출국+입국, 국내·관광은 Carry On 도장), 나라별 날짜 표기(동아시아 2026.10.21 / 북미 OCT 21 2026 / 솅겐 21.10.26 / 그 외 21 OCT 2026), 사증 면 배치(면당 6개, 기존 도장 고정, 항상 빈 자리 있는 면 포함), 비행 기록 통계 | `holderOf()`, `mrzLines()`, `checkDigit()`, `mrzName()`, `passengerName()`, `stampsFor()`, `stampDate()`, `visaPages()`, `flightLog()` | `src/domain/passport.test.ts` (ICAO 예시 여권 검증 숫자 포함) |
@@ -132,7 +133,7 @@ flowchart LR
 | `src/audio/cabinAudio.ts` | 기내 소음 실시간 합성. AudioWorklet 핑크 노이즈(반복·이음매 없음) → 공기흐름 몸통(저중역 130–220Hz 강조, 85Hz 이하 컷, 좌석별 롤오프: 앞=밝게/뒤=무겁게) + 통풍구 공기 + 엔진 드론(협대역 노이즈, 순음 없음) + 30초 이상 주기의 느린 레벨 변화. 페이즈별 레벨/톤, 선택형 바이노럴 포커스 톤(기본 꺼짐, 헤드폰 전용), 차임 | `cabinAudio` (`start(…, timbre)`, `loadTimbres()`, `setPhase()`, `setFocusMode()`, `setFocusTones()`, `setVolume()`, `chime()`, `output()`), `ANNOUNCEMENT_SHARE`(기본 비율 0.35), `announcementShare(level)` (방송 = 볼륨 × 0.35 고정). 기내 버스와 PA 버스(차임·방송·찢는 소리, `output()`)는 리미터를 따로 써서 방송이 기내 소리를 끌어내리지 않음. 집중 모드는 160Hz 로우셸프 -7dB. 기종 음색이 로드돼 있으면 화이트 노이즈 → 실제 기종 음색 필터(ConvolverNode) → 좌석 틸트 → 페이즈 톤, 없으면 합성 폴백 | 심리음향 근거: 순음(tonality)·날카로움(sharpness)·거칠기(roughness) 회피. Worklet 미지원 시 크로스페이드 루프 버퍼 |
 | `src/audio/passportSound.ts` | 여권 소리 합성: 책장(가장자리 마찰 → 펄럭이는 바람 소리 → 살짝 내려앉는 소리), 표지(더 무겁고 느린 바람 + 판지 둔탁음). 매번 조금씩 다르게 | `passportSound.page(seconds)`, `passportSound.cover(opening, seconds)` | PA 버스로 출력(볼륨 따름) |
 | `src/audio/tearSound.ts` | 탑승권 스텁을 찢을 때 종이 섬유가 뜯어지는 미세 파열음(Grains) 동적 합성 | `tearSound.advance(delta)`, `tearSound.snap()` | 제스처 드래그 속도에 비례한 그레인 밀도 |
-| `src/audio/announcer.ts` | 안내방송 재생. 구절 클립(`public/audio/voice/<목소리>/`)을 쉼표 0.14초·문장 0.24/0.36초 간격으로 이어 붙여 기내 PA 필터 → PA 버스(볼륨 × 방송 레벨 비율 `announcementShare()` × 목소리별 보정 `VOICE_GAIN_DB`)로 송출, 차임 후 시작, 큐잉. 기내 소리는 줄이지 않음. 클립이 하나라도 없으면 그 방송은 Web Speech 기기 음성으로 대체(PA 체인을 안 거쳐 ×2.6로 맞춤) | `announce(announcement)`, `setAnnouncementFlight(flightNumber)` (기장 결정), `silenceAnnouncements()` | 클립 목록은 `clips.json`, 디코딩 버퍼 48개 캐시 |
+| `src/audio/announcer.ts` | 안내방송 재생. 구절 클립(`public/audio/voice/<목소리>/`)을 쉼표 0.14초·문장 0.24/0.36초 간격으로 이어 붙여 기내 PA 필터 → PA 버스(볼륨 × 방송 레벨 비율 `announcementShare()` × 목소리별 보정 `VOICE_GAIN_DB`)로 송출, 차임 후 시작, 큐잉. 기내 소리는 줄이지 않음. 클립이 하나라도 없으면 그 방송은 Web Speech 기기 음성으로 대체(PA 체인을 안 거쳐 ×2.6로 맞춤) | `announce(announcement)`, `setAnnouncementFlight(flightNumber)` (기장 결정), `silenceAnnouncements()`, `previewAnnouncement()` (방송 볼륨 미리듣기: 승무원 한 구절, 기내 소리가 켜져 있고 나오거나 대기 중인 방송이 없을 때만, 같은 대기열이라 그사이 시작될 방송은 미리듣기 뒤에). 방송 볼륨을 움직이면 나오는 중인 방송에도 바로 반영 | 클립 목록은 `clips.json`, 디코딩 버퍼 48개 캐시 |
 | `src/audio/pa.ts` | 기내 PA 필터 (대역제한·중역 강조·압축·스피커 왜곡·다중 스피커 지연·짧은 반사·라인 히스·키 클릭). 앱은 `cabin` 프리셋 | `PA_PRESETS` (`light`/`cabin`/`vintage`), `paChain()`, `keyLine()` | 사운드 랩과 공유 |
 | `src/audio/soundLab.ts` | 사운드 랩 전용 진입 모듈: 앱의 오디오·대본 모듈을 한곳에서 내보내 랩과 방송기가 같은 인스턴스를 쓰게 함 | 재수출만 | 앱 번들에는 안 쓰임 |
 
@@ -168,7 +169,7 @@ flowchart LR
 | `src/screens/BookingScreen.tsx` | `src/screens/BookingScreen.module.css` | `'booking'` | 출발지 선택, 집중 시간 기준(By focus time) 또는 목적지 기준(By destination) 노선 탐색 및 관광비행 선택. 시간 칩 옆 "Surprise me"(어디서든 출발하는 그 시간쯤 비행을 무작위로, 출발지도 바뀜), 처음 들어오면 `Coach` 4단계 안내(그때는 팁 없음), 그 뒤로 가끔 팁 |
 | `src/screens/CheckinScreen.tsx` | `src/screens/CheckinScreen.module.css` | `'checkin'` | 비행 목적(Study, Work 등) 선택, 좌석 배치도에서 좌석 선택 또는 'Assign for me' 자동 배정 |
 | `src/screens/BoardingScreen.tsx` | `src/screens/BoardingScreen.module.css` | `'boarding'` | 탑승 대기 화면. 찢을 수 있는 탑승권(`BoardingPass`) 렌더 및 제스처 시 오디오 언락 |
-| `src/screens/FlightScreen.tsx` | `src/screens/FlightScreen.module.css` | `'flight'` | 비행 중 화면. 벡터 지구본 지도, 기내 모니터 정보(고도/속도/남은시간), 백색소음 재생, 페이즈별 방송. 소리 조작은 볼륨 슬라이더 + "Sound settings" 패널(방송·차임·집중 모드·바이노럴 톤)만. 일찍 끝내기는 아래 테두리 버튼 → 그 자리에서 "Divert this flight?" 확인(Keep flying / Divert). 소리 설정의 Announcements 아래 방송 볼륨 슬라이더(기본값 표시·Default 복귀) |
+| `src/screens/FlightScreen.tsx` | `src/screens/FlightScreen.module.css` | `'flight'` | 비행 중 화면. 벡터 지구본 지도, 기내 모니터 정보(고도/속도/남은시간), 백색소음 재생, 페이즈별 방송. 소리 조작은 볼륨 슬라이더 + "Sound settings" 패널(방송·차임·집중 모드·바이노럴 톤)만. 일찍 끝내기는 아래 테두리 버튼 → 그 자리에서 "Divert this flight?" 확인(Keep flying / Divert). 소리 설정의 Announcements 아래 방송 볼륨 슬라이더(기본값 표시·Default 복귀, 놓으면 미리듣기, 기내 소리가 꺼져 있으면 안내 문구) |
 | `src/screens/ArrivalScreen.tsx` | `src/screens/ArrivalScreen.module.css` | `'arrival'` | 착륙 화면. 환영 방송, 입국 도장, 획득 마일리지 표시, 받은 스티커(3D와 같은 그림, `StickerPicture`) 부착 연출. 캐리어가 다 차면 "Carrier full" 카드(그대로 보관·새 캐리어 준비·보너스 마일, 처음이면 2배 표시) |
 | `src/screens/LuggageScreen.tsx` | `src/screens/LuggageScreen.module.css` | `'luggage'` | 캐리어 보관함. 도감 30칸 어느 것이든 누르면 위 무대에 올라오고 맨 위로 스크롤: 내 것은 스티커 붙은 3D(드래그·핀치) + 스티커 수/용량 + "Travel with this one", 못 찾은 것(모델 있음)은 실루엣 + 등급·가격 + "Find it in Duty Free"(면세점 그 상품으로), 아직 안 만든 것은 물음표. 채운 적 있는 종류는 "✓ No. 1 · 날짜" 칩으로 채운 캐리어들(스티커 그대로)과 진행 중인 것을 골라 봄. 카드: 내 것은 구운 사진(채운 횟수 ✓×n), 못 찾은 건 실루엣, 안 만든 건 ?. 도감 수는 종류 기준 |
 | `src/screens/DutyFreeScreen.tsx` | `src/screens/DutyFreeScreen.module.css` | `'dutyfree'` | 면세점. 위 3D 진열대는 손가락으로 돌려 보기(옆으로 끌면 회전, 세로는 페이지 스크롤, 확대 없음), 아래 사진 칩 줄을 스와이프해 넘기고 탭하면 진열대가 바뀜(칩 줄만 가로로 이동), 이웃 모델 미리 로드, 보관함에서 오면 그 캐리어부터, 등급 → 마일 순으로 구매 가능 판단(잠긴 건 필요한 등급까지 남은 누적 마일), 두 번 탭해 구매, 산 뒤 바로 사용 전환. 개발 모드 전용 "+10,000 mi" 버튼 |

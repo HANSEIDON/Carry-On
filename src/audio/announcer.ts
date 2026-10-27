@@ -34,6 +34,16 @@ let queue: Promise<void> = Promise.resolve();
 /** Bumped by silenceAnnouncements so queued announcements are dropped. */
 let generation = 0;
 let stopPlaying: (() => void) | null = null;
+/** Announcements waiting their turn or on the air (a preview only plays when there are none). */
+let pending = 0;
+/** The announcement on the air now: its level node and its voice's evening-out gain. */
+let live: { ctx: AudioContext; level: GainNode; voiceGain: number } | null = null;
+
+/** Moving the announcement volume turns the one on the air up or down at once, not just the next. */
+useSettings.subscribe((s, before) => {
+  if (s.announcementLevel === before.announcementLevel || !live) return;
+  live.level.gain.setTargetAtTime(announcementShare(s.announcementLevel) * live.voiceGain, live.ctx.currentTime, 0.05);
+});
 
 /** The flight being announced on: it decides which captain is flying today. */
 export function setAnnouncementFlight(number: string) {
@@ -43,13 +53,40 @@ export function setAnnouncementFlight(number: string) {
 /** Chime, speak, done. Announcements queue up and never overlap. */
 export function announce(a: Announcement): Promise<void> {
   const gen = generation;
+  pending++;
   queue = queue.then(async () => {
-    if (gen !== generation) return;
-    const clips = await loadClips(a).catch(() => null);
-    if (gen !== generation) return;
-    await (clips ? playClips(a, clips) : speak(a));
+    try {
+      if (gen !== generation) return;
+      const clips = await loadClips(a).catch(() => null);
+      if (gen !== generation) return;
+      await (clips ? playClips(a, clips) : speak(a));
+    } finally {
+      pending--;
+    }
   });
   return queue;
+}
+
+/**
+ * A short line from the crew at the current announcement volume, to hear what the setting sounds
+ * like against the cabin. Only with the cabin sound on. If an announcement is already on the air,
+ * there's no preview: that one changes level as the slider moves. The preview takes its turn in the
+ * same queue, so an announcement that comes up during it waits until it's done.
+ */
+export function previewAnnouncement() {
+  if (pending > 0 || !cabinAudio.output()) return;
+  const parts = ['Ladies and gentlemen, welcome aboard Carry On Airways.'];
+  const preview = { id: 'welcome', speaker: 'crew', chime: 'none', parts, text: parts.join(' ') } as Announcement;
+  const gen = generation;
+  pending++;
+  queue = queue.then(async () => {
+    try {
+      const clips = await loadClips(preview).catch(() => null);
+      if (clips && gen === generation) await playClips(preview, clips);
+    } finally {
+      pending--;
+    }
+  });
 }
 
 export function silenceAnnouncements() {
@@ -114,8 +151,11 @@ function playClips(a: Announcement, clips: AudioBuffer[]): Promise<void> {
   // cabin, each voice evened out so the captain and the crew sound equally loud.
   const voice = voiceFor(a.speaker, flightNumber);
   const share = announcementShare(useSettings.getState().announcementLevel);
-  const level = new GainNode(ctx, { gain: share * 10 ** ((VOICE_GAIN_DB[voice] ?? 0) / 20) });
+  const voiceGain = 10 ** ((VOICE_GAIN_DB[voice] ?? 0) / 20);
+  const level = new GainNode(ctx, { gain: share * voiceGain });
   level.connect(out);
+  const onAir = { ctx, level, voiceGain };
+  live = onAir;
   const pa = paChain(ctx, PA);
   pa.out.connect(level);
 
@@ -136,6 +176,7 @@ function playClips(a: Announcement, clips: AudioBuffer[]): Promise<void> {
     const finish = () => {
       clearTimeout(timer);
       if (stopPlaying === stop) stopPlaying = null;
+      if (live === onAir) live = null;
       // Let the room reflection ring out before letting go of the nodes.
       setTimeout(() => level.disconnect(), 600);
       resolve();

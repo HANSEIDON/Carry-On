@@ -23,3 +23,7 @@ __pycache__/
 
 # TypeScript build info (tsc -b)
 *.tsbuildinfo
+
+# Local AI & Editor configurations
+CLAUDE.md
+.claude/
