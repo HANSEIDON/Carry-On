@@ -199,3 +199,9 @@ npm run electron:build
 * **Effects on performance and work quality due to low frequency ventilation noise**  
   Persson Waye et al., *Journal of Sound and Vibration*, 1997. [Google Scholar](https://scholar.google.com/scholar?q=Effects+on+performance+and+work+quality+due+to+low+frequency+ventilation+noise)
 * **ITU-R BS.1770-4**: *Loudness and true-peak audio measurement standard*, International Telecommunication Union. [ITU](https://www.itu.int/rec/R-REC-BS.1770)
+
+---
+
+## 📜 License
+
+This project is open-source and available under the [MIT License](LICENSE).
