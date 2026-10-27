@@ -9,27 +9,37 @@
 
   <br />
 
-  <!-- Essential Badges: Release, Platform, Download -->
+  <!-- Boarding Pass Ticket CTA (GitHub Dark / Light Adaptive) -->
   <a href="https://github.com/HANSEIDON/Carry-On/releases/tag/v0.1.0">
-    <img src="https://img.shields.io/badge/release-v0.1.0-1f1b16?style=flat-square" alt="Release v0.1.0" />
-  </a>
-  &nbsp;
-  <a href="#download">
-    <img src="https://img.shields.io/badge/platform-Windows-1f1b16?style=flat-square&logo=windows&logoColor=white" alt="Platform Windows" />
-  </a>
-  &nbsp;
-  <a href="https://github.com/HANSEIDON/Carry-On/releases/tag/v0.1.0">
-    <img src="https://img.shields.io/badge/download-.exe-b9392a?style=flat-square" alt="Download .exe" />
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/download-ticket-dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="assets/download-ticket-light.png">
+      <img src="assets/download-ticket-light.png" width="480" alt="Download for Windows · Boarding Pass CTA">
+    </picture>
   </a>
 
   <br /><br />
 
-  <!-- Hero 3-Phone Showcase (Fixed Pixel Width for Guaranteed Clean Alignment on GitHub) -->
-  <p align="center">
-    <img src="assets/mobile-01-home.png" width="220" alt="Home Ready for Flight" />
-    <img src="assets/mobile-03-seatmap.png" width="220" alt="Flight Seat Map" />
-    <img src="assets/mobile-04-boarding.png" width="220" alt="Boarding Pass" />
-  </p>
+  <!-- Hero 3-Phone Journey Flow (Check-in → Boarding → Arrived) -->
+  <table>
+    <tr>
+      <td align="center" width="220" valign="top">
+        <img src="assets/mobile-03-seatmap.png" width="210" alt="1. Check-in: Seat Selection" /><br /><br />
+        <b>1. CHECK-IN</b><br />
+        <sub>Seat Selection & Cabin Map</sub>
+      </td>
+      <td align="center" width="220" valign="top">
+        <img src="assets/mobile-04-boarding.png" width="210" alt="2. Boarding: Tear Stub to Fly" /><br /><br />
+        <b>2. BOARDING</b><br />
+        <sub>Tear Ticket Stub to Fly</sub>
+      </td>
+      <td align="center" width="220" valign="top">
+        <img src="assets/mobile-05-passport.png" width="210" alt="3. Arrived: Visa Stamps" /><br /><br />
+        <b>3. ARRIVED</b><br />
+        <sub>Earn Miles & ICAO Visa Stamps</sub>
+      </td>
+    </tr>
+  </table>
 
 </div>
 
