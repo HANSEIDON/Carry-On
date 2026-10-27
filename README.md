@@ -9,12 +9,22 @@
 
   <br />
 
-  <!-- Release / Download Badges -->
-  <img src="https://img.shields.io/badge/Windows_Desktop-100%25_Offline_Local-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows Desktop Offline" />
+  <!-- Release / Download Badges (Clickable Links) -->
+  <a href="#download">
+    <img src="https://img.shields.io/badge/Windows_Desktop-Download_.exe-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows Desktop Download" />
+  </a>
   &nbsp;
-  <img src="https://img.shields.io/badge/Acoustics-ITU--R_BS.1770--4-f59e0b?style=for-the-badge&logo=soundcharts&logoColor=white" alt="ITU-R BS.1770 Audio Standard" />
+  <a href="#acoustics">
+    <img src="https://img.shields.io/badge/Acoustics-ITU--R_BS.1770--4-f59e0b?style=for-the-badge&logo=soundcharts&logoColor=white" alt="ITU-R BS.1770 Audio Standard" />
+  </a>
   &nbsp;
-  <img src="https://img.shields.io/badge/Mobile-Roadmap-10b981?style=for-the-badge&logo=googleplay&logoColor=white" alt="Mobile Roadmap" />
+  <a href="#platform-status">
+    <img src="https://img.shields.io/badge/Mobile-Android_APK_Planned-10b981?style=for-the-badge&logo=android&logoColor=white" alt="Android APK Planned" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/HANSEIDON/Carry-On/releases">
+    <img src="https://img.shields.io/badge/Release-v0.1.0-e11d48?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Releases" />
+  </a>
 
   <br /><br />
 
@@ -38,6 +48,34 @@
 Instead of staring at a ticking clock, you book a flight based on authentic flight times, select your seat, and tear off the boarding pass stub to start focusing. During cruise, you focus within an acoustic cabin soundscape modeled from real in-flight recordings (A320, B737, B777). Once you land, you earn miles, collect destination stickers on a 3D suitcase, and receive stamped visas in your passport.
 
 ---
+
+<span id="download"></span>
+
+## 📥 Download & Installation
+
+Carry On is **100% offline and standalone**. All flight logs, mileage balances, and earned luggage stickers are securely stored on your local device with zero server requirements.
+
+### 🪟 Windows Desktop (Available Now)
+
+Standalone 64-bit Windows executables (`v0.1.0`):
+
+| Package | Filename | Size | Type | Installation & Usage |
+|:---|:---|:---:|:---:|:---|
+| **Portable** | `Carry On 0.1.0.exe` | ~365 MB | `.exe` | **Zero install needed.** Double-click to launch immediately from USB or any local folder. |
+| **Setup Installer** | `Carry On Setup 0.1.0.exe` | ~387 MB | `.exe` | Standard Windows setup with desktop shortcut and Start Menu integration. |
+
+> **Downloads**: Grab pre-built executables from **[GitHub Releases](https://github.com/HANSEIDON/Carry-On/releases)** or build directly using `npm run electron:build` (output located in `release/`).
+
+---
+
+### 📱 Android (In Development)
+
+* Standalone `.apk` package and Google Play Store (`.aab`) bundle are actively being configured via Capacitor.
+* Retains the identical zero-server local storage and soundscape engine.
+
+---
+
+<span id="platform-status"></span>
 
 ## 🪟 Platform & Release Status
 
@@ -114,6 +152,8 @@ A dictionary catalog of over 30 distinct luggage models across membership tiers.
 </div>
 
 ---
+
+<span id="acoustics"></span>
 
 ## 🔬 Scientific Foundation: Low-Frequency Noise & Focus Mode
 
