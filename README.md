@@ -9,22 +9,14 @@
 
   <br />
 
-  <!-- Release / Download Badges (Clickable Links) -->
-  <a href="#download">
-    <img src="https://img.shields.io/badge/Windows_Desktop-Download_.exe-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows Desktop Download" />
-  </a>
-  &nbsp;
-  <a href="#acoustics">
-    <img src="https://img.shields.io/badge/Acoustics-ITU--R_BS.1770--4-f59e0b?style=for-the-badge&logo=soundcharts&logoColor=white" alt="ITU-R BS.1770 Audio Standard" />
-  </a>
-  &nbsp;
-  <a href="#platform-status">
-    <img src="https://img.shields.io/badge/Mobile-Android_APK_Planned-10b981?style=for-the-badge&logo=android&logoColor=white" alt="Android APK Planned" />
-  </a>
-  &nbsp;
-  <a href="https://github.com/HANSEIDON/Carry-On/releases">
-    <img src="https://img.shields.io/badge/Release-v0.1.0-e11d48?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Releases" />
-  </a>
+  <!-- Navigation Links -->
+  <p align="center">
+    <a href="https://github.com/HANSEIDON/Carry-On/releases/tag/v0.1.0"><strong>⬇️ Download for Windows (.exe)</strong></a> &nbsp;•&nbsp;
+    <a href="#overview">Overview</a> &nbsp;•&nbsp;
+    <a href="#showcase">Showcase</a> &nbsp;•&nbsp;
+    <a href="#acoustics">Acoustics Research</a> &nbsp;•&nbsp;
+    <a href="#platform-status">Mobile Roadmap</a>
+  </p>
 
   <br /><br />
 
@@ -40,6 +32,8 @@
 <br />
 
 ---
+
+<span id="overview"></span>
 
 ## 🛫 Overview
 
@@ -59,12 +53,12 @@ Carry On is **100% offline and standalone**. All flight logs, mileage balances, 
 
 Standalone 64-bit Windows executables (`v0.1.0`):
 
-| Package | Filename | Size | Type | Installation & Usage |
+| Package | Download Link | Size | Type | Installation & Usage |
 |:---|:---|:---:|:---:|:---|
-| **Portable** | `Carry On 0.1.0.exe` | ~365 MB | `.exe` | **Zero install needed.** Double-click to launch immediately from USB or any local folder. |
-| **Setup Installer** | `Carry On Setup 0.1.0.exe` | ~387 MB | `.exe` | Standard Windows setup with desktop shortcut and Start Menu integration. |
+| **Portable** | [**`Carry-On-0.1.0-Portable.exe`**](https://github.com/HANSEIDON/Carry-On/releases/download/v0.1.0/Carry-On-0.1.0-Portable.exe) | 365 MB | `.exe` | **Zero install needed.** Double-click to launch immediately from USB or any local folder. |
+| **Setup Installer** | [**`Carry-On-Setup-0.1.0.exe`**](https://github.com/HANSEIDON/Carry-On/releases/download/v0.1.0/Carry-On-Setup-0.1.0.exe) | 387 MB | `.exe` | Standard Windows setup with desktop shortcut and Start Menu integration. |
 
-> **Downloads**: Grab pre-built executables from **[GitHub Releases](https://github.com/HANSEIDON/Carry-On/releases)** or build directly using `npm run electron:build` (output located in `release/`).
+> 💡 All release packages are published under **[GitHub Releases (v0.1.0)](https://github.com/HANSEIDON/Carry-On/releases/tag/v0.1.0)**. Developers can also compile locally via `npm run electron:build` (output in `release/`).
 
 ---
 
@@ -87,6 +81,8 @@ Standalone 64-bit Windows executables (`v0.1.0`):
 | **Web (Local)** | **Available** | Run locally via `npm run dev` or `dev.bat` |
 
 ---
+
+<span id="showcase"></span>
 
 ## 📱 Flight Journey Showcase
 
