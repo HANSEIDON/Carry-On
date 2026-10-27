@@ -20,26 +20,10 @@
 
   <br /><br />
 
-  <!-- Hero 3-Phone Journey Flow (Check-in → Boarding → Arrived) -->
-  <table>
-    <tr>
-      <td align="center" width="220" valign="top">
-        <img src="assets/mobile-03-seatmap.png" width="210" alt="1. Check-in: Seat Selection" /><br /><br />
-        <b>1. CHECK-IN</b><br />
-        <sub>Seat Selection & Cabin Map</sub>
-      </td>
-      <td align="center" width="220" valign="top">
-        <img src="assets/mobile-04-boarding.png" width="210" alt="2. Boarding: Tear Stub to Fly" /><br /><br />
-        <b>2. BOARDING</b><br />
-        <sub>Tear Ticket Stub to Fly</sub>
-      </td>
-      <td align="center" width="220" valign="top">
-        <img src="assets/mobile-05-passport.png" width="210" alt="3. Arrived: Visa Stamps" /><br /><br />
-        <b>3. ARRIVED</b><br />
-        <sub>Earn Miles & ICAO Visa Stamps</sub>
-      </td>
-    </tr>
-  </table>
+  <!-- Hero 3D Composite Showcase -->
+  <p align="center">
+    <img src="assets/hero-banner-suit.png" width="700" alt="Carry On In-Flight Experience" />
+  </p>
 
 </div>
 
