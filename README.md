@@ -4,7 +4,7 @@
 
   # Carry On
   
-  **Focus as a Journey, Miles into Baggage.**  
+  **Turn on your Flight Mode.**  
   *Transform your focus sessions into authentic airline flights.*
 
   <br />
@@ -21,7 +21,7 @@
 
   <!-- Hero 3-Phone Showcase -->
   <p align="center">
-    <img src="assets/mobile-01-home.png" width="31%" alt="Home with Stickers" />
+    <img src="assets/mobile-01-home.png" width="31%" alt="Home Ready for Flight" />
     &nbsp;
     <img src="assets/mobile-03-seatmap.png" width="31%" alt="Flight Seat Map" />
     &nbsp;
