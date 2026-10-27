@@ -27,3 +27,4 @@ __pycache__/
 # Local AI & Editor configurations
 CLAUDE.md
 .claude/
+scripts/capture-*.cjs

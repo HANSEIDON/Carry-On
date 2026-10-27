@@ -100,11 +100,20 @@ Your personal flight log formatted as an international standard passport (ICAO 9
 
 <br />
 
-### 6. Carrier Catalog & Duty Free Shop (`Duty Free`)
-A dictionary catalog of over 30 distinct luggage models. Spend accumulated flight miles in the Duty Free shop to collect new carrier types and unlock tier rewards.
+### 6. Luggage Room & Suitcase Collection (`Luggage`)
+Inspect your collection of travel cases on the luggage shelf in real-time 3D. Rotate suitcases, view all earned destination stickers, and switch your active travel bag.
 
 <div align="center">
-  <img src="assets/mobile-06-carrier-shop.png" width="45%" alt="Duty Free Carrier Dictionary" />
+  <img src="assets/mobile-06-luggage.png" width="45%" alt="Luggage Room 3D Suitcase Shelf" />
+</div>
+
+<br />
+
+### 7. Carrier Catalog & Duty Free Shop (`Duty Free`)
+A dictionary catalog of over 30 distinct luggage models across membership tiers. Spend accumulated flight miles in the Duty Free boutique to collect new carrier designs.
+
+<div align="center">
+  <img src="assets/mobile-07-dutyfree.png" width="45%" alt="Duty Free Carrier Boutique" />
 </div>
 
 ---

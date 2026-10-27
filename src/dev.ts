@@ -3,6 +3,7 @@ import { cityByCode } from './data/cities';
 import { planRoute } from './domain/flightPlan';
 import { autoAssign, buildSeatMap } from './domain/seatmap';
 import type { Screen } from './store/appStore';
+import { useSettings } from './store/settings';
 import type { Tier } from './domain/types';
 
 /**
@@ -31,6 +32,14 @@ export async function seedMockData(): Promise<void> {
   const now = Date.now();
   const carrierId = 'dev-carrier-1';
 
+  // Suppress all first-run guides and coach tutorials during screenshots
+  useSettings.setState({
+    guideSeen: true,
+    bookingGuideSeen: true,
+    tipShownAt: now + 1e11,
+    tipsSeen: ['all'],
+  });
+
   const profile: Profile = {
     id: 'me',
     name: 'Hanseidon',
@@ -44,14 +53,30 @@ export async function seedMockData(): Promise<void> {
   };
   await db.profile.put(profile);
 
-  const carrier: Carrier = {
-    id: carrierId,
-    modelId: '001',
-    color: '',
-    capacity: 12,
-    acquiredAt: now - 30 * 86400000,
-  };
-  await db.carriers.put(carrier);
+  const carriers: Carrier[] = [
+    {
+      id: carrierId,
+      modelId: '001',
+      color: '',
+      capacity: 12,
+      acquiredAt: now - 30 * 86400000,
+    },
+    {
+      id: 'dev-carrier-2',
+      modelId: '002',
+      color: '',
+      capacity: 14,
+      acquiredAt: now - 15 * 86400000,
+    },
+    {
+      id: 'dev-carrier-3',
+      modelId: '003',
+      color: '',
+      capacity: 10,
+      acquiredAt: now - 5 * 86400000,
+    },
+  ];
+  for (const c of carriers) await db.carriers.put(c);
 
   const landedFlights: Flight[] = [
     { id: 'f1', fromCode: 'ICN', toCode: 'HND', scenic: false, airlineCode: 'HN', flightNumber: 'HN474', gate: '12B', seat: '14A', cabin: 'economy', zone: 'wing', purpose: 'work', plannedMinutes: 120, startedAt: now - 10 * 86400000, endedAt: now - 10 * 86400000 + 7200000, status: 'landed', miles: 750, earnedMiles: 900 },
