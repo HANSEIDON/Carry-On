@@ -9,14 +9,18 @@
 
   <br />
 
-  <!-- Navigation Links -->
-  <p align="center">
-    <a href="https://github.com/HANSEIDON/Carry-On/releases/tag/v0.1.0"><strong>⬇️ Download for Windows (.exe)</strong></a> &nbsp;•&nbsp;
-    <a href="#overview">Overview</a> &nbsp;•&nbsp;
-    <a href="#showcase">Showcase</a> &nbsp;•&nbsp;
-    <a href="#acoustics">Acoustics Research</a> &nbsp;•&nbsp;
-    <a href="#platform-status">Mobile Roadmap</a>
-  </p>
+  <!-- Essential Badges: Release, Platform, Download -->
+  <a href="https://github.com/HANSEIDON/Carry-On/releases/tag/v0.1.0">
+    <img src="https://img.shields.io/badge/release-v0.1.0-1f1b16?style=flat-square" alt="Release v0.1.0" />
+  </a>
+  &nbsp;
+  <a href="#download">
+    <img src="https://img.shields.io/badge/platform-Windows-1f1b16?style=flat-square&logo=windows&logoColor=white" alt="Platform Windows" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/HANSEIDON/Carry-On/releases/tag/v0.1.0">
+    <img src="https://img.shields.io/badge/download-.exe-b9392a?style=flat-square" alt="Download .exe" />
+  </a>
 
   <br /><br />
 
