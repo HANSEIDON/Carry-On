@@ -24,7 +24,9 @@ __pycache__/
 # TypeScript build info (tsc -b)
 *.tsbuildinfo
 
-# Local AI & Editor configurations
+# Build and packaging output
+release/
+# Local configurations
 CLAUDE.md
 .claude/
 scripts/capture-*.cjs

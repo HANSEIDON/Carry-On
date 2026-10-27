@@ -52,6 +52,7 @@ function carrierBakeWriter(): Plugin {
 }
 
 export default defineConfig({
+  base: './',
   plugins: [react(), carrierBakeWriter()],
   test: {
     environment: 'node',
