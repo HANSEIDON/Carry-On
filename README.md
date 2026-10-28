@@ -4,8 +4,19 @@
 
   # Carry On
   
+  ### The Aviation Focus Timer & Cabin Soundscape
+
   **Turn on your Flight Mode.**  
   *Transform your focus sessions into authentic airline flights.*
+
+  <br />
+
+  <p align="center">
+    <code>⏱️ Pomodoro Focus Timer</code> &nbsp;•&nbsp;
+    <code>🎧 Cabin White Noise</code> &nbsp;•&nbsp;
+    <code>🛂 Passport & Mileage Tracker</code> &nbsp;•&nbsp;
+    <code>🪟 100% Offline Standalone</code>
+  </p>
 
   <br />
 
@@ -33,11 +44,15 @@
 
 <span id="overview"></span>
 
-## 🛫 Overview
+## 🛫 What is Carry On?
 
-**Carry On** replaces tedious countdown timers with the calming immersion of commercial aviation.
+**Carry On** replaces tedious countdown timers and ticking stopwatches with the calming immersion of commercial aviation.
 
-Instead of staring at a ticking clock, you book a flight based on authentic flight times, select your seat, and tear off the boarding pass stub to start focusing. During cruise, you focus within an acoustic cabin soundscape modeled from real in-flight recordings (A320, B737, B777). Once you land, you earn miles, collect destination stickers on a 3D suitcase, and receive stamped visas in your passport.
+Instead of staring at a ticking clock, every focus session is transformed into an authentic airline flight:
+
+1. **🎟️ Book Your Focus Session (25m ~ 4h)**: Select a real-world flight route matching your desired focus duration (from a 25-minute scenic hop to a 4-hour transcontinental cruise), and pick your cabin seat on the aircraft layout.
+2. **🎧 Cruise with In-Cabin Soundscapes**: Tear off your perforated boarding pass stub to initiate takeoff. Focus inside an acoustic soundscape modeled after actual airliner recordings (A320, B737, B777) with clinical low-frequency rumble reduction.
+3. **🛂 Land, Earn Miles & Stamp Visas**: When your timer completes, you land at your destination, earn flight miles, collect 3D suitcase stickers, and receive stamped entry visas in your digital passport.
 
 ---
 
