@@ -4,19 +4,8 @@
 
   # Carry On
   
-  ### The Aviation Focus Timer & Cabin Soundscape
-
-  **Turn on your Flight Mode.**  
-  *Transform your focus sessions into authentic airline flights.*
-
-  <br />
-
-  <p align="center">
-    <code>⏱️ Pomodoro Focus Timer</code> &nbsp;•&nbsp;
-    <code>🎧 Cabin White Noise</code> &nbsp;•&nbsp;
-    <code>🛂 Passport & Mileage Tracker</code> &nbsp;•&nbsp;
-    <code>🪟 100% Offline Standalone</code>
-  </p>
+  **The Aviation Focus Timer & Cabin Soundscape**  
+  *Turn on your Flight Mode. Transform your focus sessions into authentic airline flights.*
 
   <br />
 
